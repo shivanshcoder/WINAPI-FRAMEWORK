@@ -21,9 +21,15 @@
     <ClInclude Include="Headers\WindowClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TEXT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\SysMets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp">
+    <ClCompile Include="sysmets1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

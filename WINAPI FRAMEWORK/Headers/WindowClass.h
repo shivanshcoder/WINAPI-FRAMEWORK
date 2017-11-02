@@ -1,19 +1,16 @@
 #pragma once
-//#include<Windows.h>
 #include"Print.h"
-#include<functional>
 #define tostring(a) #a 
-
-//typedef LRESULT(CALLBACK WndProcs::*WNDPROCS)(HWND, UINT, WPARAM, LPARAM);
-//#define wndProc LRESULT CALLBACK WndProc()
 
 int window_number = 0;
 
 #define MAIN() WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,int iCmdShow)
 
-class WindowClass :public WNDCLASS {
+/*WindowClass starts*/
+
+class WindowClass :protected WNDCLASS {
 public:
-	//virtual LRESULT CALLBACK WndProcs(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
+
 	WindowClass();
 	WindowClass(LPCWSTR _lpszClassName);
 	WindowClass(LPCWSTR _lpszClassName, UINT _style);
@@ -22,18 +19,17 @@ public:
 	void DefaultClass();
 	void ChangeIcon(HICON _hIcon);
 	void ChangeCursor(HCURSOR hCursor);
-	void ChangeClassName();
-	void _RegisterClass() { 
-		RegisterClass(this);
-	}
+	void ChangeClassName(LPCWSTR _lpszClassName);
+	bool _RegisterClass();
 private:
 #ifdef _EXE
 	//Should'nt be used while making dll files
 	void default_instance() { 
 		hInstance = GetModuleHandle(NULL); 
 	}
+#else
+	void AddInstance(HINSTANCE _hInstance) { hInstance = _hInstance; }
 #endif
-
 };
 
 /*Constructors start*/
@@ -55,7 +51,29 @@ WindowClass::WindowClass(LPCWSTR _lpszClassName, UINT _style) {
 }
 /*Constructors finish*/
 
-/*Member FUnctions*/
+/*Inline Functions*/
+inline void WindowClass::AttachWndProc(WNDPROC _WndProc) {
+	lpfnWndProc = _WndProc;
+}
+inline void WindowClass::ChangeStyle(UINT _style) {
+	style = _style;
+}
+inline void WindowClass::ChangeIcon(HICON _hIcon) {
+	hIcon = _hIcon;
+}
+inline void WindowClass::ChangeCursor(HCURSOR _hCursor) {
+	hCursor = _hCursor;
+}
+inline void WindowClass::ChangeClassName(LPCWSTR _lpszClassname) {
+	lpszClassName = _lpszClassname;
+}
+inline bool WindowClass::_RegisterClass() {
+	return RegisterClass(this);
+}
+
+/*Inline Functions functions*/
+
+/*Member Functions*/
 void WindowClass::DefaultClass() {
 	style = CS_HREDRAW | CS_VREDRAW;
 	lpfnWndProc = DefWindowProc;
@@ -70,12 +88,6 @@ void WindowClass::DefaultClass() {
 	default_instance();
 #endif
 }
-void WindowClass::AttachWndProc(WNDPROC _WndProc) {
-	lpfnWndProc = _WndProc;
-}
-void WindowClass::ChangeStyle(UINT _style) {
-	style = _style;
-}
 
 /*WidnowClass ends*/
 
@@ -83,7 +95,6 @@ void WindowClass::ChangeStyle(UINT _style) {
 class Window :public WindowClass {
 public:
 	Window();
-//	Window();
 	WPARAM Run();
 	WPARAM ProcessMessage();
 	/// Inline Functions
@@ -106,8 +117,8 @@ private:
 
 /*Constructors*/
 Window::Window() {
-	position = Position{ CW_USEDEFAULT,CW_USEDEFAULT };
-	size = Size{ CW_USEDEFAULT ,CW_USEDEFAULT };
+	position = Position{ CW_USEDEFAULT, CW_USEDEFAULT };
+	size = Size{ CW_USEDEFAULT, CW_USEDEFAULT };
 	style = WS_OVERLAPPEDWINDOW;
 	hparent = NULL;
 	hmenu = NULL;
@@ -143,8 +154,7 @@ WPARAM Window::Run() {
 
 
 /*T is Derived class name*/
-template<class T>class WndProcs{
-	static T *instance;
+template<class T>class WndProcs {
 public:
 	/*arguement is derived class this pointer*/
 	WndProcs(T*_instance) {
@@ -152,24 +162,27 @@ public:
 	}
 	WNDPROC operator()() {
 		return instance->Main;
-		//return WndProcs<T>::Main;
 	}
-	virtual int WndProc();
 
 protected:
+	
+	virtual int WndProc();
+	virtual int WM_destroy() { PostQuitMessage(0); return 0; }
+
+	static LRESULT CALLBACK Main(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
+	
 	UINT message;
 	HWND hwnd;
 	WPARAM wParam;
 	LPARAM lParam;
 private:
-	static LRESULT CALLBACK Main(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
+	static T *instance;
 	void initialize(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
 };
 template<class T>T *WndProcs<T>::instance = nullptr;
 
-
 template<class T>LRESULT CALLBACK WndProcs<T>::Main(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
-	instance->initialize(_hwnd,_message, _wParam, _lParam);
+	instance->initialize(_hwnd, _message, _wParam, _lParam);
 	return instance->WndProc();
 }
 template<class T>void WndProcs<T>::initialize(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
@@ -177,10 +190,7 @@ template<class T>void WndProcs<T>::initialize(HWND _hwnd, UINT _message, WPARAM 
 	message = _message;
 	wParam = _wParam;
 	lParam = _lParam;
-	//wndproc = Main;
-	//wndproc = this->Main;
 }
 template<class T>int WndProcs<T>::WndProc() {
 	return DefWindowProc(hwnd, message, wParam, lParam);
 }
-
