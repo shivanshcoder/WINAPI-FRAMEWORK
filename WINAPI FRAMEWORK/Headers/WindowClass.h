@@ -152,9 +152,9 @@ public:
 	}
 	WNDPROC operator()() {
 		return instance->Main;
+		//return WndProcs<T>::Main;
 	}
 	virtual int WndProc();
-	static LRESULT CALLBACK Main(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
 
 protected:
 	UINT message;
@@ -162,6 +162,7 @@ protected:
 	WPARAM wParam;
 	LPARAM lParam;
 private:
+	static LRESULT CALLBACK Main(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
 	void initialize(HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam);
 };
 template<class T>T *WndProcs<T>::instance = nullptr;

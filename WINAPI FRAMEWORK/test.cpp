@@ -18,7 +18,7 @@ int _SimpleProc::WndProc() {
 		hdc = BeginPaint(hwnd, &ps);
 		//TextOut(hdc, 50, 50, p << TEXT("Hello World\nI just Made a FRAMEWORK!!") << &p, NULL);
 		GetClientRect(hwnd, &rect);
-		DrawText(hdc, p << TEXT("Hello Windows ") << 10 << &p, -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+		DrawText(hdc, p << TEXT("Hello Windows 10") << 10 << &p, -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 		EndPaint(hwnd, &ps);
 		return 0;
 	case WM_DESTROY:
