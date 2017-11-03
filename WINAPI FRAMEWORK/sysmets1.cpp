@@ -26,32 +26,26 @@ int sysmets::WndProc() {
 	case WM_CREATE:
 		//t.fillhwnd(hwnd);
 		t = new Text(hwnd);
-		//hdc = GetDC(hwnd);
-		////GetTextMetrics(hdc,&t);
-		//cxChar = t.tmAveCharWidth;
-		//cyChar = t.tmHeight + t.tmExternalLeading;
-		//cxCaps = (t.tmPitchAndFamily&1?3:2)*cxChar/2;
 		t->GetTextMetrics();
 		cxChar = t->cxChar();
 		cyChar = t->cyChar();
 		cxCaps = t->cxCaps();
-		//ReleaseDC(hwnd, hdc);
-		//delete t;
 		return 0;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 		for (int i = 0; i < NUMLINES; ++i) {
 			//str << sysmetrics[i].szLabel << L"                  " << sysmetrics[i].szDesc << L"                          " << GetSystemMetrics(sysmetrics[i].iIndex);
-			TextOut(hdc, 0, cyChar*i, str << sysmetrics[i].szLabel << L"                  " << sysmetrics[i].szDesc << L"                          " << GetSystemMetrics(sysmetrics[i].iIndex)<<&str );
-			/*SetTextAlign(hdc, TA_LEFT | TA_TOP);
+			//TextOut(hdc, 0, cyChar*i, str << sysmetrics[i].szLabel << L"                  " << sysmetrics[i].szDesc << L"                          " << GetSystemMetrics(sysmetrics[i].iIndex)<<&str );
 
-			TextOut(hdc, 0, cyChar*i, sysmetrics[i].szLabel, lstrlen(sysmetrics[i].szLabel));
-			TextOut(hdc, 22 * cxCaps, cyChar*i, sysmetrics[i].szDesc, lstrlen(sysmetrics[i].szDesc));
-
-			TextOut(hdc, 22 * cxCaps + 40 * cxChar, cyChar*i, szBuffer, wsprintf(szBuffer, TEXT("%5d"), GetSystemMetrics(sysmetrics[i].iIndex)));
-*/
+			TextOut(hdc, 0, cyChar*i, sysmetrics[i].szLabel /*,lstrlen(sysmetrics[i].szLabel)*/);
 			SetTextAlign(hdc, TA_LEFT | TA_TOP);
+			TextOut(hdc, 22 * cxCaps, cyChar*i, sysmetrics[i].szDesc/*, lstrlen(sysmetrics[i].szDesc)*/);
 
+		//	TextOut(hdc, 22 * cxCaps + 40 * cxChar, cyChar*i, str << GetSystemMetrics(sysmetrics[i].iIndex) << &str/*, wsprintf(szBuffer, TEXT("%5d"), GetSystemMetrics(sysmetrics[i].iIndex))*/);
+
+			SetTextAlign(hdc, TA_RIGHT | TA_TOP);
+
+			
 		}
 		EndPaint(hwnd, &ps);
 		return 0;

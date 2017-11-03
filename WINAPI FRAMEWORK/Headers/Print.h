@@ -83,6 +83,7 @@ T* strings<T, size>::operator<< (strings *z) {
 //	//printf(s);
 //#endif
 //
+	s[index] = '\0';
 	index = 0;
 	return s;
 }
