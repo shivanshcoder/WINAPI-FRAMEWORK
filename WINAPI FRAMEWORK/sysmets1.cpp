@@ -5,6 +5,7 @@
 void TextOut(HDC hdc, int x, int y, LPCWSTR lpString) {
 	TextOut(hdc, x, y, lpString, lstrlen(lpString));
 }
+
 class sysmets :public WndProcs<sysmets> {
 public:
 	sysmets():WndProcs(this){}
@@ -33,18 +34,22 @@ int sysmets::WndProc() {
 		return 0;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
+		temp tp;
+		tp.x = 5;
+		str.hdc = hdc;
 		for (int i = 0; i < NUMLINES; ++i) {
-			//str << sysmetrics[i].szLabel << L"                  " << sysmetrics[i].szDesc << L"                          " << GetSystemMetrics(sysmetrics[i].iIndex);
-			//TextOut(hdc, 0, cyChar*i, str << sysmetrics[i].szLabel << L"                  " << sysmetrics[i].szDesc << L"                          " << GetSystemMetrics(sysmetrics[i].iIndex)<<&str );
 
-			TextOut(hdc, 0, cyChar*i, sysmetrics[i].szLabel /*,lstrlen(sysmetrics[i].szLabel)*/);
-			SetTextAlign(hdc, TA_LEFT | TA_TOP);
-			TextOut(hdc, 22 * cxCaps, cyChar*i, sysmetrics[i].szDesc/*, lstrlen(sysmetrics[i].szDesc)*/);
+			str[{0, cyChar*i}] << sysmetrics[i].szLabel;
+		//	SetTextAlign(hdc, TA_LEFT | TA_TOP);
+			str[{22 * cxCaps, cyChar*i}] << sysmetrics[i].szDesc;
+			str[{22 * cxCaps + 40 * cxChar, cyChar*i}] << GetSystemMetrics(sysmetrics[i].iIndex);
 
-		//	TextOut(hdc, 22 * cxCaps + 40 * cxChar, cyChar*i, str << GetSystemMetrics(sysmetrics[i].iIndex) << &str/*, wsprintf(szBuffer, TEXT("%5d"), GetSystemMetrics(sysmetrics[i].iIndex))*/);
-
-			SetTextAlign(hdc, TA_RIGHT | TA_TOP);
-
+			str.finish();
+			//SetTextAlign(hdc, TA_RIGHT | TA_TOP);
+			//TextOut(hdc, 0, cyChar*i, str(),str.size() );
+		//	TextOut(hdc, 0, cyChar*i, sysmetrics[i].szLabel /*,lstrlen(sysmetrics[i].szLabel)*/);
+		//	TextOut(hdc, 22 * cxCaps, cyChar*i, sysmetrics[i].szDesc/*, lstrlen(sysmetrics[i].szDesc)*/);
+		////	TextOut(hdc, 22 * cxCaps + 40 * cxChar, cyChar*i, str << GetSystemMetrics(sysmetrics[i].iIndex) << &str/*, wsprintf(szBuffer, TEXT("%5d"), GetSystemMetrics(sysmetrics[i].iIndex))*/);
 			
 		}
 		EndPaint(hwnd, &ps);
@@ -62,6 +67,6 @@ int sysmets::WndProc() {
 int MAIN() {
 	Window w;
 	w.AttachWndProc(Sysmets());
-	w.Createwindow(L"Sysmets 1", Position{ 0,0 }, Size{ 1900,1000 });
+	w.Createwindow(L"Sysmets 1", Position{ 0,0 }, Size{ 1000,1000 });
 	return w.Run();
 }

@@ -2,13 +2,23 @@
 #include"Print.h"
 #define tostring(a) #a 
 
+#ifdef EXTENDEDSUPPORT
+#define EXSP
+#endif
+
 int window_number = 0;
 
 #define MAIN() WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,int iCmdShow)
 
 /*WindowClass starts*/
 
-class WindowClass :protected WNDCLASS {
+#ifdef EXSP
+typedef WNDCLASSEX _WNDCLASS;
+#else 
+typedef WNDCLASS _WNDCLASS;
+#endif
+
+class WindowClass :protected _WNDCLASS {
 public:
 
 	WindowClass();
@@ -18,9 +28,13 @@ public:
 	void ChangeStyle(UINT _style);
 	void DefaultClass();
 	void ChangeIcon(HICON _hIcon);
+#ifdef EXSP
+	void ChangeIconSm(HICON _hIconSm);
+#endif // EXSP
+
 	void ChangeCursor(HCURSOR hCursor);
 	void ChangeClassName(LPCWSTR _lpszClassName);
-	bool _RegisterClass();
+	bool RegisterClass();
 private:
 #ifdef _EXE
 	//Should'nt be used while making dll files
@@ -34,10 +48,16 @@ private:
 
 /*Constructors start*/
 WindowClass::WindowClass(LPCWSTR _lpszClassName) {
-	if (!GetClassInfo(NULL, _lpszClassName, this)) {
+
+#ifdef EXSP
+	if (!GetClassInfoEx(NULL, _lpszClassName, this)) 
+#else
+	if (!GetClassInfo(NULL, _lpszClassName, this)) 
+#endif //ExSP
+	{
 		DefaultClass();
-		//_RegisterClass();
 	}
+
 }
 WindowClass::WindowClass() {
 	DefaultClass();
@@ -47,7 +67,7 @@ WindowClass::WindowClass(LPCWSTR _lpszClassName, UINT _style) {
 	DefaultClass();
 	lpszClassName = _lpszClassName;
 	style = _style;
-	_RegisterClass();
+	RegisterClass();
 }
 /*Constructors finish*/
 
@@ -67,9 +87,20 @@ inline void WindowClass::ChangeCursor(HCURSOR _hCursor) {
 inline void WindowClass::ChangeClassName(LPCWSTR _lpszClassname) {
 	lpszClassName = _lpszClassname;
 }
-inline bool WindowClass::_RegisterClass() {
-	return RegisterClass(this);
+inline bool WindowClass::RegisterClass() {
+#ifdef EXSP
+	return ::RegisterClassEx(this);
+#else 
+	return ::RegisterClass(this);
+#endif // EXSP
+
 }
+
+#ifdef EXSP
+inline void WindowClass::ChangeIconSm(HICON _hIconSm) {
+	hIconSm = _hIconSm;
+}
+#endif // EXSP
 
 /*Inline Functions functions*/
 
@@ -87,6 +118,12 @@ void WindowClass::DefaultClass() {
 #ifdef _EXE
 	default_instance();
 #endif
+
+#ifdef EXSP
+	cbSize = sizeof(_WNDCLASS);
+	hIconSm = NULL;
+#endif // EXSP
+
 }
 
 /*WidnowClass ends*/
@@ -101,6 +138,9 @@ public:
 	void Createwindow(TCHAR *_caption, Position _pos, Size _size);
 	void ShowWindow(int iCmdShow) { ::ShowWindow(this->hwnd,iCmdShow); }
 	void UpdateWindow() { ::UpdateWindow(this->hwnd); }
+	void ChangeWinStyle(DWORD _WinStyle) {
+		Winstyle = _WinStyle;
+	}
 
 private:
 	HWND hwnd;
@@ -112,14 +152,14 @@ private:
 	HMENU hmenu;
 	LPARAM lparam;
 	LPCWSTR classname;
-	DWORD style;
+	DWORD Winstyle;
 };
 
 /*Constructors*/
 Window::Window() {
 	position = Position{ CW_USEDEFAULT, CW_USEDEFAULT };
 	size = Size{ CW_USEDEFAULT, CW_USEDEFAULT };
-	style = WS_OVERLAPPEDWINDOW;
+	Winstyle = WS_OVERLAPPEDWINDOW|WS_HSCROLL|WS_VSCROLL;
 	hparent = NULL;
 	hmenu = NULL;
 	hparent = NULL;
@@ -131,11 +171,11 @@ Window::Window() {
 
 /*Member Functions*/
 void Window::Createwindow(TCHAR *_caption, Position _pos, Size _size) {
-	_RegisterClass();
+	RegisterClass();
 	caption = _caption;
 	position = _pos;
 	size = _size;
-	hwnd = CreateWindow(classname, caption, style, position.x, position.y, size.x, size.y, hparent, hmenu, hInstance, &lparam);
+	hwnd = CreateWindow(classname, caption, Winstyle, position.x, position.y, size.x, size.y, hparent, hmenu, hInstance, &lparam);
 }
 WPARAM Window::ProcessMessage() {
 	while (GetMessage(&msg, NULL, 0, 0)) {
@@ -160,6 +200,7 @@ public:
 	WndProcs(T*_instance) {
 		instance = _instance;
 	}
+	/*Returns callback function WndProc*/
 	WNDPROC operator()() {
 		return instance->Main;
 	}

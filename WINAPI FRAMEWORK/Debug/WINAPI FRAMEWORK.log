@@ -1,2 +1,4 @@
-﻿  WINAPI FRAMEWORK.vcxproj -> C:\Users\Shiva\Documents\Repos\WINAPI-FRAMEWORK\WINAPI FRAMEWORK\Debug\WINAPI FRAMEWORK.exe
+﻿  Sysmets2.cpp
+c:\users\shiva\documents\repos\winapi-framework\winapi framework\headers\print.h(115): warning C5037: 'strings<T,_size>::operator ()': an out-of-line definition of a member of a class template cannot have default arguments
+  WINAPI FRAMEWORK.vcxproj -> C:\Users\Shiva\Documents\Repos\WINAPI-FRAMEWORK\WINAPI FRAMEWORK\Debug\WINAPI FRAMEWORK.exe
   WINAPI FRAMEWORK.vcxproj -> C:\Users\Shiva\Documents\Repos\WINAPI-FRAMEWORK\WINAPI FRAMEWORK\Debug\WINAPI FRAMEWORK.pdb (Partial PDB)

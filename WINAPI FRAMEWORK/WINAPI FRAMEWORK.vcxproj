@@ -150,10 +150,11 @@
     <ClInclude Include="Headers\Print.h" />
     <ClInclude Include="Headers\SysMets.h" />
     <ClInclude Include="Headers\WindowClass.h" />
+    <ClInclude Include="Scroll.h" />
     <ClInclude Include="TEXT.H" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sysmets1.cpp" />
+    <ClCompile Include="Sysmets2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

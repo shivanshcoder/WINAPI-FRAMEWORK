@@ -2,7 +2,7 @@
    SYSMETS.H -- System metrics display structure
   -----------------------------------------------*/
 #include<Windows.h>
-//#define NUMLINES ((int) (sizeof sysmetrics / sizeof sysmetrics [0]))
+#define NUMLINES ((int) (sizeof sysmetrics / sizeof sysmetrics [0]))
 
 struct
 {
@@ -73,7 +73,7 @@ sysmetrics [] =
      SM_CYSIZEFRAME,          TEXT ("SM_CYSIZEFRAME"),           
                               TEXT ("Window sizing frame height"),
      SM_CXMINTRACK,           TEXT ("SM_CXMINTRACK"),            
-                             TEXT ("Minimum window tracking width"),
+                             TEXT ("Minimum window tracking width")//,
 /*
      SM_CYMINTRACK,           TEXT ("SM_CYMINTRACK"),            
                               TEXT ("Minimum window tracking height"),

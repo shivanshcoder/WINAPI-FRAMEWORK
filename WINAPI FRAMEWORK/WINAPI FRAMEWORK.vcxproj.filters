@@ -27,9 +27,12 @@
     <ClInclude Include="Headers\SysMets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scroll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sysmets1.cpp">
+    <ClCompile Include="Sysmets2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
