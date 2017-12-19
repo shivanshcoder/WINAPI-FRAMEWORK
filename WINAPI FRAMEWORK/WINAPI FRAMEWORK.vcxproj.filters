@@ -45,9 +45,12 @@
     <ClInclude Include="Headers\Shapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\WndProc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp">
+    <ClCompile Include="Color1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

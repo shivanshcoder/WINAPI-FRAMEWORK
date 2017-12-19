@@ -26,7 +26,6 @@ typedef WNDCLASS _WNDCLASS;
 
 class Window;
 
-bool Change = false;
 
 class WindowClass :protected _WNDCLASS {
 
@@ -38,6 +37,7 @@ protected:
 	///Constructors
 	WindowClass ();
 	void DefaultClass ();
+	static bool Change;
 
 public:
 	void AttachWndProc ( WNDPROC _WndProc );
@@ -54,7 +54,7 @@ public:
 		//	void ChangeBackground(HBRUSH NewBackground);
 			//void ChangeMenuName()
 
-
+	
 	bool RegisterClass ();
 	bool RegisterClass ( std::wstring NewClassName );
 private:
@@ -65,7 +65,7 @@ private:
 	}
 
 };
-
+bool WindowClass::Change = false;
 ///*Constructors start*/
 WindowClass::WindowClass () {
 	DefaultClass ();
@@ -110,6 +110,7 @@ inline void WindowClass::ChangeClassName ( LPCWSTR ClassName ) {
 	lpszClassName = ClassName;
 }
 inline bool WindowClass::RegisterClass () {
+	if( !Change )return 0;
 	Change = false;
 	int a = ::RegisterClass ( this );
 	CheckError ();
@@ -146,6 +147,7 @@ void WindowClass::DefaultClass () {
 
 /*WidnowClass ends*/
 
+
 class WindowBase {
 public:
 	WindowBase ( std::wstring *ClassName ) { _WindowClass->ChangeClassName ( ClassName ); }
@@ -158,6 +160,11 @@ public:
 
 	//void Createwindow ( std::wstring _caption );
 	//void Createwindow ( std::wstring _caption, Position _pos, Size _size );
+
+	HWND operator()() {
+		return hwnd;
+	}
+
 	void Createwindow ( std::wstring ClassName, std::wstring _caption, DWORD style, Position _pos, Size _size, HWND hparent, HMENU hmenu, LPARAM lParam );
 	//void CreateWindow ( std::wstring ClassName, std::wstring _caption, DWORD style, Position _pos, Size _size,
 	//	HWND hparent = NULL, HMENU hmenu = NULL, LPARAM lParam = NULL);
@@ -165,13 +172,13 @@ public:
 
 	void ShowWindow ( int iCmdShow ) { ::ShowWindow ( hwnd, iCmdShow ); }
 	void UpdateWindow () { ::UpdateWindow ( hwnd ); }
-	void ChangeWinStyle ( DWORD _WinStyle ) { SetInfo ( GWL_STYLE, _WinStyle ); }
+	void ChangeWinStyle ( DWORD _WinStyle );
 
 	void AttachWinProcedure ( WNDPROC _WndProc );
 
 	void SetFocus ();
-	LONG_PTR GetInfo ( int Index );
-	LONG_PTR SetInfo ( int Index, LONG_PTR NewVal );
+	LONG_PTR GetWndInfo ( int Index );
+	LONG_PTR SetWndInfo ( int Index, LONG_PTR NewVal );
 	LONG_PTR hParent ();
 
 	WPARAM Run ();
@@ -251,22 +258,26 @@ inline void WindowBase::SetFocus () {
 }
 
 void WindowBase::AttachWinProcedure ( WNDPROC _WndProc ) {
-	if( hwnd == NULL ) {
+	if( hwnd ) 
+		SetWndInfo ( GWLP_WNDPROC, ( LONG ) _WndProc );
+	else {
 		_WindowClass->AttachWndProc ( _WndProc );
 		_WindowClass->RegisterClass ();
 	}
-	else
-		SetInfo ( GWLP_WNDPROC, ( LONG ) _WndProc );
 }
-
-inline LONG_PTR WindowBase::GetInfo ( int Index ) {
+void WindowBase::ChangeWinStyle ( DWORD _WinStyle ) {
+	if(hwnd)
+	SetWndInfo ( GWL_STYLE, _WinStyle ); 
+	 
+}
+inline LONG_PTR WindowBase::GetWndInfo ( int Index ) {
 	return GetWindowLongPtr ( hwnd, Index );
 }
-inline LONG_PTR WindowBase::SetInfo ( int Index, LONG_PTR NewVal ) {
+inline LONG_PTR WindowBase::SetWndInfo ( int Index, LONG_PTR NewVal ) {
 	return SetWindowLongPtr ( hwnd, Index, NewVal );
 }
 inline LONG_PTR WindowBase::hParent () {
-	return GetInfo ( GWLP_HWNDPARENT );
+	return GetWndInfo ( GWLP_HWNDPARENT );
 }
 WPARAM WindowBase::ProcessMessage () {
 	static int a;
@@ -287,10 +298,9 @@ WPARAM WindowBase::Run () {
 	}*/
 	return msg.wParam;
 }
+/*Constructor*/
 
-
-
-class SimpleWindow :public WindowBase {
+class SimpleWindow : public WindowBase{
 public:
 	SimpleWindow ();
 private:
@@ -301,7 +311,6 @@ private:
 	Size size;
 
 };
-/*Constructor*/
 
 SimpleWindow::SimpleWindow () :WindowBase ( &( classname = L"SimpleWindow" ) ) {
 	position = Position{ CW_USEDEFAULT, CW_USEDEFAULT };
@@ -309,62 +318,4 @@ SimpleWindow::SimpleWindow () :WindowBase ( &( classname = L"SimpleWindow" ) ) {
 	//Winstyle = WS_OVERLAPPEDWINDOW;
 	//classname = L"SimpleWindow";
 }
-
-
 /*Window class ends*/
-
-/*T is Derived class name*/
-template<class T>class WndProcs {
-public:
-	/*arguement is derived class this pointer*/
-	WndProcs ( T*_instance ) {
-		instance = _instance;
-	}
-	/*Returns callback function WndProc*/
-	WNDPROC operator()() {
-		return instance->Main;
-	}
-
-protected:
-
-	virtual int WndProc () = 0;
-	virtual int WM_destroy () { PostQuitMessage ( 0 ); return 0; }
-	virtual void UpdateSize(){
-		size.x = LOWORD ( lParam );
-		size.y = HIWORD ( lParam );
-	}
-
-	static LRESULT CALLBACK Main ( HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam );
-
-	UINT message;
-	HWND hwnd;
-	WPARAM wParam;
-	LPARAM lParam;
-	//Client Size
-	Size size;
-private:
-	static T *instance;
-	void initialize ( HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam );
-};
-template<class T>T *WndProcs<T>::instance = nullptr;
-
-template<class T>LRESULT CALLBACK WndProcs<T>::Main ( HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam ) {
-	instance->initialize ( _hwnd, _message, _wParam, _lParam );
-	return instance->WndProc ();
-}
-template<class T>void WndProcs<T>::initialize ( HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam ) {
-	hwnd = _hwnd;
-	message = _message;
-	wParam = _wParam;
-	lParam = _lParam;
-}
-
-static LRESULT CALLBACK DefaultWndProc ( HWND _hwnd, UINT _message, WPARAM _wParam, LPARAM _lParam ) {
-	switch( _message ) {
-	case WM_DESTROY:
-		PostQuitMessage ( 0 );
-		return 0;
-	}
-	return DefWindowProc ( _hwnd, _message, _wParam, _lParam );
-}
-

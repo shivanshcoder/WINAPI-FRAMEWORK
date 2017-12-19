@@ -155,11 +155,12 @@
     <ClInclude Include="Headers\Shapes.h" />
     <ClInclude Include="Headers\SysMets.h" />
     <ClInclude Include="Headers\WindowClass.h" />
+    <ClInclude Include="Headers\WndProc.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="TEXT.H" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="Color1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

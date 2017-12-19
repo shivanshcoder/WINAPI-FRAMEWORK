@@ -1,5 +1,6 @@
 #include"Headers\WindowClass.h"
 #include"Headers\Shapes.h"
+#include"Headers\WndProc.h"
 #define ID_SMALLER 1
 #define ID_LARGER 2
 #define BTN_WIDTH	( 8 * cxChar )
@@ -7,11 +8,11 @@
 
 void Triangle ( HDC hdc, POINT pt[] );
 
-class _WndProc :public WndProcs<_WndProc> {
+class _WndProc :public AdvWndProcs<_WndProc> {
 public:
 	_WndProc()
-		:WndProcs(this){}
-	int WndProc ()override;
+		:AdvWndProcs(this){}
+	LONG_PTR AdvWndProc ()override;
 private:
 	int cx, cy;
 	LPDRAWITEMSTRUCT pdis;
@@ -24,7 +25,7 @@ private:
 int _WndProc::cyChar = 0;
 int _WndProc::cxChar = 0;
 
-int _WndProc::WndProc () {
+LONG_PTR _WndProc::AdvWndProc () {
 	//CheckError ();
 	switch( message ) {
 	case WM_CREATE:
@@ -61,8 +62,9 @@ int _WndProc::WndProc () {
 		CheckError ();
 		return 0;
 	case WM_DRAWITEM:
-		pdis = ( LPDRAWITEMSTRUCT ) lParam;
 
+		pdis = (( LPDRAWITEMSTRUCT ) lParam);
+		
 		// Fill area with white and frame it black
 
 		FillRect ( pdis->hDC, &pdis->rcItem,
@@ -71,6 +73,7 @@ int _WndProc::WndProc () {
 		FrameRect ( pdis->hDC, &pdis->rcItem,
 			( HBRUSH ) GetStockObject ( BLACK_BRUSH ) );
 
+	//	SelectObject ( pdis->hDC, ( HBRUSH ) GetSysColorBrush ( COLOR_3DDKSHADOW ) );
 		// Draw inward and outward black triangles
 
 		cx = pdis->rcItem.right - pdis->rcItem.left;
@@ -138,19 +141,14 @@ int _WndProc::WndProc () {
 		// Draw a focus rectangle if the button has the focus
 
 		if( pdis->itemState & ODS_FOCUS ) {
-			pdis->rcItem.left += cx / 16;
-			pdis->rcItem.top += cy / 16;
-			pdis->rcItem.right -= cx / 16;
-			pdis->rcItem.bottom -= cy / 16;
-
 			DrawFocusRect ( pdis->hDC, &pdis->rcItem );
 		}
 		CheckError ();
 		return 0;
 
-	case WM_DESTROY:
-		PostQuitMessage ( 0 );
-		return 0;
+	//case WM_DESTROY:
+	//	PostQuitMessage ( 0 );
+	//	return 0;
 	}
 	return DefWindowProc ( hwnd, message, wParam, lParam );
 }
@@ -170,6 +168,7 @@ private:
 
 int MAIN () {
 	std::wstring AppName = L"MainWindow";
+	int a = sizeof ( WndProcs<_WndProc> );
 	MainWindow Window ( &AppName );
 	Window.Createwindow ( AppName, std::wstring ( L"Owner-Draw Button Demo" ) );
 	return Window.Run ();
