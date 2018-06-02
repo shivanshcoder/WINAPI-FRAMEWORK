@@ -1,6 +1,16 @@
 
 #include"Header/WinProc.hpp"
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/*                                      This Code doesn't belong to me                             */
+/*         The Code has been taken from a article from COdeProject by Jon Campbell                 */
+/* https://www.codeproject.com/articles/1121696/cplusplus-winapi-wrapper-object-using-thunks-x-and */
+/*              Thanks to Jon Campbell for helping out with Thunking for WNDPROC                   */
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/*                                        His Code Starts                                          */
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #if defined(_M_IX86)
 #pragma pack(push, 1)
 
@@ -85,6 +95,12 @@ HANDLE winThunk::eHeapAddr = NULL;
 #pragma pack(pop)
 
 #endif
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/*                                         His Code Ends                                           */
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 namespace WINAPIPP {
 	BaseWinProc::BaseWinProc () {

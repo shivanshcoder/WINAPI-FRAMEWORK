@@ -1,3 +1,4 @@
+#pragma once
 #include"WinProc.hpp"
 #include<utility>
 #include<memory>
@@ -19,6 +20,9 @@ struct WindowClassEx :tagWNDCLASSEXW{
 		lpszClassName = ClassName;
 		cbSize = sizeof (WNDCLASSEX);
 	}
+	inline void DefaultInit () {
+
+	}
 
 	inline ATOM Register () {
 		ATOM Val;
@@ -30,7 +34,27 @@ struct WindowClassEx :tagWNDCLASSEXW{
 		// Maybe throw exception
 			//throw 0;
 	}
-
+	inline void ChangeStyle (UINT _style) {
+		style = _style;
+	}
+	inline void ChangeCursor (HCURSOR Cursor) {
+		hCursor = Cursor;
+	}
+	inline void ChangeIcon (HICON Icon) {
+		hIcon = Icon;
+	}
+	inline void ChangeIconSm (HICON Icon) {
+		hIconSm = Icon;
+	}
+	inline void ChangeBackground (HBRUSH Brush) {
+		hbrBackground = Brush;
+	}
+	inline void ChangeMenuName (LPCWSTR MenuName) {
+		lpszMenuName = MenuName;
+	}
+	inline void ChangeClassName (LPCWSTR ClassName) {
+		lpszClassName = ClassName;
+	}
 	inline void AttachProc (WNDPROC Proc) {
 		lpfnWndProc = Proc;
 		
@@ -38,18 +62,51 @@ struct WindowClassEx :tagWNDCLASSEXW{
 };
 
 namespace WINAPIPP {
+
+	class WIN {
+	public:
+		operator HWND() {
+			return Window;
+		}
+
+	private:
+		HWND Window;
+	};
+
 	class BaseWin :public BaseWinProc {
 
 	public:
+
+		BaseWin () {
+			if (!WinClassProp) {
+				GenerateDefaultClass ();
+			}
+
+		}
 		virtual inline int MessageLoop ();
 		virtual inline int Run ();
-
-
 		virtual inline void Idle () {
 
 		}
 
-		void Create (std::wstring WindowName);
+		//Message Virtual Function can be overridden
+		virtual void OnCreate (CREATESTRUCT CreateStruct) {}
+
+		virtual void OnPaint (HDC & hdc, PAINTSTRUCT & ps) {}
+
+		virtual void OnClose () {}
+
+		virtual void OnDestroy () {}
+
+		virtual void Create (std::wstring WindowName);
+
+		virtual LRESULT MessageFunc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)override;
+
+		virtual LRESULT WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) { return DefWindowProc (hwnd, message, wParam, lParam); }
+
+		operator HWND() {
+			return Window;
+		}
 
 	private:
 
@@ -57,9 +114,10 @@ namespace WINAPIPP {
 
 		ATOM GenerateDefaultClass ();
 
-		WindowClassEx * WinClass;
+		WindowClassEx * WinClassProp; 
 
 		//Represents if the class was registered or not
+		//Should be Static i guess
 		bool ClassRegistered;
 
 		HWND Window;
@@ -94,4 +152,5 @@ namespace WINAPIPP {
 		return (int)MessageLoop ();
 
 	}
+
 }
