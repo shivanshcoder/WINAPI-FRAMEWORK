@@ -5,27 +5,38 @@ class Basic_DC {
 
 public:
 	virtual operator HDC() {
-		return DeviceClient;
+		return DeviceContext;
 	}
 
 	Basic_DC operator=(HDC hdc) {
-		DeviceClient = hdc;
+		DeviceContext = hdc;
 		return *this;
 	}
 
 	Basic_DC operator=(HDC &hdc) {
-		DeviceClient = hdc;
+		DeviceContext = hdc;
 	}
 
 
 protected:
 
-	HDC DeviceClient;
+	HDC DeviceContext;
 };
 
 class Temp_DC :public Basic_DC{
 public:
-	Temp_DC (HWND hwnd) :Window (hwnd) { DeviceClient = GetDC (hwnd); }
+	Temp_DC (HWND hwnd) :Window (hwnd) {}
+	
+	void InitDC () {
+		DeviceContext = GetDC (Window);
+	}
+
+	void InitDC (HWND _Window) {
+		Window = _Window;
+		DeviceContext = GetDC (Window);
+	}
+
+
 	~Temp_DC () {
 		ReleaseDC (Window, *this);
 	}

@@ -114,7 +114,7 @@ namespace WINAPIPP {
 
 		ATOM GenerateDefaultClass ();
 
-		WindowClassEx * WinClassProp; 
+		WindowClassEx * WinClassProp;	
 
 		//Represents if the class was registered or not
 		//Should be Static i guess
