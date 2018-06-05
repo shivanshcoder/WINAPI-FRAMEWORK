@@ -130,7 +130,8 @@ namespace WINAPIPP {
 		while (Running) {
 
 			while (PeekMessage (&message, 0, 0, 0, PM_REMOVE)) {
-				if (message.message == WM_DESTROY)
+				if (message.message == WM_QUIT)
+					
 					Running = false;
 
 				TranslateMessage (&message);

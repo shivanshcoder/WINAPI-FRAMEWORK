@@ -2,45 +2,59 @@
 #include<Windows.h>
 
 class Basic_DC {
-
 public:
+	Basic_DC () :ValidDC (true) {}
+
+	Basic_DC (HDC hdc) {
+		DeviceContext = std::make_shared<HDC> (hdc);
+	}
 	virtual operator HDC() {
+		return *DeviceContext;
+	}
+
+	virtual operator std::shared_ptr<HDC> () {
 		return DeviceContext;
 	}
 
 	Basic_DC operator=(HDC hdc) {
-		DeviceContext = hdc;
+		DeviceContext = std::make_shared<HDC>(hdc);
 		return *this;
 	}
-
-	Basic_DC operator=(HDC &hdc) {
-		DeviceContext = hdc;
+	
+	virtual ~Basic_DC () {
+		//ReleaseDC (WindowFromDC (*DeviceContext), *DeviceContext);
+		DeviceContext.reset ();
+		ValidDC = false;
 	}
 
+
+	void GetDC (HWND _Window) {
+		DeviceContext = std::make_shared<HDC> (::GetDC (_Window));
+	}
 
 protected:
-
-	HDC DeviceContext;
+	std::shared_ptr<HDC>DeviceContext;
+	bool ValidDC;
 };
 
-class Temp_DC :public Basic_DC{
-public:
-	Temp_DC (HWND hwnd) :Window (hwnd) {}
-	
-	void InitDC () {
-		DeviceContext = GetDC (Window);
-	}
-
-	void InitDC (HWND _Window) {
-		Window = _Window;
-		DeviceContext = GetDC (Window);
-	}
-
-
-	~Temp_DC () {
-		ReleaseDC (Window, *this);
-	}
-
-private:
-	HWND Window;
-};
+//class Temp_DC :public Basic_DC{
+//public:
+//	//Temp_DC (HWND hwnd) :Window (hwnd) {}
+//	
+//	//void InitDC () {
+//	//	DeviceContext = std::make_shared<HDC> (GetDC (Window));
+//	//}
+//
+//	void InitDC (HWND _Window) {
+//		//Window = _Window;
+//		DeviceContext = std::make_shared<HDC> (GetDC (_Window));
+//	}
+//
+//
+//	/*~Temp_DC () override{
+//		ReleaseDC (Window, *this);
+//	}*/
+//
+////private:
+//	//HWND Window;
+//};

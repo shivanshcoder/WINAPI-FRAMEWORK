@@ -33,19 +33,18 @@ namespace WINAPIPP {
 
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
-
 			HDC DeviceClient = BeginPaint (Window, &ps);
 			OnPaint (DeviceClient, ps);
 
 			EndPaint (Window, &ps);
-
+			CheckError ();
 		}return 0;
 
 
-		case WM_CLOSE: {
+		/*case WM_CLOSE: {
 			OnClose ();
 			
-		}
+		}*/
 		//We can Break or do something else
 		case WM_DESTROY: {
 			OnDestroy ();
