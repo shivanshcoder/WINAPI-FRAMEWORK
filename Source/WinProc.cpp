@@ -3,7 +3,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /*                                      This Code doesn't belong to me                             */
-/*         The Code has been taken from a article from COdeProject by Jon Campbell                 */
+/*         The Code has been taken from a article from CodeProject by Jon Campbell                 */
 /* https://www.codeproject.com/articles/1121696/cplusplus-winapi-wrapper-object-using-thunks-x-and */
 /*              Thanks to Jon Campbell for helping out with Thunking for WNDPROC                   */
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +85,7 @@ void* winThunk::operator new(size_t, HANDLE HeapAddr) {
 
 	return HeapAlloc (HeapAddr, 0, sizeof (winThunk));
 }
+
 
 void winThunk::operator delete(void* pThunk) {
 	HeapFree (eHeapAddr, 0, pThunk);

@@ -1,5 +1,5 @@
 #include"Header/BaseWin.hpp"
-
+#include"Header/GDI.hpp"
 namespace WINAPIPP {
 
 	
@@ -7,15 +7,15 @@ namespace WINAPIPP {
 		
 		if (!ClassRegistered)
 			GenerateDefaultClass ();
-
-		Window = CreateWindowEx (0, ClassName.c_str (), WindowName.c_str (), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle (NULL), NULL);
+		
+		Window = CreateWindowEx (0, WinClassProp->lpszClassName, WindowName.c_str (), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle (NULL), NULL);
 		
 	}
 
 	ATOM BaseWin::GenerateDefaultClass () {
 		ClassRegistered = true;
-		ClassName = TEXT("TEMP");
-		WinClassProp = new WindowClassEx (ClassName.c_str ());;
+		//ClassName = TEXT("TEMP");
+		WinClassProp = new WindowClassEx (/*ClassName.c_str ()*/TEXT ("TEMP"));
 		WinClassProp->AttachProc (Procedure);
 		return WinClassProp->Register ();
 	}
@@ -30,13 +30,25 @@ namespace WINAPIPP {
 			OnCreate (*CreateStr);
 		}return 0;
 
+		case WM_SIZE: {
+			//RECT rc;
+			//GetClientRect (*this, &rc);
+			//xClient = rc.right - rc.left;
+			//yClient = rc.bottom - rc.top;
+			
+			OnSize ();
 
+
+		}return 0;
 		case WM_PAINT: {
-			PAINTSTRUCT ps;
-			HDC DeviceClient = BeginPaint (Window, &ps);
-			OnPaint (DeviceClient, ps);
+			//PAINTSTRUCT ps;
+			//HDC DeviceClient = BeginPaint (Window, &ps);
+			PaintDC DeviceContext (Window);
+			
 
-			EndPaint (Window, &ps);
+			OnPaint (DeviceContext);
+
+			//EndPaint (Window, &ps);
 			CheckError ();
 		}return 0;
 

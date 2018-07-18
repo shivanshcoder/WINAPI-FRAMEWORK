@@ -7,13 +7,19 @@
 
 struct WindowClassEx :tagWNDCLASSEXW{
 	inline WindowClassEx (LPCWSTR ClassName) {
+
 		style = CS_HREDRAW | CS_VREDRAW;
 		lpfnWndProc = nullptr;
 		cbClsExtra = 0;
 		cbWndExtra = 0;
+
+		//Need to fix this for dll files
 		hInstance = GetModuleHandle (NULL);;
+
 		hCursor = LoadCursor (NULL, IDC_ARROW);
+
 		hIcon = LoadIcon (NULL, IDI_APPLICATION);
+
 		hIconSm = NULL;
 		hbrBackground = (HBRUSH)GetStockObject (WHITE_BRUSH);
 		lpszMenuName = nullptr;
@@ -63,7 +69,7 @@ struct WindowClassEx :tagWNDCLASSEXW{
 
 namespace WINAPIPP {
 
-	class WIN {
+	class WND {
 	public:
 		operator HWND() {
 			return Window;
@@ -76,7 +82,7 @@ namespace WINAPIPP {
 	class BaseWin :public BaseWinProc {
 
 	public:
-
+			
 		BaseWin () {
 			if (!WinClassProp) {
 				GenerateDefaultClass ();
@@ -92,10 +98,12 @@ namespace WINAPIPP {
 		//Message Virtual Function can be overridden
 		virtual void OnCreate (CREATESTRUCT CreateStruct) {}
 
-		virtual void OnPaint (HDC & hdc, PAINTSTRUCT & ps) {}
+		virtual void OnSize () {}
+		
+		virtual void OnPaint (PaintDC &_DC) {}
 
 		virtual void OnClose () {}
-
+			
 		virtual void OnDestroy () {}
 
 		virtual void Create (std::wstring WindowName);
@@ -110,7 +118,7 @@ namespace WINAPIPP {
 
 	private:
 
-		std::wstring ClassName;
+		//std::wstring ClassName;
 
 		ATOM GenerateDefaultClass ();
 
