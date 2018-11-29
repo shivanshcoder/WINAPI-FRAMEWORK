@@ -1,35 +1,36 @@
+#include"Helpers.h"
 #include<Windows.h>
-#include"WinProc.hpp"
-#include<memory>
 
-
+//TODO make the wrappers for all the DC operations
 class DC {
 
 
 public:
-	DC (HWND _hwnd) 
-		:hwnd(_hwnd){
-		hdc = GetDC (hwnd);
+	DC(HWND _hwnd)
+		:hwnd(_hwnd) {}
+	
+	inline BOOL CancelDC () {
+		return ::CancelDC(hdc);
 	}
 
-	//For Inherited PaintDC
-protected:
-	DC () {}
-	
-public:
-	inline BOOL CancelDC ();
-	
+	/*			Wrappers				*/
+
+	void TextOut(WINAPIPP::Point point, std::wstring string) {
+		::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
+	}
+
+	/*			Wrappers				*/
+
 	operator HDC() {
 		return hdc;
 	}
 
-	
 	virtual ~DC () {
 		if (hwnd) {
 			::ReleaseDC (hwnd, hdc);
 		}
 	}
-
+	
 
 //protected:
 protected:
@@ -37,27 +38,39 @@ protected:
 	HDC hdc;
 };
 
-BOOL DC::CancelDC () {
-	return ::CancelDC (hdc);
-}
+class QuickDC:public DC {
+	QuickDC(HWND _hwnd) :DC(_hwnd) {
+		hdc = GetDC(_hwnd);
+	}
+};
 
-
-class PaintDC :public DC{
+//Should be made in WM_PAINT message only
+class PaintDC :public DC {
 public:
-	PaintDC(HWND _hwnd)
-		:DC(){
+	PaintDC(HWND _hwnd):DC(_hwnd)
+		{
 
 		hwnd = _hwnd;
 		hdc = BeginPaint (hwnd, &ps);
 
 	}
-
+	operator HDC() {
+		return hdc;
+	}
 
 	~PaintDC () {
-		EndPaint (hwnd, &ps);
-		hwnd = nullptr;
-
+		if (hwnd) {
+			EndPaint(hwnd, &ps);
+		}
 	}
 public:
 	PAINTSTRUCT ps;
+};
+
+
+//TODO Implement DrawText with this class
+class TextCursor {
+
+
+
 };

@@ -1,5 +1,7 @@
 #pragma once
+
 #include<Windows.h>
+#include<hash_map>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /*                                 This Code doesn't belong to me                                 */
@@ -176,6 +178,8 @@ inline void CheckError () {
 
 namespace WINAPIPP {
 
+#pragma region BaseWinProc
+
     class BaseWinProc {
     public:
         BaseWinProc();
@@ -197,8 +201,6 @@ namespace WINAPIPP {
         static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis);
 #endif
     };
-
-
 
     BaseWinProc::BaseWinProc() {
         ++objInstances;
@@ -240,10 +242,24 @@ namespace WINAPIPP {
 #elif defined(_M_AMD64)
     LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
 #endif
-		CheckError();
         return pThis->MessageFunc(hwnd, message, wParam, lParam);
     }
 
     HANDLE BaseWinProc::eHeapAddr = nullptr;
     int BaseWinProc::objInstances = 0;
+
+
+#pragma endregion
+
+#pragma region WinProc
+
+	class WinProc :public BaseWinProc {
+
+	public:
+		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	};
+
+#pragma endregion
+
+
 }

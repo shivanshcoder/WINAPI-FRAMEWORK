@@ -1,4 +1,6 @@
 #include"MainWindow.h"
+#include"GDI.hpp"
+#include<sstream>
 //using namespace WINAPIPP;
 
 class HelloWin : WINAPIPP::MainWindow {
@@ -21,16 +23,37 @@ public:
         PAINTSTRUCT ps;
         RECT rect;
 
+		static int cxChar, cxCaps, cyChar, cxClient, cyClient, iMaxWidth;
+		int i, x, y, iVertPos, iHorzPos, iPaintBeg, iPaintEnd;
+
         switch (message) {
 
+		case WM_SIZE: {
+			cxClient = LOWORD(lParam);
+			cyClient = HIWORD(lParam);
+			
+			WINAPIPP::ScrollBar Horz(SB_HORZ);
+			Horz.SetPage(cxClient / cxChar);
+			Horz.SetRange(0, (2 + iMaxWidth / cxChar));
+			Horz.SetInfo(*this,true);
+
+			WINAPIPP::ScrollBar Vert(SB_VERT);
+			Horz.SetPage(cyClient / cyChar);
+			Horz.SetRange(0, NUMLINES - 1);
+
+
+		}
+
         case WM_PAINT: {
-            hdc = BeginPaint(hwnd, &ps);
+			PaintDC dc(*this);
             GetClientRect(hwnd, &rect);
 
-			DrawText(hdc, TEXT("Hello World!"), -1, &rect,
-				DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+			std::wstringstream stream;
+			stream << "Hello Wolrd " << 213 << " Bye";
+			dc.TextOut({ 50,50 }, stream.str());
+			//DrawText(dc, stream.str().c_str(), -1, &rect,
+			//	DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 
-			EndPaint(hwnd, &ps);
 			CheckError();
 			return 0;
         }

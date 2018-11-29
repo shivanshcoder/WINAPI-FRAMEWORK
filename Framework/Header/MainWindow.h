@@ -1,5 +1,5 @@
 #pragma once
-#include"BaseWin.hpp"
+#include"Wrappers.hpp"
 #include"WinProc.hpp"
 #define START_WINDOW(Class) typedef Class MAIN_CLASS
 
@@ -40,7 +40,6 @@ namespace WINAPIPP {
 			while (GetMessage(&msg, NULL, NULL, NULL)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
-				CheckError();
 			}
 			return msg.wParam;
 		}
