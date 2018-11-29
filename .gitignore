@@ -32,3 +32,6 @@
 *.app
 *.opendb
 *.db
+/Framework/.vs/Framework/v15
+/Framework/Debug
+/Framework/x64/Debug
