@@ -4,40 +4,16 @@
 namespace WINAPIPP {
 
 
+	//TODO make ScrollWIndowClass
+
+
+	//TODO check this window with SB_CTL type
 	class ScrollBar {
-
-		enum Position{
-
-			//Corresponds to SB_LINELEFT and SB_LINEUP
-			LineLow,
-
-			//Corresponds to SB_LINERIGHT and SB_LINEDOWN
-			LineHigh,
-
-			//Corresponds to SB_PAGELEFT and SB_PAGEUP
-			PageLow,
-
-			//Corresponds to SB_PAGEDOWN and SB_PAGERIGHT
-			PageHigh,
-
-			//Corresponds to SB_THUMBPOSITION
-			ThumbPos,
-
-			//Corresponds to SB_THUMBTRACK
-			ThumbTrack,
-			
-			//Corresponds to SB_TOP and SB_LEFT
-			Min,
-
-			//Corresponds to SB_BOTTOM and SB_RIGHT
-			Max,
-		};
-
 	public:
 		ScrollBar(short int ScrollBarType, BaseWin *Win)
 			:Type(ScrollBarType) {
 			Info.cbSize = sizeof(Info);
-			Parent = *Win;
+			Parent = Win;
 		}
 
 		void SetRange(int Min, int Max) {
@@ -51,8 +27,9 @@ namespace WINAPIPP {
 			Info.fMask |= SIF_PAGE;
 		}
 
+
+		//Send the LOWORD(wParam) of the Message Procedure
 		void SetPos(int Pos) {
-			//Info.nPos = Pos;
 			switch (Pos) {
 
 			case Position::Min:
@@ -87,36 +64,68 @@ namespace WINAPIPP {
 			Info.fMask |= SIF_POS;
 		}
 
-		void SetInfo(BaseWin Win, bool Erase) {
-			SetScrollInfo(Win, Type, &Info, Erase);
+		void SetInfo(bool Erase) {
+			SetScrollInfo(*Parent, Type, &Info, Erase);
 			Info.fMask = 0;
 		}
 
-		void GetInfo(BaseWin Win) {
+		void GetInfo() {
 			//TODO change the default SIF_ALL later on
 			Info.fMask = SIF_ALL;
-			GetScrollInfo(Win, Type, &Info);
+			GetScrollInfo(*Parent, Type, &Info);
 			Info.fMask = 0;
+		}
+
+		int GetCurrentPos() {
+			GetInfo();
+			return Info.nPos;
 		}
 
 		//TODO make it more generic for other scroll bars too
-		int CheckChange(BaseWin Win, int NewPos) {
-			GetInfo(Win);
+		int CheckChange(int NewPos) {
+			GetInfo();
 			int iVertPos = Info.nPos;
 
 			SetPos(NewPos);
 
-			SetInfo(Win, true);
-			GetInfo(Win);
+			SetInfo(true);
+			GetInfo();
 
 			return iVertPos - Info.nPos;
 
 		}
 
-	//TODO later make it private
-	//private:
+		enum Position {
+
+			//Corresponds to SB_LINELEFT and SB_LINEUP
+			LineLow,
+
+			//Corresponds to SB_LINERIGHT and SB_LINEDOWN
+			LineHigh,
+
+			//Corresponds to SB_PAGELEFT and SB_PAGEUP
+			PageLow,
+
+			//Corresponds to SB_PAGEDOWN and SB_PAGERIGHT
+			PageHigh,
+
+			//Corresponds to SB_THUMBPOSITION
+			ThumbPos,
+
+			//Corresponds to SB_THUMBTRACK
+			ThumbTrack,
+
+			//Corresponds to SB_TOP and SB_LEFT
+			Min,
+
+			//Corresponds to SB_BOTTOM and SB_RIGHT
+			Max,
+		};
+
+
+	private:
 		short int Type;
 		SCROLLINFO Info;
-		BaseWin Parent;
+		BaseWin *Parent;
 	};
 }

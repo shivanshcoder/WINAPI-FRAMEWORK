@@ -11,7 +11,9 @@ public:
 	WINAPIPP::ScrollBar Vert;
 
 	HelloWin() :
-		Horz(SB_HORZ, this), Vert(SB_VERT, this) {}
+			Horz(SB_HORZ, this), Vert(SB_VERT, this) {
+	
+	}
 
     WPARAM start() {
         InitClass();
@@ -27,10 +29,9 @@ public:
     }
     LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
-       // RECT rect;
 		TEXTMETRIC tm;
 		static int cxChar, cxCaps, cyChar, cxClient, cyClient, iMaxWidth;
-		int i, x, y, iVertPos, iHorzPos, iPaintBeg, iPaintEnd;
+	
 
 
         switch (message) {
@@ -52,54 +53,48 @@ public:
 			
 			Horz.SetPage(cxClient / cxChar);
 			Horz.SetRange(0, (2 + iMaxWidth / cxChar));
-			Horz.SetInfo(*this,true);
+			Horz.SetInfo(true);
 
 			Vert.SetPage(cyClient / cyChar);
 			Vert.SetRange(0, NUMLINES - 1);
-			Vert.SetInfo(*this, true);
+			Vert.SetInfo(true);
 
 			return 0;
 		}
 
 		case WM_VSCROLL: {
-			int change = Vert.CheckChange(*this, LOWORD(wParam));
+			int change = Vert.CheckChange(LOWORD(wParam));
 
 			if (change) {
 				ScrollWindow(hwnd, 0, cyChar*(change), NULL, NULL);
 				UpdateWindow(*this);
 			}
 
-
-		}
-						 return 0;
+		}return 0;
 
 		case WM_HSCROLL: {
-			int change = Horz.CheckChange(*this, LOWORD(wParam));
+			int change = Horz.CheckChange( LOWORD(wParam));
 
 			if (change) {
 				ScrollWindow(hwnd, cxChar*(change), 0, NULL, NULL);
 				UpdateWindow(*this);
 			}
-		}
+		}return 0;
 
         case WM_PAINT: {
 			PaintDC dc(*this);
 
-			Vert.GetInfo(*this);
-			
-			iVertPos = Vert.Info.nPos;
+			int iVertPos = Vert.GetCurrentPos();
 
-			//TODO Horz Scrollbar
-			Horz.GetInfo(*this);
-			iHorzPos = Horz.Info.nPos;
+			int iHorzPos = Horz.GetCurrentPos();
 
-			iPaintBeg = max(0, iVertPos + dc.ps.rcPaint.top / cyChar);
-			iPaintEnd = min(NUMLINES - 1, iVertPos + dc.ps.rcPaint.bottom / cyChar);
+			int iPaintBeg = max(0, iVertPos + dc.ps.rcPaint.top / cyChar);
+			int iPaintEnd = min(NUMLINES - 1, iVertPos + dc.ps.rcPaint.bottom / cyChar);
 
-			for (i = iPaintBeg; i <= iPaintEnd; ++i) {
+			for (int i = iPaintBeg; i <= iPaintEnd; ++i) {
 
-				x = cxChar * (1 - iHorzPos);
-				y = cyChar * (i - iVertPos);
+				int x = cxChar * (1 - iHorzPos);
+				int y = cyChar * (i - iVertPos);
 
 				dc.TextOut({ x,y }, sysmetrics[i].szLabel);
 
