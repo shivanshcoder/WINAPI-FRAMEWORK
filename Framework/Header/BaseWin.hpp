@@ -9,7 +9,7 @@ namespace WINAPIPP {
     public:
         BaseWin() {
             hwnd = NULL;
-            valid = false;
+          //  valid = false;
         }
 
         bool Create(std::wstring ClassName, std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin Parent) {
@@ -28,7 +28,7 @@ namespace WINAPIPP {
         //BaseWin(BaseWin& w);
 
     private:
-        bool valid;
+    //    bool valid;
         HWND hwnd;
     };
 }
