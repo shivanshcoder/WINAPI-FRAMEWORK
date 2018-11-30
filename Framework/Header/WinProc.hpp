@@ -1,7 +1,6 @@
 #pragma once
 
 #include<Windows.h>
-#include<hash_map>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /*                                 This Code doesn't belong to me                                 */

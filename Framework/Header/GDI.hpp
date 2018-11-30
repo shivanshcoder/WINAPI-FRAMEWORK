@@ -39,6 +39,7 @@ protected:
 };
 
 class QuickDC:public DC {
+public:
 	QuickDC(HWND _hwnd) :DC(_hwnd) {
 		hdc = GetDC(_hwnd);
 	}

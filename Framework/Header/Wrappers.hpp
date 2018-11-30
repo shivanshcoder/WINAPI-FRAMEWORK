@@ -29,10 +29,13 @@ namespace WINAPIPP {
 		}
 
 		void GetInfo(BaseWin Win) {
+			//TODO change the default SIF_ALL later on
+			Info.fMask = SIF_ALL;
 			GetScrollInfo(Win, Type, &Info);
 			Info.fMask = 0;
 		}
-	private:
+	//TODO later make it private
+	//private:
 		short int Type;
 		SCROLLINFO Info;
 	};
