@@ -27,7 +27,6 @@ namespace WINAPIPP {
 			Info.fMask |= SIF_PAGE;
 		}
 
-
 		//Send the LOWORD(wParam) of the Message Procedure
 		void SetPos(int Pos) {
 			switch (Pos) {
@@ -128,4 +127,5 @@ namespace WINAPIPP {
 		SCROLLINFO Info;
 		BaseWin *Parent;
 	};
+
 }

@@ -4,6 +4,9 @@
 #include"Sysmets.h"
 //using namespace WINAPIPP;
 
+
+#define NUM 1000
+#define TWOPI (2*3.14159)
 class HelloWin : WINAPIPP::MainWindow {
 public:
 
@@ -37,7 +40,7 @@ public:
         switch (message) {
 
 		case WM_CREATE:{
-			QuickDC dc(hwnd);
+			WINAPIPP::QuickDC dc(hwnd);
 
 			GetTextMetrics(dc, &tm);
 			cxChar = tm.tmAveCharWidth;
@@ -51,10 +54,10 @@ public:
 			cxClient = LOWORD(lParam);
 			cyClient = HIWORD(lParam);
 			
-			Horz.SetPage(cxClient / cxChar);
-			Horz.SetRange(0, (2 + iMaxWidth / cxChar));
-			Horz.SetInfo(true);
-
+			//Horz.SetPage(cxClient / cxChar);
+			//Horz.SetRange(0, (2 + iMaxWidth / cxChar));
+			//Horz.SetInfo(true);
+			//
 			Vert.SetPage(cyClient / cyChar);
 			Vert.SetRange(0, NUMLINES - 1);
 			Vert.SetInfo(true);
@@ -64,24 +67,24 @@ public:
 
 		case WM_VSCROLL: {
 			int change = Vert.CheckChange(LOWORD(wParam));
-
+		
 			if (change) {
 				ScrollWindow(hwnd, 0, cyChar*(change), NULL, NULL);
 				UpdateWindow(*this);
 			}
-
+		
 		}return 0;
+		//
+		//case WM_HSCROLL: {
+		//	int change = Horz.CheckChange( LOWORD(wParam));
+		//
+		//	if (change) {
+		//		ScrollWindow(hwnd, cxChar*(change), 0, NULL, NULL);
+		//		UpdateWindow(*this);
+		//	}
+		//}return 0;
 
-		case WM_HSCROLL: {
-			int change = Horz.CheckChange( LOWORD(wParam));
-
-			if (change) {
-				ScrollWindow(hwnd, cxChar*(change), 0, NULL, NULL);
-				UpdateWindow(*this);
-			}
-		}return 0;
-
-        case WM_PAINT: {
+       /* case WM_PAINT: {
 			PaintDC dc(*this);
 
 			int iVertPos = Vert.GetCurrentPos();
@@ -109,8 +112,25 @@ public:
 				SetTextAlign(dc, TA_LEFT | TA_TOP);
 			}
 			return 0;
-        }
+        }*/
 
+		case WM_PAINT: {
+			POINT apt[NUM];
+			WINAPIPP::PaintDC dc(*this);
+			MoveToEx(dc, 0, cyClient / 2, NULL);
+			LineTo(dc, cxClient, cyClient / 2);
+			{
+				WINAPIPP::Pen p(PS_DASH, 1, RGB(255, 0, 0));
+				dc.Attach(p);
+			}
+			//SelectObject(dc, CreatePen(PS_DASH, 1, RGB(255, 0, 0)));
+			for (int i = 0; i < NUM; ++i) {
+				apt[i].x = i * cxClient / NUM;
+				apt[i].y = (int)(cyClient / 2 * (1 - sin(TWOPI * i / NUM)));
+			}
+
+			Polyline(dc, apt, NUM);
+		}return 0;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			CheckError();
