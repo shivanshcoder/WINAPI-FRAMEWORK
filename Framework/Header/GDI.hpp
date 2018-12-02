@@ -5,6 +5,10 @@
 
 namespace WINAPIPP {
 
+	enum GDIObjectType {
+		pen,
+		brush
+	};
 
 	class GDIObject {
 	public:
@@ -12,7 +16,7 @@ namespace WINAPIPP {
 			Object = Obj;
 		}
 
-		~GDIObject() {
+		virtual ~GDIObject() {
 			DeleteObject(Object);
 		}
 
@@ -21,7 +25,7 @@ namespace WINAPIPP {
 		}
 
 	private:
-		GDIObject(GDIObject&);
+		GDIObject(GDIObject& t) {}
 
 	protected:
 		HGDIOBJ Object;
@@ -39,12 +43,9 @@ namespace WINAPIPP {
 			return pen;
 		}
 
-		/*operator GDIObject() {
-			return *pen;
-		}*/
-
 	private:
 		std::shared_ptr<GDIObject>pen;
+
 		int Style;
 		int Width;
 		COLORREF color;
@@ -85,13 +86,13 @@ namespace WINAPIPP {
 
 		/*			Wrappers				*/
 
-		void Attach(std::shared_ptr<GDIObject>Object) {
-			Pen = Object;
-			SelectObject(hdc, *Object);
+		virtual void Attach(GDIObject Object) {
+			SelectObject(hdc, Object);
 		}
 
-
-
+		void AttachStockObject(int Object) {
+			SelectObject(hdc, GetStockObject(Object));
+		}
 
 		operator HDC() {
 			return hdc;
@@ -106,8 +107,6 @@ namespace WINAPIPP {
 	protected:
 		HWND hwnd;
 		HDC hdc;
-		std::shared_ptr<GDIObject> Pen;
-		std::shared_ptr<GDIObject> Brush;
 	};
 
 	class QuickDC :public DC {
@@ -140,6 +139,20 @@ namespace WINAPIPP {
 		PAINTSTRUCT ps;
 	};
 
+	class SafeDC :public PaintDC {
+	public:
+		using PaintDC::PaintDC;
+
+		void Attach(std::shared_ptr<GDIObject> Object, GDIObjectType Type) {
+			Objects[Type] = Object;
+			SelectObject(hdc, *Object);
+		}
+
+	private:
+		void Attach(GDIObject Object)override {}
+
+		std::shared_ptr<GDIObject> Objects[5];
+	};
 
 	//TODO Implement DrawText with this class
 	class TextCursor {

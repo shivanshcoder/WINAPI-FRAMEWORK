@@ -116,12 +116,12 @@ public:
 
 		case WM_PAINT: {
 			POINT apt[NUM];
-			WINAPIPP::PaintDC dc(*this);
+			WINAPIPP::SafeDC dc(*this);
 			MoveToEx(dc, 0, cyClient / 2, NULL);
 			LineTo(dc, cxClient, cyClient / 2);
 			{
 				WINAPIPP::Pen p(PS_DASH, 1, RGB(255, 0, 0));
-				dc.Attach(p);
+				dc.Attach(p, WINAPIPP::pen);
 			}
 			//SelectObject(dc, CreatePen(PS_DASH, 1, RGB(255, 0, 0)));
 			for (int i = 0; i < NUM; ++i) {
