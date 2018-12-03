@@ -58,14 +58,14 @@ public:
 			//Horz.SetRange(0, (2 + iMaxWidth / cxChar));
 			//Horz.SetInfo(true);
 			//
-			Vert.SetPage(cyClient / cyChar);
-			Vert.SetRange(0, NUMLINES - 1);
-			Vert.SetInfo(true);
+			//Vert.SetPage(cyClient / cyChar);
+			//Vert.SetRange(0, NUMLINES - 1);
+			//Vert.SetInfo(true);
 
 			return 0;
 		}
 
-		case WM_VSCROLL: {
+		/*case WM_VSCROLL: {
 			int change = Vert.CheckChange(LOWORD(wParam));
 		
 			if (change) {
@@ -73,7 +73,7 @@ public:
 				UpdateWindow(*this);
 			}
 		
-		}return 0;
+		}return 0;*/
 		//
 		//case WM_HSCROLL: {
 		//	int change = Horz.CheckChange( LOWORD(wParam));
@@ -116,12 +116,12 @@ public:
 
 		case WM_PAINT: {
 			POINT apt[NUM];
-			WINAPIPP::SafeDC dc(*this);
+			WINAPIPP::PaintDC dc(*this);
 			MoveToEx(dc, 0, cyClient / 2, NULL);
 			LineTo(dc, cxClient, cyClient / 2);
 			{
 				WINAPIPP::Pen p(PS_DASH, 1, RGB(255, 0, 0));
-				dc.Attach(p, WINAPIPP::pen);
+				dc.Attach(p);
 			}
 			//SelectObject(dc, CreatePen(PS_DASH, 1, RGB(255, 0, 0)));
 			for (int i = 0; i < NUM; ++i) {
