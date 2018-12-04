@@ -35,6 +35,7 @@ namespace WINAPIPP {
 	};
 
 	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
+	//It is okay to have same logical pen for different DCs
 	//Wrapper for hiding std::shared_ptr and base class for GDIObjects
 	class BaseGDIObject {
 		friend class DC;
@@ -71,13 +72,26 @@ namespace WINAPIPP {
 	private:
 		Pen(Pen&);
 
-		int Style;
-		int Width;
-		COLORREF color;
+		//TODO store properties and use
+		//int Style;
+		//int Width;
+		//COLORREF color;
 	};
 
 	class Brush :public BaseGDIObject {
 	public:
+		Brush(COLORREF crColor) {
+			HBRUSH temp = CreateSolidBrush(crColor);
+			Object = std::make_shared<BaseObject>(temp);
+		}
+		Brush(int iHatch, COLORREF Color) {
+			HBRUSH temp = CreateHatchBrush(iHatch, Color);
+			Object = std::make_shared<BaseObject>(temp);
+		}
+
+		GDIObjectType Type()const override {
+			return GDIObjectType::brush;
+		}
 
 	private:
 		Brush(Brush&);
