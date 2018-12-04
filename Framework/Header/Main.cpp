@@ -120,23 +120,27 @@ public:
 			MoveToEx(dc, 0, cyClient / 2, NULL);
 			LineTo(dc, cxClient, cyClient / 2);
 			{
-				WINAPIPP::Pen p(PS_DASH, 1, RGB(255, 0, 0));
-				dc.Attach(p);
+				WINAPIPP::Pen p(PS_DASH, 1, RGB(255, 255, 0));
+				//WINAPIPP::Pen p2(p);
+				//dc.Attach(p);
+				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 0, 255)));
+				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 255, 255)));
+				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 255, 0)));
+				
 			}
-			//SelectObject(dc, CreatePen(PS_DASH, 1, RGB(255, 0, 0)));
 			for (int i = 0; i < NUM; ++i) {
 				apt[i].x = i * cxClient / NUM;
 				apt[i].y = (int)(cyClient / 2 * (1 - sin(TWOPI * i / NUM)));
 			}
 
 			Polyline(dc, apt, NUM);
+			
 		}return 0;
+
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			CheckError();
 			return 0;
-
-
         }
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}

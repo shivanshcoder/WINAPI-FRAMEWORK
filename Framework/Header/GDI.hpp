@@ -12,68 +12,75 @@ namespace WINAPIPP {
 	};
 
 
-	class GDIObject {
+	/*
+		BaseObject class for auto deletion of object
+	*/
+	class BaseObject {
 		friend class BaseGDIObject;
 	public:
-		~GDIObject() {
-			if(Object)
+		~BaseObject() {
+			if (Object)
 				DeleteObject(Object);
 		}
-	
-		GDIObject(HGDIOBJ Obj) {
+
+		BaseObject(HGDIOBJ Obj) {
 			Object = Obj;
 		}
 
 	protected:
 
-		GDIObject(GDIObject& t) {}
+		BaseObject(BaseObject& t) {}
 
 		HGDIOBJ Object;
-
-	
 	};
 
+	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
+	//Wrapper for hiding std::shared_ptr and base class for GDIObjects
 	class BaseGDIObject {
 		friend class DC;
-	public:
+		friend class SafeDC;
 
+	protected:
+		//For Getting underlying Handle
 		HGDIOBJ operator *() {
 			return Object->Object;
 		}
 
-		virtual GDIObjectType Type() { return base; }// = 0;
+		//Returns Type of Object
+		virtual GDIObjectType Type()const { return base; }// = 0;
 
-		operator std::shared_ptr<GDIObject>() {
+		operator std::shared_ptr<BaseObject>() {
 			return Object;
 		}
 
-	protected:
-		std::shared_ptr<GDIObject>Object;
+		std::shared_ptr<BaseObject>Object;
 	};
 
-	class Pen :public BaseGDIObject{
+	class Pen :public BaseGDIObject {
 	public:
-		Pen( int iStyle, int cWidth, COLORREF color)
+		Pen(int iStyle, int cWidth, COLORREF color)
 		{
 			HPEN temp = CreatePen(iStyle, cWidth, color);
-			Object = std::make_shared<GDIObject>(temp);
+			Object = std::make_shared<BaseObject>(temp);
 		}
 
-		GDIObjectType Type() {
+		GDIObjectType Type()const override {
 			return GDIObjectType::pen;
 		}
 
 	private:
+		Pen(Pen&);
+
 		int Style;
 		int Width;
 		COLORREF color;
 	};
 
-	class Brush:public BaseGDIObject {
+	class Brush :public BaseGDIObject {
 	public:
 
 	private:
-
+		Brush(Brush&);
 	};
 
 
@@ -120,28 +127,39 @@ namespace WINAPIPP {
 		HDC hdc;
 	};
 
-
+	/*
+		This DC implementation saves the Objects currently selected for the respective DCs
+		This uses the std::shared_ptr for making it safe
+		In case the the BaseObject gets out of scope, this prevents it from getting deleted
+		and automatically deletes the objects with it's own destructor
+	*/
 	class SafeDC :public DC {
 	public:
 		using DC::DC;
 
-		void Attach(BaseGDIObject &Object) {
-			int tem = Object.Type();
+		//For attaching the object which already has a scope from calling place
+		void Attach(BaseGDIObject &Object)override {
+			//TODO better checking
+			//Strange
+			if (Object.Type() == base)
+				__debugbreak();
 			Objects[Object.Type()] = Object;
 			SelectObject(hdc, (*Object));
 		}
-		/*
-		void Attach( const BaseGDIObject &Object) {
-		
-			auto temp = std::make_shared<BaseGDIObject>(Object);
-			Objects[temp->Type()] = tek
-			SelectObject(hdc, (*Object));
-		}*/
+
+		//For on the go constructor type Object
+		void Attach(const BaseGDIObject &Object) {
+			//TODO better checking
+			//Strange
+			if (Object.Type() == base)
+				__debugbreak();
+			Objects[Object.Type()] = BaseGDIObject(Object);
+			SelectObject(hdc, *Objects[Object.Type()]);
+		}
 
 	private:
-		//void Attach(BaseGDIObject &Object) {}
-		std::shared_ptr<GDIObject> Objects[5];
-	//	BaseGDIObject Objects[5];
+		//Saving reference of the selected objects
+		BaseGDIObject Objects[5];
 	};
 
 	class QuickDC :public DC {
