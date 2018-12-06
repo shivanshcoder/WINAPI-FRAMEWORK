@@ -2,6 +2,7 @@
 
 #include<Windows.h>
 #include<memory>
+#include<chrono>
 
 namespace WINAPIPP {
 
@@ -12,11 +13,12 @@ namespace WINAPIPP {
 	};
 
 
-	/*
-		BaseObject class for auto deletion of object
-	*/
+	
+	//	BaseObject class for auto deletion of object
+	
 	class BaseObject {
 		friend class BaseGDIObject;
+		
 	public:
 		~BaseObject() {
 			if (Object)
@@ -95,6 +97,7 @@ namespace WINAPIPP {
 
 	private:
 		Brush(Brush&);
+
 	};
 
 
@@ -106,15 +109,27 @@ namespace WINAPIPP {
 		DC(HWND _hwnd)
 			:hwnd(_hwnd) {}
 
-		inline BOOL CancelDC() {
+		/*			Wrappers				*/
+
+		//TODO change return values acording to standard functions
+		BOOL CancelDC() {
 			return ::CancelDC(hdc);
 		}
+		void SaveDC() {
+			::SaveDC(hdc);
+		}
+		void RestoreDC() {
+			::RestoreDC(hdc, -1);
+		}
 
-		/*			Wrappers				*/
+
 
 		void TextOut(WINAPIPP::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
+
+
+
 
 		/*			Wrappers				*/
 

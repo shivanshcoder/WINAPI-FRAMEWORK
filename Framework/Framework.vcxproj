@@ -99,7 +99,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>AUTO_ENTRY; _DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -146,12 +146,13 @@
     <ClInclude Include="Header\MainWindow.h" />
     <ClInclude Include="Header\SysMets.h" />
     <ClInclude Include="Header\TextAPI.hpp" />
+    <ClInclude Include="Header\WINAPIPP.h" />
     <ClInclude Include="Header\WinClass.h" />
     <ClInclude Include="Header\WinProc.hpp" />
     <ClInclude Include="Header\Wrappers.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Header\Main.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

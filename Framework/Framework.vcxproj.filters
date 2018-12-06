@@ -42,9 +42,12 @@
     <ClInclude Include="Header\SysMets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\WINAPIPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Header\Main.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

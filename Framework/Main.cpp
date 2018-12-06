@@ -1,15 +1,14 @@
-#include"MainWindow.h"
-#include"GDI.hpp"
+#include"Header/WINAPIPP.h"
 #include<sstream>
-#include"Sysmets.h"
+#include"Header/Sysmets.h"
 //using namespace WINAPIPP;
 
 
 #define NUM 1000
 #define TWOPI (2*3.14159)
-class HelloWin : WINAPIPP::MainWindow {
+class HelloWin : public WINAPIPP::MainWindow {
 public:
-
+	
 	WINAPIPP::ScrollBar Horz;
 	WINAPIPP::ScrollBar Vert;
 
@@ -126,7 +125,7 @@ public:
 				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 0, 255)));
 				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 255, 255)));
 				dc.Attach(WINAPIPP::Pen(PS_DASH, 1, RGB(0, 255, 0)));
-				
+
 			}
 			for (int i = 0; i < NUM; ++i) {
 				apt[i].x = i * cxClient / NUM;
@@ -147,12 +146,4 @@ public:
 
 };
 
-int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	WINAPIPP::Instance = Instance;
-	WINAPIPP::CmdShow = CmdShow;
-
-	HelloWin mainWindow;
-	return mainWindow.start();
-
-}
-//START_WINDOW(HelloWin);
+ENTRY_APP(HelloWin)

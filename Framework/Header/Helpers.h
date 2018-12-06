@@ -4,10 +4,10 @@
 namespace WINAPIPP {
 
 	//TODO make enums for system and local window class name strings
-	enum SystemClasses {
+	/*enum SystemClasses {
 		MainWindow,
 		Static
-	};
+	};*/
 
 
 	class Rectangle {
