@@ -21,19 +21,10 @@
     <ClInclude Include="Header\GDI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\TextAPI.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\WinProc.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\Wrappers.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\MainWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Header\WinClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\Helpers.h">
@@ -43,6 +34,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\WINAPIPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

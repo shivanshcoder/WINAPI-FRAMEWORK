@@ -1,9 +1,8 @@
 #pragma once
+#include"Core.h"
 #include"Helpers.h"
-#include<string>
-#include<Windows.h>
+
 namespace WINAPIPP {
-	extern HINSTANCE Instance;
 
     class BaseWin {
     public:
@@ -12,11 +11,10 @@ namespace WINAPIPP {
           //  valid = false;
         }
 
-        bool Create(std::wstring ClassName, std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin Parent) {
+        bool CreateWin(std::wstring ClassName, std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin Parent) {
             hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
-				//CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-				size.x, size.y, size.width, size.height,
-                Parent, NULL, Instance, NULL);
+				size.left, size.top, size.right, size.bottom,
+                Parent, NULL, Instance(), NULL);
 			return hwnd;
         }
         

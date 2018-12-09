@@ -1,6 +1,5 @@
 #include"Helpers.h"
-
-#include<Windows.h>
+#include"BaseWin.hpp"
 #include<memory>
 #include<chrono>
 
@@ -29,6 +28,9 @@ namespace WINAPIPP {
 			Object = Obj;
 		}
 
+		operator HGDIOBJ() {
+			return Object;
+		}
 	protected:
 
 		BaseObject(BaseObject& t) {}
@@ -71,6 +73,11 @@ namespace WINAPIPP {
 			return GDIObjectType::pen;
 		}
 
+		
+		operator HPEN() {
+			//HGDIOBJ temp =  *Object;
+			return (HPEN)((HGDIOBJ)(*Object));
+		}
 	private:
 		Pen(Pen&);
 
@@ -95,6 +102,10 @@ namespace WINAPIPP {
 			return GDIObjectType::brush;
 		}
 
+		operator HBRUSH() {
+			//HGDIOBJ temp =  *Object;
+			return (HBRUSH)((HGDIOBJ)(*Object));
+		}
 	private:
 		Brush(Brush&);
 
@@ -133,7 +144,7 @@ namespace WINAPIPP {
 
 		/*			Wrappers				*/
 
-		virtual void Attach(BaseGDIObject &Object) {
+		virtual void Attach(BaseGDIObject &Object) { 
 			SelectObject(hdc, *Object);
 		}
 
@@ -196,6 +207,9 @@ namespace WINAPIPP {
 		QuickDC(HWND _hwnd) :DC(_hwnd) {
 			hdc = GetDC(_hwnd);
 		}
+
+	private:
+		QuickDC(QuickDC&);
 	};
 
 	//Should be made in WM_PAINT message only
@@ -205,20 +219,28 @@ namespace WINAPIPP {
 		{
 
 			hwnd = _hwnd;
-			hdc = BeginPaint(hwnd, &ps);
+			hdc = BeginPaint(hwnd, &__ps);
 
 		}
+
 		operator HDC() {
 			return hdc;
 		}
 
 		~PaintDC() {
 			if (hwnd) {
-				EndPaint(hwnd, &ps);
+				EndPaint(hwnd, &__ps);
 			}
 		}
-	public:
-		PAINTSTRUCT ps;
+		PAINTSTRUCT ps() const{
+			return __ps;
+		}
+
+		//TODO make this private
+	private:
+		PaintDC(PaintDC&);
+
+		PAINTSTRUCT __ps;
 	};
 
 

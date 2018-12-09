@@ -1,19 +1,21 @@
 #pragma once
 
 //To be included by user for using framework
-#include"MainWindow.h"
+#include"Application.h"
 #include"GDI.hpp"
+
+
 
 
 //------------------Entry Point-------------------------
 
 #ifdef AUTO_ENTRY
 
-extern WINAPIPP::MainWindow* EntryApplication();
+extern WINAPIPP::Application* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	WINAPIPP::Instance = Instance;
-	WINAPIPP::CmdShow = CmdShow;
+	WINAPIPP::__ProgramInstance = Instance;
+	WINAPIPP::__ProgramCmdShow = CmdShow;
 
 	auto App = EntryApplication();
 	App->start();
@@ -23,7 +25,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 #endif
 
 
-#define ENTRY_APP(APP)  WINAPIPP::MainWindow* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  WINAPIPP::Application* EntryApplication() { return new APP(); }
 
 
 //------------------Entry Point-------------------------
