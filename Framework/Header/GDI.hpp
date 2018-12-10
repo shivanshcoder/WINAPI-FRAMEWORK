@@ -8,34 +8,30 @@ namespace WINAPIPP {
 	enum GDIObjectType {
 		pen,
 		brush,
+		region,
 		base
 	};
 
-
-	
 	//	BaseObject class for auto deletion of object
-	
+
 	class BaseObject {
-		friend class BaseGDIObject;
-		
+		//friend class BaseGDIObject;
+
 	public:
 		~BaseObject() {
 			if (Object)
 				DeleteObject(Object);
 		}
 
-		BaseObject(HGDIOBJ Obj) {
-			Object = Obj;
-		}
-
 		operator HGDIOBJ() {
 			return Object;
 		}
-	protected:
-
-		BaseObject(BaseObject& t) {}
 
 		HGDIOBJ Object;
+
+	protected:
+		BaseObject(BaseObject& t) {}
+
 	};
 
 	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
@@ -46,70 +42,27 @@ namespace WINAPIPP {
 		friend class SafeDC;
 
 	protected:
-		//For Getting underlying Handle
-		HGDIOBJ operator *() {
-			return Object->Object;
+
+		//Getting Underlying Handle to Object
+		HGDIOBJ RetrieveObject() {
+			return GDIObject->Object;
+		}
+
+		void Init(HGDIOBJ Obj) {
+			GDIObject = std::make_shared<BaseObject>(Obj);
 		}
 
 		//Returns Type of Object
 		virtual GDIObjectType Type()const { return base; }// = 0;
 
 		operator std::shared_ptr<BaseObject>() {
-			return Object;
+			return GDIObject;
 		}
 
-		std::shared_ptr<BaseObject>Object;
+		std::shared_ptr<BaseObject>GDIObject;
 	};
 
-	class Pen :public BaseGDIObject {
-	public:
-		Pen(int iStyle, int cWidth, COLORREF color)
-		{
-			HPEN temp = CreatePen(iStyle, cWidth, color);
-			Object = std::make_shared<BaseObject>(temp);
-		}
-
-		GDIObjectType Type()const override {
-			return GDIObjectType::pen;
-		}
-
-		
-		operator HPEN() {
-			//HGDIOBJ temp =  *Object;
-			return (HPEN)((HGDIOBJ)(*Object));
-		}
-	private:
-		Pen(Pen&);
-
-		//TODO store properties and use
-		//int Style;
-		//int Width;
-		//COLORREF color;
-	};
-
-	class Brush :public BaseGDIObject {
-	public:
-		Brush(COLORREF crColor) {
-			HBRUSH temp = CreateSolidBrush(crColor);
-			Object = std::make_shared<BaseObject>(temp);
-		}
-		Brush(int iHatch, COLORREF Color) {
-			HBRUSH temp = CreateHatchBrush(iHatch, Color);
-			Object = std::make_shared<BaseObject>(temp);
-		}
-
-		GDIObjectType Type()const override {
-			return GDIObjectType::brush;
-		}
-
-		operator HBRUSH() {
-			//HGDIOBJ temp =  *Object;
-			return (HBRUSH)((HGDIOBJ)(*Object));
-		}
-	private:
-		Brush(Brush&);
-
-	};
+#pragma region DCs
 
 
 	//TODO make the wrappers for all the DC operations
@@ -133,8 +86,6 @@ namespace WINAPIPP {
 			::RestoreDC(hdc, -1);
 		}
 
-
-
 		void TextOut(WINAPIPP::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
@@ -144,8 +95,8 @@ namespace WINAPIPP {
 
 		/*			Wrappers				*/
 
-		virtual void Attach(BaseGDIObject &Object) { 
-			SelectObject(hdc, *Object);
+		virtual void Attach(BaseGDIObject &Object) {
+			SelectObject(hdc, Object.RetrieveObject());
 		}
 
 		void AttachStockObject(int Object) {
@@ -184,7 +135,7 @@ namespace WINAPIPP {
 			if (Object.Type() == base)
 				__debugbreak();
 			Objects[Object.Type()] = Object;
-			SelectObject(hdc, (*Object));
+			SelectObject(hdc, (Object.RetrieveObject()));
 		}
 
 		//For on the go constructor type Object
@@ -194,7 +145,7 @@ namespace WINAPIPP {
 			if (Object.Type() == base)
 				__debugbreak();
 			Objects[Object.Type()] = BaseGDIObject(Object);
-			SelectObject(hdc, *Objects[Object.Type()]);
+			SelectObject(hdc, Objects[Object.Type()].RetrieveObject());
 		}
 
 	private:
@@ -217,10 +168,8 @@ namespace WINAPIPP {
 	public:
 		PaintDC(HWND _hwnd) :SafeDC(_hwnd)
 		{
-
 			hwnd = _hwnd;
 			hdc = BeginPaint(hwnd, &__ps);
-
 		}
 
 		operator HDC() {
@@ -232,7 +181,7 @@ namespace WINAPIPP {
 				EndPaint(hwnd, &__ps);
 			}
 		}
-		PAINTSTRUCT ps() const{
+		PAINTSTRUCT ps() const {
 			return __ps;
 		}
 
@@ -244,10 +193,111 @@ namespace WINAPIPP {
 	};
 
 
+#pragma endregion
+
+
+
+
+	class Pen :public BaseGDIObject {
+	public:
+		Pen(int iStyle, int cWidth, COLORREF color)
+		{
+			Init(CreatePen(iStyle, cWidth, color));
+			//Object = std::make_shared<BaseObject>(temp);
+		}
+
+		GDIObjectType Type()const override {
+			return GDIObjectType::pen;
+		}
+
+		operator HPEN() {
+			return (HPEN)RetrieveObject();
+		}
+	private:
+		Pen(Pen&);
+
+		//TODO store properties and use
+		//int Style;
+		//int Width;
+		//COLORREF color;
+	};
+
+	class Brush :public BaseGDIObject {
+	public:
+		Brush(COLORREF crColor) {
+			Init(CreateSolidBrush(crColor));
+		//	Object = std::make_shared<BaseObject>(temp);
+		}
+		Brush(int iHatch, COLORREF Color) {
+			Init(CreateHatchBrush(iHatch, Color));
+		//	Object = std::make_shared<BaseObject>(temp);
+		}
+
+		GDIObjectType Type()const override {
+			return GDIObjectType::brush;
+		}
+
+		operator HBRUSH() {
+			//HGDIOBJ temp =  *Object;
+			return (HBRUSH)RetrieveObject();
+		}
+	private:
+		Brush(Brush&);
+
+	};
+
+	enum RegionTypes {
+		rectangular,
+		elliptical,
+		roundrect
+	};
+
+	class Region :public BaseGDIObject{
+	public:
+		Region(Rectangle rect, bool Elliptical) {
+			if (Elliptical) {
+				Init(CreateEllipticRgnIndirect(&rect.rect));
+			}
+			else {
+				Init(CreateRectRgnIndirect(&rect.rect));
+			}
+		}
+
+		Region(Rectangle rect, Pair CornerEllipse) {
+			Init(CreateRoundRectRgn(
+				rect.left, rect.top,
+				rect.right, rect.bottom,
+				CornerEllipse.x, CornerEllipse.y
+			));
+		}
+
+		Region(std::vector<POINT>Points, int PolyFillMode) {
+			Init(CreatePolygonRgn(&Points[0], Points.size(), PolyFillMode));
+		}
+
+		void Combine(Region region1, Region region2, int iMode) {
+			HRGN temp = CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(temp, region1, region2, iMode);
+		}
+
+		operator HRGN() {
+			return (HRGN)RetrieveObject();
+		}
+
+	private:
+		Region(Region&);
+
+
+	};
+
 	//TODO Implement DrawText with this class
 	class TextCursor {
 
 
 
 	};
+
+
+
+
 }
