@@ -11,6 +11,7 @@
 
 class HelloWin : public WINAPIPP::Application {
 	int cxClient, cyClient;
+	WINAPIPP::Region RgnClip;
 public:
 	
 
@@ -24,22 +25,6 @@ public:
 		return Run();
 
     }
-	void Idle()override {
-		if (cxClient == 0 || cyClient == 0) {
-			return;
-		}
-
-		WINAPIPP::Brush brush(RGB(rand() % 256, rand() % 256, rand() % 256));
-
-		WINAPIPP::QuickDC dc(*this);
-
-		WINAPIPP::Rectangle rect = WINAPIPP::Rectangle::Random(cxClient,cyClient);
-		FillRect(dc, &(rect.rect), brush);
-
-		//DeleteObject(brush);
-
-
-	}
 
     LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
@@ -62,16 +47,20 @@ public:
 		//	}
 
 		case WM_SIZE: {
+			using namespace WINAPIPP;
 			cxClient = LOWORD(lParam);
 			cyClient = HIWORD(lParam);
 			
-			//Horz.SetPage(cxClient / cxChar);
-			//Horz.SetRange(0, (2 + iMaxWidth / cxChar));
-			//Horz.SetInfo(true);
-			//
-			//Vert.SetPage(cyClient / cyChar);
-			//Vert.SetRange(0, NUMLINES - 1);
-			//Vert.SetInfo(true);
+			HCURSOR Cursor = SetCursor(LoadCursor(NULL , IDC_WAIT));
+			ShowCursor(TRUE);
+
+			RgnClip.clear();
+
+			Region Reg1(
+				Region(true, WINAPIPP::Rectangle(0, cyClient / 2, cxClient / 2, 2 * cyClient / 3)),
+				Region(),
+				RGN_OR
+			);
 
 			return 0;
 		}
