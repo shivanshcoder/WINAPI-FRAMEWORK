@@ -8,15 +8,15 @@ namespace WINAPIPP {
 	enum GDIObjectType {
 		pen,
 		brush,
-		region,
 		base
 	};
+
+
 
 	//	BaseObject class for auto deletion of object
 
 	class BaseObject {
 		friend class GDIObject;
-
 
 	public:
 		~BaseObject() {
@@ -24,25 +24,20 @@ namespace WINAPIPP {
 				DeleteObject(Object);
 		}
 
+		BaseObject(HGDIOBJ Obj) {
+			Object = Obj;
+		}
 
-		HGDIOBJ Object;
-
-	protected:
 		operator HGDIOBJ() {
 			return Object;
 		}
+	protected:
 
 		//NOTE Disabled CopyConstructor
-
-		//TODO check if it affects or not
-		//BaseObject(BaseObject& t) {}
 		BaseObject(BaseObject& t) = delete;
 
+		HGDIOBJ Object;
 	};
-
-
-#pragma region GDIOBjects
-
 
 	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
 	//It is okay to have same logical pen for different DCs
@@ -52,11 +47,9 @@ namespace WINAPIPP {
 		friend class SafeDC;
 
 	protected:
-
 		//For Getting underlying Handle
 		HGDIOBJ RetrieveObject() const {
 			return Object->Object;
-
 		}
 
 		void Init(HGDIOBJ Obj) {
@@ -66,15 +59,15 @@ namespace WINAPIPP {
 		//Returns Type of Object
 		virtual GDIObjectType Type()const { return base; }// = 0;
 
+
+
 		//NOTE
 		//operator std::shared_ptr<BaseObject>() {
 		//	return Object;
 		//}
 
-
-		std::shared_ptr<BaseObject>GDIObject;
+		std::shared_ptr<BaseObject>Object;
 	};
-
 
 	class Pen :public GDIObject {
 		friend class DC;
@@ -128,9 +121,7 @@ namespace WINAPIPP {
 		Brush& operator=(Brush const&) = delete;
 
 	protected:
-
 		explicit operator HBRUSH() const {
-
 			return (HBRUSH)RetrieveObject();
 		}
 
@@ -226,17 +217,13 @@ namespace WINAPIPP {
 			::RestoreDC(hdc, -1);
 		}
 
+
+
 		void TextOut(WINAPIPP::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 
-		bool FillRect(Rectangle Rect, Brush &Brush) {
-			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
-		}
 
-		bool FrameRgn(Region Reg, Brush brush, int width, int height) {
-			return ::FrameRgn(hdc, static_cast<HRGN>(Reg), static_cast<HBRUSH>(brush), width, height);
-		}
 
 		bool FillRect(Rectangle Rect, Brush &Brush) {
 			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
@@ -264,7 +251,7 @@ namespace WINAPIPP {
 			SelectObject(hdc, GetStockObject(Object));
 		}
 
-		operator HDC()const {
+		operator HDC() {
 			return hdc;
 		}
 
@@ -273,9 +260,6 @@ namespace WINAPIPP {
 				::ReleaseDC(hwnd, hdc);
 			}
 		}
-
-		DC(DC& const) = delete;
-		DC& operator=(const DC&) = delete;
 
 	protected:
 		HWND hwnd;
@@ -332,8 +316,10 @@ namespace WINAPIPP {
 	public:
 		PaintDC(HWND _hwnd) :SafeDC(_hwnd)
 		{
+
 			hwnd = _hwnd;
 			hdc = BeginPaint(hwnd, &__ps);
+
 		}
 
 		operator HDC() {
@@ -357,17 +343,10 @@ namespace WINAPIPP {
 	};
 
 
-#pragma endregion
-
-
 	//TODO Implement DrawText with this class
 	class TextCursor {
 
 
 
 	};
-
-
-
-
 }
