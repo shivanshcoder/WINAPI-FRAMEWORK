@@ -8,6 +8,9 @@ namespace WINAPIPP {
 		MainWindow,
 		Static
 	};*/
+
+
+
 	class Point {
 	public:
 		Point()
@@ -26,8 +29,15 @@ namespace WINAPIPP {
 				LONG  x;
 				LONG  y;
 			};
+
+			struct {
+				LONG first;
+				LONG second;
+			};
 		};
 	};
+
+	typedef Point Pair;
 	
 
 	class Rectangle {
@@ -101,7 +111,7 @@ namespace WINAPIPP {
 		};
 	};
 
-	
 
+	
 }
 

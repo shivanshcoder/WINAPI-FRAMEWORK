@@ -16,8 +16,8 @@ public:
 			BaseWin());
 
 		return Run();
+  }
 
-	}
 
 	LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
