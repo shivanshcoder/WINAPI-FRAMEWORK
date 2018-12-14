@@ -15,7 +15,8 @@ namespace WINAPIPP {
 	//	BaseObject class for auto deletion of object
 
 	class BaseObject {
-		//friend class GDIObject;
+		friend class GDIObject;
+
 
 	public:
 		~BaseObject() {
@@ -30,6 +31,8 @@ namespace WINAPIPP {
 		operator HGDIOBJ() {
 			return Object;
 		}
+
+		//NOTE Disabled CopyConstructor
 
 		//TODO check if it affects or not
 		//BaseObject(BaseObject& t) {}
@@ -50,21 +53,24 @@ namespace WINAPIPP {
 
 	protected:
 
-		//Getting Underlying Handle to Object
-		HGDIOBJ RetrieveObject()const {
-			return GDIObject->Object;
+		//For Getting underlying Handle
+		HGDIOBJ RetrieveObject() const {
+			return Object->Object;
+
 		}
 
 		void Init(HGDIOBJ Obj) {
-			GDIObject = std::make_shared<BaseObject>(Obj);
+			Object = std::make_shared<BaseObject>(Obj);
 		}
 
 		//Returns Type of Object
 		virtual GDIObjectType Type()const { return base; }// = 0;
 
-		operator std::shared_ptr<BaseObject>() {
-			return GDIObject;
-		}
+		//NOTE
+		//operator std::shared_ptr<BaseObject>() {
+		//	return Object;
+		//}
+
 
 		std::shared_ptr<BaseObject>GDIObject;
 	};
@@ -122,7 +128,9 @@ namespace WINAPIPP {
 		Brush& operator=(Brush const&) = delete;
 
 	protected:
-		explicit operator HBRUSH() const  {
+
+		explicit operator HBRUSH() const {
+
 			return (HBRUSH)RetrieveObject();
 		}
 
@@ -142,7 +150,7 @@ namespace WINAPIPP {
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-		Region(bool Elliptical, Rectangle rect ) {
+		Region(bool Elliptical, Rectangle rect) {
 			if (Elliptical) {
 				Init(CreateEllipticRgnIndirect(&rect.rect));
 			}
@@ -151,13 +159,13 @@ namespace WINAPIPP {
 			}
 		}
 
-		Region(Rectangle rect, Pair CornerEllipse) {
+		/*Region(Rectangle rect, Pair CornerEllipse) {
 			Init(CreateRoundRectRgn(
 				rect.left, rect.top,
 				rect.right, rect.bottom,
 				CornerEllipse.x, CornerEllipse.y
 			));
-		}
+		}*/
 
 		Region(std::vector<POINT>Points, int PolyFillMode) {
 			Init(CreatePolygonRgn(&Points[0], Points.size(), PolyFillMode));
@@ -180,25 +188,23 @@ namespace WINAPIPP {
 		void clear() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-
+		void Combine(const Region &region1, Region const &region2, int iMode) {
+			//HRGN temp = CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(static_cast<HRGN>(*this), static_cast<HRGN>(region1),
+				static_cast<HRGN>(region2), iMode);
+			//Init(temp);
+		}
 		Region(Region&) = delete;
 		Region& operator=(Region const&) = delete;
 		//Region& operator=(Region &) = delete;
 	protected:
-		explicit operator HRGN()const  {
+		explicit operator HRGN()const {
 			return (HRGN)RetrieveObject();
 		}
 
 
 
 	};
-
-#pragma endregion
-
-
-#pragma region DCs
-
-
 	//TODO make the wrappers for all the DC operations
 	class DC {
 
@@ -232,8 +238,20 @@ namespace WINAPIPP {
 			return ::FrameRgn(hdc, static_cast<HRGN>(Reg), static_cast<HBRUSH>(brush), width, height);
 		}
 
+		bool FillRect(Rectangle Rect, Brush &Brush) {
+			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
+		}
+
+		bool FrameRgn(Region Reg, Brush brush, int width, int height) {
+			return ::FrameRgn(hdc, static_cast<HRGN>(Reg), static_cast<HBRUSH>(brush), width, height);
+		}
+
 		bool InvertRgn(Region Reg) {
 			return ::InvertRgn(hdc, static_cast<HRGN>(Reg));
+		}
+
+		void SelectRegion(Region &Reg) {
+			SelectClipRgn(hdc, static_cast<HRGN>(Reg));
 		}
 
 		/*			Wrappers				*/
