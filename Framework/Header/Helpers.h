@@ -101,23 +101,7 @@ namespace WINAPIPP {
 		};
 	};
 
-	class Region {
-	public:
-		//Elliptic if true makes elliptic region else Rect region is made
-		Region(Rectangle rect, bool Elliptic) {
-			if (Elliptic)
-				region = CreateEllipticRgnIndirect(&rect.rect);
-			else
-				region = CreateRectRgnIndirect(&rect.rect);
-		}
-
-		Region(std::vector<Point>points, int FillMode) {
-			region = CreatePolygonRgn(points.begin(),)
-		}
-
-	private:
-		HRGN region;
-	};
+	
 
 }
 

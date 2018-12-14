@@ -12,12 +12,12 @@ namespace WINAPIPP {
 	};
 
 
-	
+
 	//	BaseObject class for auto deletion of object
-	
+
 	class BaseObject {
-		friend class BaseGDIObject;
-		
+		friend class GDIObject;
+
 	public:
 		~BaseObject() {
 			if (Object)
@@ -33,7 +33,8 @@ namespace WINAPIPP {
 		}
 	protected:
 
-		BaseObject(BaseObject& t) {}
+		//NOTE Disabled CopyConstructor
+		BaseObject(BaseObject& t) = delete;
 
 		HGDIOBJ Object;
 	};
@@ -41,45 +42,55 @@ namespace WINAPIPP {
 	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
 	//It is okay to have same logical pen for different DCs
 	//Wrapper for hiding std::shared_ptr and base class for GDIObjects
-	class BaseGDIObject {
+	class GDIObject {
 		friend class DC;
 		friend class SafeDC;
 
 	protected:
 		//For Getting underlying Handle
-		HGDIOBJ operator *() {
+		HGDIOBJ RetrieveObject() const {
 			return Object->Object;
+		}
+
+		void Init(HGDIOBJ Obj) {
+			Object = std::make_shared<BaseObject>(Obj);
 		}
 
 		//Returns Type of Object
 		virtual GDIObjectType Type()const { return base; }// = 0;
 
-		operator std::shared_ptr<BaseObject>() {
-			return Object;
-		}
+
+
+		//NOTE
+		//operator std::shared_ptr<BaseObject>() {
+		//	return Object;
+		//}
 
 		std::shared_ptr<BaseObject>Object;
 	};
 
-	class Pen :public BaseGDIObject {
+	class Pen :public GDIObject {
+		friend class DC;
+
 	public:
 		Pen(int iStyle, int cWidth, COLORREF color)
 		{
-			HPEN temp = CreatePen(iStyle, cWidth, color);
-			Object = std::make_shared<BaseObject>(temp);
+			Init(CreatePen(iStyle, cWidth, color));
+			//Object = std::make_shared<BaseObject>(temp);
 		}
+		Pen(Pen&) = delete;
 
 		GDIObjectType Type()const override {
 			return GDIObjectType::pen;
 		}
 
-		
-		operator HPEN() {
-			//HGDIOBJ temp =  *Object;
-			return (HPEN)((HGDIOBJ)(*Object));
+		Pen& operator=(Pen const&) = delete;
+	protected:
+		explicit operator HPEN() {
+			return (HPEN)RetrieveObject();
 		}
-	private:
-		Pen(Pen&);
+
+
 
 		//TODO store properties and use
 		//int Style;
@@ -87,31 +98,104 @@ namespace WINAPIPP {
 		//COLORREF color;
 	};
 
-	class Brush :public BaseGDIObject {
+	class Brush :public GDIObject {
+		friend class DC;
+
 	public:
 		Brush(COLORREF crColor) {
-			HBRUSH temp = CreateSolidBrush(crColor);
-			Object = std::make_shared<BaseObject>(temp);
+			Init(CreateSolidBrush(crColor));
+			//	Object = std::make_shared<BaseObject>(temp);
 		}
 		Brush(int iHatch, COLORREF Color) {
-			HBRUSH temp = CreateHatchBrush(iHatch, Color);
-			Object = std::make_shared<BaseObject>(temp);
+			Init(CreateHatchBrush(iHatch, Color));
+			//	Object = std::make_shared<BaseObject>(temp);
 		}
+		//Copy constructor disabled
+		Brush(Brush&) = delete;
 
 		GDIObjectType Type()const override {
 			return GDIObjectType::brush;
 		}
 
-		operator HBRUSH() {
-			//HGDIOBJ temp =  *Object;
-			return (HBRUSH)((HGDIOBJ)(*Object));
+
+		Brush& operator=(Brush const&) = delete;
+
+	protected:
+		explicit operator HBRUSH() const {
+			return (HBRUSH)RetrieveObject();
 		}
-	private:
-		Brush(Brush&);
+
+
 
 	};
 
+	enum RegionTypes {
+		rectangular,
+		elliptical,
+		roundrect
+	};
 
+	class Region :public GDIObject {
+		friend class DC;
+	public:
+		Region() {
+			Init(CreateRectRgn(0, 0, 1, 1));
+		}
+		Region(bool Elliptical, Rectangle rect) {
+			if (Elliptical) {
+				Init(CreateEllipticRgnIndirect(&rect.rect));
+			}
+			else {
+				Init(CreateRectRgnIndirect(&rect.rect));
+			}
+		}
+
+		/*Region(Rectangle rect, Pair CornerEllipse) {
+			Init(CreateRoundRectRgn(
+				rect.left, rect.top,
+				rect.right, rect.bottom,
+				CornerEllipse.x, CornerEllipse.y
+			));
+		}*/
+
+		Region(std::vector<POINT>Points, int PolyFillMode) {
+			Init(CreatePolygonRgn(&Points[0], Points.size(), PolyFillMode));
+		}
+
+		Region(Region &region1, Region &region2, int iMode) {
+			HRGN temp = CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(temp, static_cast<HRGN>(region1),
+				static_cast<HRGN>(region2), iMode);
+			Init(temp);
+		}
+
+		Region(const Region &region1, Region const &region2, int iMode) {
+			HRGN temp = CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(temp, static_cast<HRGN>(region1),
+				static_cast<HRGN>(region2), iMode);
+			Init(temp);
+		}
+
+		void clear() {
+			Init(CreateRectRgn(0, 0, 1, 1));
+		}
+		void Combine(const Region &region1, Region const &region2, int iMode) {
+			//HRGN temp = CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(static_cast<HRGN>(*this), static_cast<HRGN>(region1),
+				static_cast<HRGN>(region2), iMode);
+			//Init(temp);
+		}
+		Region(Region&) = delete;
+		Region& operator=(Region const&) = delete;
+		//Region& operator=(Region &) = delete;
+	protected:
+		explicit operator HRGN()const {
+			return (HRGN)RetrieveObject();
+		}
+
+
+
+	};
 	//TODO make the wrappers for all the DC operations
 	class DC {
 
@@ -141,11 +225,26 @@ namespace WINAPIPP {
 
 
 
+		bool FillRect(Rectangle Rect, Brush &Brush) {
+			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
+		}
+
+		bool FrameRgn(Region Reg, Brush brush, int width, int height) {
+			return ::FrameRgn(hdc, static_cast<HRGN>(Reg), static_cast<HBRUSH>(brush), width, height);
+		}
+
+		bool InvertRgn(Region Reg) {
+			return ::InvertRgn(hdc, static_cast<HRGN>(Reg));
+		}
+
+		void SelectRegion(Region &Reg) {
+			SelectClipRgn(hdc, static_cast<HRGN>(Reg));
+		}
 
 		/*			Wrappers				*/
 
-		virtual void Attach(BaseGDIObject &Object) { 
-			SelectObject(hdc, *Object);
+		virtual void Attach(GDIObject &Object) {
+			SelectObject(hdc, Object.RetrieveObject());
 		}
 
 		void AttachStockObject(int Object) {
@@ -178,28 +277,28 @@ namespace WINAPIPP {
 		using DC::DC;
 
 		//For attaching the object which already has a scope from calling place
-		void Attach(BaseGDIObject &Object)override {
+		void Attach(GDIObject &Object)override {
 			//TODO better checking
 			//Strange
 			if (Object.Type() == base)
 				__debugbreak();
 			Objects[Object.Type()] = Object;
-			SelectObject(hdc, (*Object));
+			SelectObject(hdc, (Object.RetrieveObject()));
 		}
 
 		//For on the go constructor type Object
-		void Attach(const BaseGDIObject &Object) {
+		void Attach(const GDIObject &Object) {
 			//TODO better checking
 			//Strange
 			if (Object.Type() == base)
 				__debugbreak();
-			Objects[Object.Type()] = BaseGDIObject(Object);
-			SelectObject(hdc, *Objects[Object.Type()]);
+			Objects[Object.Type()] = GDIObject(Object);
+			SelectObject(hdc, Objects[Object.Type()].RetrieveObject());
 		}
 
 	private:
 		//Saving reference of the selected objects
-		BaseGDIObject Objects[5];
+		GDIObject Objects[5];
 	};
 
 	class QuickDC :public DC {
@@ -232,7 +331,7 @@ namespace WINAPIPP {
 				EndPaint(hwnd, &__ps);
 			}
 		}
-		PAINTSTRUCT ps() const{
+		PAINTSTRUCT ps() const {
 			return __ps;
 		}
 
