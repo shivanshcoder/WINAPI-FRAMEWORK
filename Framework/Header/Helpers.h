@@ -111,13 +111,6 @@ namespace WINAPIPP {
 		};
 	};
 
-	enum RegionTypes {
-		Rectangular,
-		Empty,
-		Elliptical,
-		Poly,
-		Complex
-	};
 
 	
 }
