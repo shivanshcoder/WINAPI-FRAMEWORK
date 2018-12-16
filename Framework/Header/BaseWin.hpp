@@ -9,13 +9,20 @@ namespace WINAPIPP {
 	Cannot be copied or 
 	*/
     class BaseWin {
-    public:
-        BaseWin() {
-            hwnd = NULL;
-          //  valid = false;
-        }
+		friend class CUSTOM_CLASS;
 
-        bool CreateWin(std::wstring ClassName, std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin const &Parent) {
+    public:
+        /*BaseWin() {
+            hwnd = NULL;
+        }
+*/
+		//TODO function like this
+		//BaseWin
+		
+		//TODO replace this function with simple wrapper around HWND
+        virtual bool CreateWin( std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin const &Parent) {
+			//URGENT remove such ClassName
+			std::wstring ClassName = L"MainWindow";
             hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
                 Parent.hwnd, NULL, Instance(), NULL);
@@ -28,15 +35,10 @@ namespace WINAPIPP {
             return hwnd;
         }
 
-		//TODO should it be allowed to copy or assigned or not???
-		//BaseWin(BaseWin&) = delete;
-		//BaseWin& operator=(BaseWin const&) = delete;
 
     private:
-        //BaseWin(BaseWin& w);
 
     private:
-    //    bool valid;
         HWND hwnd;
     };
 

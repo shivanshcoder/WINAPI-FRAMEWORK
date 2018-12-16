@@ -185,7 +185,9 @@ namespace WINAPIPP {
         ~BaseWinProc();
 
     protected:
-        WNDPROC Procedure;
+		WNDPROC Procedure() {
+			return thunk->GetThunkAddress();
+		}
         virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     private:
         winThunk * thunk;
@@ -218,7 +220,7 @@ namespace WINAPIPP {
             }
         }
         thunk->Init(this, (DWORD_PTR)WndProc);
-        Procedure = thunk->GetThunkAddress();
+        //Procedure = thunk->GetThunkAddress();
     }
     BaseWinProc::~BaseWinProc() {
         if (objInstances == 1) {

@@ -10,6 +10,11 @@ namespace WINAPIPP {
 
 	public:
 
+	/*	Application() {
+			InitClass();
+
+		}*/
+
 		virtual void InitClass(UINT style = CS_HREDRAW | CS_VREDRAW) {
 			WNDCLASS wndClass;
 			wndClass.lpszClassName = TEXT("MainWindow");
@@ -22,7 +27,7 @@ namespace WINAPIPP {
 			wndClass.hInstance = Instance();
 			wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 			wndClass.lpszMenuName = NULL;
-			wndClass.lpfnWndProc = Procedure;
+			wndClass.lpfnWndProc = Procedure();
 			CheckError();
 			if (!RegisterClass(&wndClass))
 				__debugbreak();
