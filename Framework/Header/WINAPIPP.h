@@ -2,7 +2,6 @@
 
 //To be included by user for using framework
 #include"Application.h"
-#include"GDI.hpp"
 
 
 
@@ -11,7 +10,7 @@
 
 #ifdef AUTO_ENTRY
 
-extern WINAPIPP::Application* EntryApplication();
+extern WINAPIPP::CustomApplication* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
 	WINAPIPP::__ProgramInstance = Instance;
@@ -21,11 +20,19 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 	App->start();
 	delete App;
 }
-
+#define ENTRY_APP(APP)  WINAPIPP::CustomApplication* EntryApplication() { return new APP(); }
+//#else
+//extern void MAIN();
+//
+//int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
+//	WINAPIPP::__ProgramInstance = Instance;
+//	WINAPIPP::__ProgramCmdShow = CmdShow;
+//
+//	MAIN();
+//}
+//#define ENTRY_FUNC(func) void MAIN(){func();}
 #endif
 
-
-#define ENTRY_APP(APP)  WINAPIPP::Application* EntryApplication() { return new APP(); }
 
 
 //------------------Entry Point-------------------------

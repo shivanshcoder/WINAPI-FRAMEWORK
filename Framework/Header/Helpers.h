@@ -1,7 +1,8 @@
 #pragma once
+#include<Windows.h>
 #include<vector>
 
-namespace WINAPIPP {
+namespace Helpers {
 
 	//TODO make enums for system and local window class name strings
 	/*enum SystemClasses {
@@ -40,21 +41,21 @@ namespace WINAPIPP {
 	typedef Point Pair;
 	
 
-	class Rectangle {
+	class CPPRectangle {
 
 	public:
-		Rectangle() {
+		CPPRectangle() {
 			SetRectEmpty(&rect);
 		}
 
-		Rectangle(int xLeft, int yTop, int xRight, int yBottom) {
+		CPPRectangle(int xLeft, int yTop, int xRight, int yBottom) {
 			SetRect(&rect, xLeft, yTop, xRight, yBottom);
 		}
 
 
-		static Rectangle Random(
-			unsigned long long xlimit = MAXULONGLONG, unsigned long long ylimit = MAXULONGLONG) {
-			return Rectangle(
+		static CPPRectangle Random(
+			unsigned long long xlimit , unsigned long long ylimit) {
+			return CPPRectangle(
 				rand() % xlimit,rand() % ylimit,
 				rand() % xlimit,rand() % ylimit
 			);
@@ -70,14 +71,14 @@ namespace WINAPIPP {
 			InflateRect(&rect, dx, dy);
 		}
 
-		Rectangle Intersection(Rectangle otherRect) const {
-			Rectangle temp;
+		CPPRectangle Intersection(CPPRectangle otherRect) const {
+			CPPRectangle temp;
 			IntersectRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}
 
-		Rectangle Union(Rectangle otherRect) const {
-			Rectangle temp;
+		CPPRectangle Union(CPPRectangle otherRect) const {
+			CPPRectangle temp;
 			UnionRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}

@@ -1,86 +1,77 @@
-#include"Header/WINAPIPP.h"
-#include"Header/CustomWinClass.h"
-#define TWOPI (2*3.14159)
 
-template< int Message, typename T,typename T2>
-std::pair<T, T2> Unpack(int Message, WPARAM wParam,LPARAM lParam) {
-	//std::pair<T, T2>
-}
+#include"Header/WINAPIPP.h"
+
+#define DIV 5
+
 
 class HelloWin : public WINAPIPP::Application {
-	int cxClient, cyClient;
-	WINAPIPP::Region RgnClip;
+
+	int cxBlock, cyBlock;
+	bool fState[DIV][DIV];
 public:
 
+	WPARAM start()override {
 
-	WPARAM start() {
-		InitClass();
-		CreateWin( TEXT("The Hello Program"),
+		CreateWin(TEXT("The Hello Program"),
 			WS_OVERLAPPEDWINDOW,
-			WINAPIPP::Rectangle(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT),
-			BaseWin());
+			Helpers::CPPRectangle(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT),
+			nullptr);
 
 		return Run();
 	}
-	DECLARE_MESSAGE_MAP();
 
-	int OnSize(WPARAM wParam, LPARAM lParam) {
-		using namespace WINAPIPP;
-		cxClient = LOWORD(lParam);
-		cyClient = HIWORD(lParam);
-
-		HCURSOR Cursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
-		ShowCursor(TRUE);
-
-		RgnClip.clear();
-
-		Region Reg1(
-			Region(true, WINAPIPP::Rectangle(0, cyClient / 3, cxClient / 2, 2 * cyClient / 3)),
-			Region(true, WINAPIPP::Rectangle(cxClient / 2, cyClient / 3, cxClient, 2 * cyClient / 3)),
-			RGN_OR
-		);;
-
-		Region Reg2(
-			Region(true, WINAPIPP::Rectangle(cxClient / 3, 0, 2 * cxClient / 3, cyClient / 2)),
-			Region(true, WINAPIPP::Rectangle(cxClient / 3, cyClient / 2, 2 * cxClient / 3, cyClient)),
-			RGN_OR
-		);
-
-		RgnClip.Combine(Reg1, Reg2, RGN_XOR);
-
-		SetCursor(Cursor);
-		ShowCursor(FALSE);
+	int OnSize(WPARAM wParam, LPARAM lParam) override {
+		cxBlock = LOWORD(lParam)/DIV;
+		cyBlock = HIWORD(lParam)/DIV;
 
 		return 0;
 	}
-	int OnPaint() {
+	int OnMouseDown(WPARAM wParam, LPARAM lParam)override {
+		int x = LOWORD(lParam) / cxBlock;
+		int y = HIWORD(lParam) / cyBlock;
+		RECT rect;
+		if (x < DIV && y < DIV) {
+			fState[x][y] ^= 1;
+
+			rect.left = x * cxBlock;
+			rect.top = y * cyBlock;
+			rect.right = (x + 1) *cxBlock;
+			rect.bottom = (y + 1)*cyBlock;
+
+			InvalidateRect(*this, &rect, FALSE);
+
+		}
+		else
+			MessageBeep(0);
+		return 0;
+	}
+	int OnPaint() override {
 		WINAPIPP::PaintDC dc(*this);
 
-		SetViewportOrgEx(dc, cxClient / 2, cyClient / 2, NULL);
-		dc.SelectRegion(RgnClip);
-		float fRadius = _hypot(cxClient / 2.0, cyClient / 2.0);
-
-		for (float fAngle = 0.0; fAngle < TWOPI; fAngle += TWOPI / 360) {
-			MoveToEx(dc, 0, 0, NULL);
-			LineTo(dc, (int)(fRadius *cos(fAngle) + 0.5),
-				(int)(-fRadius * sin(fAngle) + 0.5));
+		for (int x = 0; x < DIV; ++x) {
+			for (int y = 0; y < DIV; ++y) {
+				::Rectangle(dc, x*cxBlock, y*cyBlock,
+					(x + 1)*cxBlock, (y + 1)*cyBlock);
+				if (fState[x][y]) {
+					MoveToEx(dc, x*cxBlock, y*cyBlock, NULL);
+					LineTo(dc, (x + 1)*cxBlock, (y + 1)*cyBlock);
+					MoveToEx(dc, x*cxBlock, (y + 1)*cyBlock, NULL);
+					LineTo(dc, (x + 1)*cxBlock, y*cyBlock);
+				}
+			}
 		}
 		return 0;
 	}
 
-	int OnDestroy() {
+	int OnDestroy() override {
 		PostQuitMessage(0);
 		return 0;
 	}
-	
+
 
 };
 
 
-MESSAGE_MAP_BEGIN(HelloWin)
-MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
-MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
-MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
-MESSAGE_MAP_END()
 
-ENTRY_APP(HelloWin)
+//ENTRY_FUNC(start);
+ENTRY_APP(HelloWin);

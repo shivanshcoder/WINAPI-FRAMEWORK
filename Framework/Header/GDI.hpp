@@ -1,3 +1,4 @@
+#pragma once
 #include"Helpers.h"
 #include"BaseWin.hpp"
 #include<memory>
@@ -131,7 +132,7 @@ namespace WINAPIPP {
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-		Region(bool Elliptical, Rectangle rect) {
+		Region(bool Elliptical, Helpers::CPPRectangle rect) {
 			if (Elliptical) {
 				Init(CreateEllipticRgnIndirect(&rect.rect));
 			}
@@ -140,7 +141,7 @@ namespace WINAPIPP {
 			}
 		}
 
-		/*Region(Rectangle rect, Pair CornerEllipse) {
+		/*Region(CPPRectangle rect, Pair CornerEllipse) {
 			Init(CreateRoundRectRgn(
 				rect.left, rect.top,
 				rect.right, rect.bottom,
@@ -212,13 +213,13 @@ namespace WINAPIPP {
 
 
 
-		void TextOut(WINAPIPP::Point point, std::wstring string) {
+		void TextOut(Helpers::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 
 
 
-		bool FillRect(Rectangle Rect, Brush &Brush) {
+		bool FillRect(Helpers::CPPRectangle Rect, Brush &Brush) {
 			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
 		}
 

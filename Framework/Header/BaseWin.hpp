@@ -20,12 +20,13 @@ namespace WINAPIPP {
 		//BaseWin
 		
 		//TODO replace this function with simple wrapper around HWND
-        virtual bool CreateWin( std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin const &Parent) {
+        virtual bool CreateWin( std::wstring Tittle, DWORD style, Helpers::CPPRectangle size,BaseWin *Parent) {
+			
 			//URGENT remove such ClassName
-			std::wstring ClassName = L"MainWindow";
-            hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
-				size.left, size.top, size.right, size.bottom,
-                Parent.hwnd, NULL, Instance(), NULL);
+			std::wstring ClassName = L"Application";
+            //hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
+			//	size.left, size.top, size.right, size.bottom,
+            //  *Parent, NULL, Instance(), NULL);
 			return hwnd;
         }
         

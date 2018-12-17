@@ -1,5 +1,5 @@
 #pragma once
-#include"Wrappers.hpp"
+//#include"Wrappers.hpp"
 #include"WinProc.hpp"
 
 #define DECLARE_MESSAGE_MAP() LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)final
@@ -21,55 +21,30 @@ namespace WINAPIPP {
 	public:
 
 	protected:
+		CUSTOM_CLASS(std::wstring ClassName)
+			:ClassName(ClassName) {}
 		//In Order to Define WinCLass properties and register the class
 		virtual void ClassProp(WNDCLASS &wndClass) = 0;
 
-		virtual bool CreateWin(std::wstring Tittle, DWORD style, WINAPIPP::Rectangle size, BaseWin const &Parent)override {
-			
-			
-			WNDCLASS wndclass;
+		virtual bool CreateWin(std::wstring Tittle, DWORD style, Helpers::CPPRectangle size, BaseWin *Parent = nullptr)override {			
+			WNDCLASS wndclass = {};
 			ClassProp(wndclass);
 			wndclass.lpszClassName = ClassName.c_str();
 			wndclass.lpfnWndProc = Procedure();
 			if (!RegisterClass(&wndclass))
 				//TODO replace with exceptions
 				__debugbreak();
-
-
-			hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
+			HWND par = nullptr;
+			if (Parent)
+				par = *Parent;
+			hwnd = CreateWindowW(ClassName.c_str(), Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
-				Parent.hwnd, NULL, Instance(), NULL);
+				(par),
+				NULL, Instance(), NULL);
 			return hwnd;
 		}
 
-		virtual WPARAM Run() {
-
-			ShowWindow(*this, WINAPIPP::CmdShow());
-			UpdateWindow(*this);
-			
-			return MessageProcess();
-		}
-
-		virtual WPARAM MessageProcess() {
-			MSG msg;
-
-
-			while (true) {
-				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-					if (msg.message == WM_QUIT)
-						break;
-
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-				}
-			}
-
-			return msg.wParam;
-		}
-
-		//DECLARE_MESSAGE_MAP();
-
-		const std::wstring ClassName;
+		 std::wstring ClassName;
 	};
 
 	
