@@ -146,6 +146,7 @@
     <ClInclude Include="Header\CustomWinClass.h" />
     <ClInclude Include="Header\GDI.hpp" />
     <ClInclude Include="Header\Helpers.h" />
+    <ClInclude Include="Header\Messages.h" />
     <ClInclude Include="Header\SysMets.h" />
     <ClInclude Include="Header\WINAPIPP.h" />
     <ClInclude Include="Header\WinProc.hpp" />
