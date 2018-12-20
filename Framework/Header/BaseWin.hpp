@@ -9,7 +9,7 @@ namespace WINAPIPP {
 	Cannot be copied or 
 	*/
     class BaseWin {
-		friend class CUSTOM_CLASS;
+		friend class Window;
 
     public:
         /*BaseWin() {

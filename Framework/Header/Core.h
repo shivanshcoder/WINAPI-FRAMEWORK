@@ -15,6 +15,12 @@ namespace WINAPIPP {
 		return __ProgramCmdShow;
 	}
 
+	namespace Exceptions {
 
+	class WinClass : public std::exception {
+
+	};
+
+	}
 
 }

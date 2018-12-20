@@ -8,12 +8,9 @@
 
 namespace WINAPIPP {
 
-	class CustomApplication :public CUSTOM_CLASS {
+	class CustomApplication :public Window {
 
 	public:
-		CustomApplication(std::wstring ClassName)	
-			:CUSTOM_CLASS(ClassName) {}
-
 
 		 WPARAM Run() {
 
@@ -53,14 +50,8 @@ namespace WINAPIPP {
 	class Application : public CustomApplication {
 
 	public:
-		Application()
-			:CustomApplication(std::wstring(TEXT("Application"))) {}
-		void ClassProp(WNDCLASS &wndclass) override{
-			wndclass.style = CS_VREDRAW | CS_HREDRAW;
-			wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-			wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-			wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		}
+	
+		CLASS_PROPERTIES(Application, CS_HREDRAW | CS_VREDRAW, NULL)
 
 		DECLARE_MESSAGE_MAP();
 
