@@ -57,6 +57,8 @@ namespace WINAPIPP {
 		
 		CLASS_PROPERTIES(Application, CS_HREDRAW | CS_VREDRAW, NULL)
 
+		virtual WPARAM start()override { return Run(); }
+			
 		DECLARE_MESSAGE_MAP();
 
 		//virtual int OnPaint() = 0;

@@ -18,11 +18,7 @@ namespace WINAPIPP {
 		void Init(HWND t) {
 			hwnd = t;
 		}
-		//TODO function like this
-		//BaseWin
-		
-		//TODO replace this function with simple wrapper around HWND
-      
+
 		//TODO should it be protected?????
 //	protected:
         operator HWND() {
@@ -34,7 +30,7 @@ namespace WINAPIPP {
         HWND hwnd;
     };
 
-
+	//TODO make HWND functions wrapper class
 	class Win :public BaseWin {
 
 	};

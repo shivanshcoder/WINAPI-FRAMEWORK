@@ -180,15 +180,14 @@ inline void CheckError() {
 
 namespace WINAPIPP {
 
+
+	//The Default Callback Windows Procedure for every window
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		if (message == WM_NCCREATE) {
-			LPCREATESTRUCT temp = (LPCREATESTRUCT)lParam;
-			temp->lpCreateParams;
-			//WNDPROC Func = 
-			SetLastError(0);
-			auto z = SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)temp->lpCreateParams);
-			CheckError();
-			return TRUE;
+
+			//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
+			//return TRUE;
 		}
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
@@ -200,8 +199,8 @@ namespace WINAPIPP {
 		BaseWinProc();
 		~BaseWinProc();
 
-		//friend LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	protected:
+		//Returns the windows Procedure specific to our class Object
 		WNDPROC Procedure() {
 			return thunk->GetThunkAddress();
 		}
@@ -237,7 +236,6 @@ namespace WINAPIPP {
 			throw;
 		}
 		thunk->Init(this, (DWORD_PTR)WndProc);
-		//Procedure = thunk->GetThunkAddress();
 	}
 	BaseWinProc::~BaseWinProc() {
 		if (objInstances == 1) {
@@ -260,26 +258,12 @@ namespace WINAPIPP {
 #elif defined(_M_AMD64)
 	LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
 #endif
-		//if (message == WM_NCCREATE /*|| message == WM_CREATE*/) {
-			//LPCREATESTRUCT Inst = (LPCREATESTRUCT)lParam;
-
-	//	}
 		return pThis->MessageFunc(hwnd, message, wParam, lParam);
 	}
 
 	HANDLE BaseWinProc::eHeapAddr = nullptr;
 	int BaseWinProc::objInstances = 0;
 
-
-#pragma endregion
-
-#pragma region WinProc
-
-	class WinProc :public BaseWinProc {
-
-	public:
-		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-	};
 
 #pragma endregion
 

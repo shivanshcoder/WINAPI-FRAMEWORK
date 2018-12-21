@@ -13,7 +13,7 @@
  bool __ClassProp() {		\
 		static bool Created = false;	\
 	if(!Created)	\
-		WINAPIPP::RegisterWinClass(Style, WINAPIPP::StaticWndProc /*Procedure()*/, Icon, Cursor, Background, MenuName, ClassName()); Created = true;	return true;\
+		WINAPIPP::RegisterWinClass(Style, WINAPIPP::StaticWndProc , Icon, Cursor, Background, MenuName, ClassName()); Created = true;	return true;\
 }\
  bool const ValidClass = __ClassProp(); 
 
@@ -42,9 +42,7 @@ namespace WINAPIPP {
 		}
 		return true;
 	}
-	bool temp(const int t) {
-		return t;
-	}
+	
 	/*
 	------------------------	Custom Window Classes ------------------------------
 	Derive from Window Class
@@ -65,12 +63,14 @@ namespace WINAPIPP {
 				wndParent = *_Parent;
 				par = *_Parent;
 			}
-			CheckError();
-			WNDPROC t = Procedure();
-			hwnd = CreateWindowW(ClassName(), Tittle.c_str(), style,
+
+			hwnd = CreateWindowW(ClassName(), //ClassName using virtual function
+				Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
-				(par),
-				Menu, Instance(), t);
+				(par), //Parent Window
+				Menu, Instance(),
+				Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
+			);
 
 			if (!hwnd)
 				throw std::exception("Window Creation Unsuccessful");

@@ -38,51 +38,32 @@ public:
 		return 0;
 	}
 
-	int Destroy() {
-		PostQuitMessage(0);
-		return 0;
-	}
 };
 
 MESSAGE_MAP_BEGIN(ChildWindows)
-//MESSAGE_MAP_ENTRY(Create, WM_CREATE)
-
-MESSAGE_MAP_ENTRY(LButtonDown, WM_LBUTTONDOWN)
-MESSAGE_MAP_ENTRY(Paint, WM_PAINT)
-MESSAGE_MAP_ENTRY(Destroy, WM_DESTROY)
+	MESSAGE_MAP_ENTRY(LButtonDown, WM_LBUTTONDOWN)
+	MESSAGE_MAP_ENTRY(Paint, WM_PAINT)
 MESSAGE_MAP_END();
 
 class HelloWin : public WINAPIPP::Application {
 	std::vector<std::vector<std::unique_ptr<ChildWindows> > > Children;
 	int cxBlock, cyBlock;
 public:
-	HelloWin()
-		:Application(
-			std::wstring(L"Click On"), WS_OVERLAPPEDWINDOW) {}
-
-	WPARAM start()override {
-		return Run();
-	}
-	int OnSize(WPARAM wParam, LPARAM lParam) override {
-		Children.clear();
+	HelloWin()	:Application(std::wstring(L"Click On"), WS_OVERLAPPEDWINDOW) {
 		Children.resize(5);
+		for (int x = 0; x < DIV; ++x) 
+			for (int y = 0; y < DIV; ++y) 
+				Children[x].push_back(std::make_unique<ChildWindows>(*this, (y << 8 | x)));
+	}
 
+	int OnSize(WPARAM wParam, LPARAM lParam) override {
+	
 		cxBlock = LOWORD(lParam) / DIV;
 		cyBlock = HIWORD(lParam) / DIV;
 
 		for (int x = 0; x < DIV; ++x) {
 			for (int y = 0; y < DIV; ++y) {
-				Children[x].push_back(std::make_unique<ChildWindows>(*this, (y<<8|x)));
-				UpdateWindow(*Children[x][y]);
-			}
-		}
-
-
-		for (int x = 0; x < DIV; ++x) {
-			for (int y = 0; y < DIV; ++y) {
 				MoveWindow(*Children[x][y], cxBlock*x, cyBlock*y, cxBlock, cyBlock, TRUE);
-				CheckError();
-				UpdateWindow(*Children[x][y]);
 			}
 		}
 		return 0;
@@ -91,16 +72,5 @@ public:
 		MessageBeep(0);
 		return 0;
 	}
-	
-	int OnDestroy() override {
-		PostQuitMessage(0);
-		return 0;
-	}
-
-	~HelloWin()override{}
 };
-
-
-
-//ENTRY_FUNC(start);
 ENTRY_APP(HelloWin);

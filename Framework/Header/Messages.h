@@ -13,6 +13,8 @@ return DefWindowProc(hwnd, message, wParam, lParam); }
 
 #define MESSAGE_MAP_ENTRY(FUNC, MESSAGE_VAL) case MESSAGE_VAL: return FUNC();
 
+#define MESSAGE_MAP_ENTRY_SINGLE(STATEMENT, RETURN_VAL, MESSAGE_VAL) case MESSAGE_VAL: STATEMENT; return RETURN_VAL;
+
 struct Params {
 	WPARAM wParam;
 	LPARAM lParam;
