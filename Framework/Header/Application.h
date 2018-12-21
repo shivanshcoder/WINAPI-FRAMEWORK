@@ -1,9 +1,7 @@
 #pragma once
 #include"GDI.hpp"
 #include"CustomWinClass.h"
-/*
-#include"Wrappers.hpp"
-#include"WinProc.hpp"*/
+
 
 
 namespace WINAPIPP {
@@ -11,8 +9,9 @@ namespace WINAPIPP {
 	class CustomApplication :public Window {
 
 	public:
+		CustomApplication() = default;
 
-		 WPARAM Run() {
+		WPARAM Run() {
 
 			ShowWindow(*this, WINAPIPP::CmdShow());
 			UpdateWindow(*this);
@@ -20,9 +19,8 @@ namespace WINAPIPP {
 			return MessageProcess();
 		}
 
-		 WPARAM MessageProcess() {
+		WPARAM MessageProcess() {
 			MSG msg;
-
 
 			while (true) {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -41,24 +39,28 @@ namespace WINAPIPP {
 		}
 
 		virtual WPARAM start() = 0;
-		virtual void Idle() {
+		virtual void Idle() {}
 
-		}
-
+		virtual ~CustomApplication() {} //= 0;
 	};
 
 	class Application : public CustomApplication {
 
 	public:
-	
+
+		Application(const std::wstring &Tittle, DWORD style,
+			Helpers::CPPRectangle size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			//NOTE Because Application can't have parent maybe??
+			CreateWin(Tittle, style, size, nullptr);
+		}
+			
+		
 		CLASS_PROPERTIES(Application, CS_HREDRAW | CS_VREDRAW, NULL)
 
 		DECLARE_MESSAGE_MAP();
 
-		virtual int OnPaint() {
-			WINAPIPP::PaintDC dc(*this);
-			return 0;
-		}
+		//virtual int OnPaint() = 0;
+		//virtual int OnCreate() { return 0; }
 		virtual int OnDestroy() {
 			PostQuitMessage(0);
 			return 0;
@@ -69,11 +71,13 @@ namespace WINAPIPP {
 	};
 
 	MESSAGE_MAP_BEGIN(Application)
-		MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
+		case WM_CREATE: Init(hwnd); return 0;
+		//MESSAGE_MAP_ENTRY(OnCreate, WM_CREATE)
+		//MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
 		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
-	MESSAGE_MAP_END()
+		MESSAGE_MAP_END()
 
 }
 

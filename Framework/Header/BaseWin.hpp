@@ -12,32 +12,23 @@ namespace WINAPIPP {
 		friend class Window;
 
     public:
-        /*BaseWin() {
+        BaseWin() {
             hwnd = NULL;
         }
-*/
+		void Init(HWND t) {
+			hwnd = t;
+		}
 		//TODO function like this
 		//BaseWin
 		
 		//TODO replace this function with simple wrapper around HWND
-        virtual bool CreateWin( std::wstring Tittle, DWORD style, Helpers::CPPRectangle size,BaseWin *Parent) {
-			
-			//URGENT remove such ClassName
-			std::wstring ClassName = L"Application";
-            //hwnd = CreateWindow(ClassName.c_str(), Tittle.c_str(), style,
-			//	size.left, size.top, size.right, size.bottom,
-            //  *Parent, NULL, Instance(), NULL);
-			return hwnd;
-        }
-        
+      
 		//TODO should it be protected?????
 //	protected:
         operator HWND() {
             return hwnd;
         }
 
-
-    private:
 
     private:
         HWND hwnd;
