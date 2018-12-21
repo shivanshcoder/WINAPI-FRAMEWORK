@@ -25,8 +25,10 @@ public:
 	int Paint() {
 		WINAPIPP::PaintDC dc(*this);
 		RECT rect;
+
 		GetClientRect(*this, &rect);
-		Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
+		Rectangle(dc, 0, 0, rect.right, rect.bottom);
+
 		if (flag) {
 			MoveToEx(dc, 0, 0, NULL);
 			LineTo(dc, rect.right, rect.bottom);
@@ -44,6 +46,7 @@ public:
 
 MESSAGE_MAP_BEGIN(ChildWindows)
 //MESSAGE_MAP_ENTRY(Create, WM_CREATE)
+
 MESSAGE_MAP_ENTRY(LButtonDown, WM_LBUTTONDOWN)
 MESSAGE_MAP_ENTRY(Paint, WM_PAINT)
 MESSAGE_MAP_ENTRY(Destroy, WM_DESTROY)
@@ -51,7 +54,6 @@ MESSAGE_MAP_END();
 
 class HelloWin : public WINAPIPP::Application {
 	std::vector<std::vector<std::unique_ptr<ChildWindows> > > Children;
-	//ChildWindows a, b, c, d, e;
 	int cxBlock, cyBlock;
 public:
 	HelloWin()
@@ -64,19 +66,23 @@ public:
 	int OnSize(WPARAM wParam, LPARAM lParam) override {
 		Children.clear();
 		Children.resize(5);
+
+		cxBlock = LOWORD(lParam) / DIV;
+		cyBlock = HIWORD(lParam) / DIV;
+
 		for (int x = 0; x < DIV; ++x) {
 			for (int y = 0; y < DIV; ++y) {
 				Children[x].push_back(std::make_unique<ChildWindows>(*this, (y<<8|x)));
-				
+				UpdateWindow(*Children[x][y]);
 			}
 		}
 
- 		cxBlock = LOWORD(lParam)/DIV;
-		cyBlock = HIWORD(lParam)/DIV;
 
 		for (int x = 0; x < DIV; ++x) {
 			for (int y = 0; y < DIV; ++y) {
-				MoveWindow(*Children[x][y], x*cxBlock, y*cyBlock, cxBlock, cyBlock, TRUE);
+				MoveWindow(*Children[x][y], cxBlock*x, cyBlock*y, cxBlock, cyBlock, TRUE);
+				CheckError();
+				UpdateWindow(*Children[x][y]);
 			}
 		}
 		return 0;

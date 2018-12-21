@@ -180,6 +180,19 @@ inline void CheckError() {
 
 namespace WINAPIPP {
 
+	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		if (message == WM_NCCREATE) {
+			LPCREATESTRUCT temp = (LPCREATESTRUCT)lParam;
+			temp->lpCreateParams;
+			//WNDPROC Func = 
+			SetLastError(0);
+			auto z = SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)temp->lpCreateParams);
+			CheckError();
+			return TRUE;
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
 #pragma region BaseWinProc
 
 	class BaseWinProc {
@@ -187,6 +200,7 @@ namespace WINAPIPP {
 		BaseWinProc();
 		~BaseWinProc();
 
+		//friend LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	protected:
 		WNDPROC Procedure() {
 			return thunk->GetThunkAddress();
@@ -246,6 +260,10 @@ namespace WINAPIPP {
 #elif defined(_M_AMD64)
 	LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
 #endif
+		//if (message == WM_NCCREATE /*|| message == WM_CREATE*/) {
+			//LPCREATESTRUCT Inst = (LPCREATESTRUCT)lParam;
+
+	//	}
 		return pThis->MessageFunc(hwnd, message, wParam, lParam);
 	}
 

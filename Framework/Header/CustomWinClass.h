@@ -13,7 +13,7 @@
  bool __ClassProp() {		\
 		static bool Created = false;	\
 	if(!Created)	\
-		WINAPIPP::RegisterWinClass(Style, Procedure(), Icon, Cursor, Background, MenuName, ClassName()); Created = true;	return true;\
+		WINAPIPP::RegisterWinClass(Style, WINAPIPP::StaticWndProc /*Procedure()*/, Icon, Cursor, Background, MenuName, ClassName()); Created = true;	return true;\
 }\
  bool const ValidClass = __ClassProp(); 
 
@@ -28,7 +28,7 @@ namespace WINAPIPP {
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
 		WNDCLASS wndclass = {};
 		wndclass.style = Style;
-		wndclass.lpfnWndProc = Proc;
+		wndclass.lpfnWndProc =Proc/* StaticWndProc*/;
 		wndclass.hInstance = Instance();
 		wndclass.hbrBackground = Background;
 		wndclass.hIcon = Icon;
@@ -66,10 +66,11 @@ namespace WINAPIPP {
 				par = *_Parent;
 			}
 			CheckError();
+			WNDPROC t = Procedure();
 			hwnd = CreateWindowW(ClassName(), Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
 				(par),
-				Menu, Instance(), NULL);
+				Menu, Instance(), t);
 
 			if (!hwnd)
 				throw std::exception("Window Creation Unsuccessful");
