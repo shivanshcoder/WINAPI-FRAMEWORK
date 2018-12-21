@@ -1,3 +1,4 @@
+#pragma once
 #include"Helpers.h"
 #include"BaseWin.hpp"
 #include<memory>
@@ -24,15 +25,16 @@ namespace WINAPIPP {
 				DeleteObject(Object);
 		}
 
+
 		BaseObject(HGDIOBJ Obj) {
 			Object = Obj;
 		}
 
-		operator HGDIOBJ() {
+		operator HGDIOBJ() const {
 			return Object;
 		}
-	protected:
 
+	protected:
 		//NOTE Disabled CopyConstructor
 		BaseObject(BaseObject& t) = delete;
 
@@ -59,13 +61,7 @@ namespace WINAPIPP {
 		//Returns Type of Object
 		virtual GDIObjectType Type()const { return base; }// = 0;
 
-
-
-		//NOTE
-		//operator std::shared_ptr<BaseObject>() {
-		//	return Object;
-		//}
-
+	private:
 		std::shared_ptr<BaseObject>Object;
 	};
 
@@ -76,21 +72,20 @@ namespace WINAPIPP {
 		Pen(int iStyle, int cWidth, COLORREF color)
 		{
 			Init(CreatePen(iStyle, cWidth, color));
-			//Object = std::make_shared<BaseObject>(temp);
 		}
-		Pen(Pen&) = delete;
 
 		GDIObjectType Type()const override {
 			return GDIObjectType::pen;
 		}
 
+		/*----Disabled Functions---*/
+		//Copy constructor disabled
+		Pen(Pen&) = delete;
 		Pen& operator=(Pen const&) = delete;
 	protected:
 		explicit operator HPEN() {
 			return (HPEN)RetrieveObject();
 		}
-
-
 
 		//TODO store properties and use
 		//int Style;
@@ -104,29 +99,25 @@ namespace WINAPIPP {
 	public:
 		Brush(COLORREF crColor) {
 			Init(CreateSolidBrush(crColor));
-			//	Object = std::make_shared<BaseObject>(temp);
 		}
 		Brush(int iHatch, COLORREF Color) {
 			Init(CreateHatchBrush(iHatch, Color));
-			//	Object = std::make_shared<BaseObject>(temp);
 		}
-		//Copy constructor disabled
-		Brush(Brush&) = delete;
 
 		GDIObjectType Type()const override {
 			return GDIObjectType::brush;
 		}
 
 
+		/*----Disabled Functions---*/
+		//Copy constructor disabled
+		Brush(Brush&) = delete;
 		Brush& operator=(Brush const&) = delete;
 
 	protected:
 		explicit operator HBRUSH() const {
 			return (HBRUSH)RetrieveObject();
 		}
-
-
-
 	};
 
 	enum RegionTypes {
@@ -141,7 +132,7 @@ namespace WINAPIPP {
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-		Region(bool Elliptical, Rectangle rect) {
+		Region(bool Elliptical, Helpers::CPPRectangle rect) {
 			if (Elliptical) {
 				Init(CreateEllipticRgnIndirect(&rect.rect));
 			}
@@ -150,7 +141,7 @@ namespace WINAPIPP {
 			}
 		}
 
-		/*Region(Rectangle rect, Pair CornerEllipse) {
+		/*Region(CPPRectangle rect, Pair CornerEllipse) {
 			Init(CreateRoundRectRgn(
 				rect.left, rect.top,
 				rect.right, rect.bottom,
@@ -185,9 +176,12 @@ namespace WINAPIPP {
 				static_cast<HRGN>(region2), iMode);
 			//Init(temp);
 		}
+
+
+		/*----Disabled Functions---*/
+		//Copy constructor disabled
 		Region(Region&) = delete;
 		Region& operator=(Region const&) = delete;
-		//Region& operator=(Region &) = delete;
 	protected:
 		explicit operator HRGN()const {
 			return (HRGN)RetrieveObject();
@@ -219,21 +213,21 @@ namespace WINAPIPP {
 
 
 
-		void TextOut(WINAPIPP::Point point, std::wstring string) {
+		void TextOut(Helpers::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 
 
 
-		bool FillRect(Rectangle Rect, Brush &Brush) {
+		bool FillRect(Helpers::CPPRectangle Rect, Brush &Brush) {
 			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
 		}
 
-		bool FrameRgn(Region Reg, Brush brush, int width, int height) {
+		bool FrameRgn(Region &Reg, Brush &brush, int width, int height) {
 			return ::FrameRgn(hdc, static_cast<HRGN>(Reg), static_cast<HBRUSH>(brush), width, height);
 		}
 
-		bool InvertRgn(Region Reg) {
+		bool InvertRgn(Region &Reg) {
 			return ::InvertRgn(hdc, static_cast<HRGN>(Reg));
 		}
 
@@ -260,6 +254,9 @@ namespace WINAPIPP {
 				::ReleaseDC(hwnd, hdc);
 			}
 		}
+
+		DC(DC&) = delete;
+		DC& operator=(DC&) = delete;
 
 	protected:
 		HWND hwnd;
@@ -314,12 +311,9 @@ namespace WINAPIPP {
 	//Should be made in WM_PAINT message only
 	class PaintDC :public SafeDC {
 	public:
-		PaintDC(HWND _hwnd) :SafeDC(_hwnd)
-		{
-
+		PaintDC(HWND _hwnd) :SafeDC(_hwnd) {
 			hwnd = _hwnd;
 			hdc = BeginPaint(hwnd, &__ps);
-
 		}
 
 		operator HDC() {

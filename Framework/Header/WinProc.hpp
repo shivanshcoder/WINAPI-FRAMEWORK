@@ -1,6 +1,7 @@
 #pragma once
-
 #include<Windows.h>
+
+inline void CheckError();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /*                                 This Code doesn't belong to me                                 */
@@ -30,15 +31,15 @@ struct winThunk {
 	unsigned long m_relproc; //relative proc
 
 	static HANDLE eHeapAddr;
-	
-	bool Init (void* Instance_to_attach, DWORD_PTR Function_to_suppply); 
-	
+
+	bool Init(void* Instance_to_attach, DWORD_PTR Function_to_suppply);
+
 	//Some thunk will dynamically allocate the memory for the code
-	WNDPROC GetThunkAddress ();
+	WNDPROC GetThunkAddress();
 
 	void* operator new(size_t, HANDLE HeapAddr);
 
-	void operator delete(void* pThunk); 
+	void operator delete(void* pThunk);
 };
 
 #pragma pack(pop)
@@ -55,14 +56,14 @@ struct winThunk {
 	unsigned long long ProcImm;
 	unsigned short     RaxJmp;  //jmp rax
 	static HANDLE      eHeapAddr; //heap address this thunk will be initialized too
-	bool Init (void *pThis, DWORD_PTR proc);
-	
-	WNDPROC GetThunkAddress ();
-	
+	bool Init(void *pThis, DWORD_PTR proc);
+
+	WNDPROC GetThunkAddress();
+
 	void* operator new(size_t, HANDLE heapaddr);
-	
+
 	void operator delete(void* pThunk);
-	
+
 };
 
 #pragma pack(pop)
@@ -73,40 +74,40 @@ struct winThunk {
 #pragma pack(push, 1)
 
 bool winThunk::Init(void* Instance_to_attach, DWORD_PTR Function_to_suppply) {
-    m_push1 = 0x34ff; //ff 34 23 push DWORD PTR [esp]
-    m_push2 = 0xc724;
+	m_push1 = 0x34ff; //ff 34 23 push DWORD PTR [esp]
+	m_push2 = 0xc724;
 
-    m_mov1 = 0x2444; //c7 44 24 04 mov dword ptr [esp +0x4],
-    m_mov2 = 0x04l;
+	m_mov1 = 0x2444; //c7 44 24 04 mov dword ptr [esp +0x4],
+	m_mov2 = 0x04l;
 
-    m_this = PtrToUlong(Instance_to_attach);
+	m_this = PtrToUlong(Instance_to_attach);
 
-    m_jmp = 0xe9; //jmp
+	m_jmp = 0xe9; //jmp
 
-                  //Calculate relative address of proc to jump to
-    m_relproc = unsigned long((INT_PTR)Function_to_suppply - ((INT_PTR)this + sizeof(winThunk)));
+				  //Calculate relative address of proc to jump to
+	m_relproc = unsigned long((INT_PTR)Function_to_suppply - ((INT_PTR)this + sizeof(winThunk)));
 
-    //write block from data cache and flush from instruction cache
-    if (FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
-        //Success
-        return true;
-    else
-        //Fail
-        return false;
+	//write block from data cache and flush from instruction cache
+	if (FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
+		//Success
+		return true;
+	else
+		//Fail
+		return false;
 }
 
 WNDPROC winThunk::GetThunkAddress() {
-    return (WNDPROC)this;
+	return (WNDPROC)this;
 }
 
 void* winThunk::operator new(size_t, HANDLE HeapAddr) {
-    eHeapAddr = HeapAddr;
+	eHeapAddr = HeapAddr;
 
-    return HeapAlloc(HeapAddr, 0, sizeof(winThunk));
+	return HeapAlloc(HeapAddr, 0, sizeof(winThunk));
 }
 
 void winThunk::operator delete(void* pThunk) {
-    HeapFree(eHeapAddr, 0, pThunk);
+	HeapFree(eHeapAddr, 0, pThunk);
 }
 
 HANDLE winThunk::eHeapAddr = NULL;
@@ -117,36 +118,38 @@ HANDLE winThunk::eHeapAddr = NULL;
 #pragma pack(push, 2)
 
 bool winThunk::Init(void *pThis, DWORD_PTR proc) {
-    RaxMov = 0xb848;                    //movabs rax (48 B8), pThis
-    RaxImm = (unsigned long long)pThis; //
-    RspMov = 0x24448948;                //mov qword ptr [rsp+28h], rax (48 89 44 24 28)
-    RspMov1 = 0x9028;                    //to properly byte align the instruction we add a nop (no operation) (90)
-    Rax2Mov = 0xb848;                    //movabs rax (48 B8), proc
-    ProcImm = (unsigned long long)proc;
-    RaxJmp = 0xe0ff;                     //jmp rax (FF EO)
-    if (FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
-    { //error
-        return FALSE;
-    }
-    else
-    {//succeeded
-        return TRUE;
-    }
+	RaxMov = 0xb848;                    //movabs rax (48 B8), pThis
+	RaxImm = (unsigned long long)pThis; //
+	RspMov = 0x24448948;                //mov qword ptr [rsp+28h], rax (48 89 44 24 28)
+	RspMov1 = 0x9028;                    //to properly byte align the instruction we add a nop (no operation) (90)
+	Rax2Mov = 0xb848;                    //movabs rax (48 B8), proc
+	ProcImm = (unsigned long long)proc;
+	RaxJmp = 0xe0ff;                     //jmp rax (FF EO)
+	if (!FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
+	{ //error
+		CheckError();
+		__debugbreak();
+		return FALSE;
+	}
+	else
+	{//succeeded
+		return TRUE;
+	}
 }
 
 WNDPROC winThunk::GetThunkAddress() {
-    return (WNDPROC)this;
+	return (WNDPROC)this;
 }
 
 void* winThunk::operator new(size_t, HANDLE HeapAddr) {
-    eHeapAddr = HeapAddr;
+	eHeapAddr = HeapAddr;
 
-    return HeapAlloc(HeapAddr, 0, sizeof(winThunk));
+	return HeapAlloc(HeapAddr, 0, sizeof(winThunk));
 }
 
 
 void winThunk::operator delete(void* pThunk) {
-    HeapFree(eHeapAddr, 0, pThunk);
+	HeapFree(eHeapAddr, 0, pThunk);
 }
 
 HANDLE winThunk::eHeapAddr = NULL;
@@ -164,99 +167,103 @@ HANDLE winThunk::eHeapAddr = NULL;
 
 
 //Function to place breakpoint in case of error
-inline void CheckError () {
+inline void CheckError() {
 	char buf[256];
-	FormatMessageA (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, ::GetLastError (), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-		buf, sizeof (buf), NULL);
-	if (strcmp (buf, "The operation completed successfully.\r\n")) {
-		__debugbreak ();
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		buf, sizeof(buf), NULL);
+	if (strcmp(buf, "The operation completed successfully.\r\n")) {
+		__debugbreak();
 	}
 	return;
 }
 
 namespace WINAPIPP {
 
+
+	//The Default Callback Windows Procedure for every window
+	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		if (message == WM_NCCREATE) {
+
+			//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
+			//return TRUE;
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
 #pragma region BaseWinProc
 
-    class BaseWinProc {
-    public:
-        BaseWinProc();
-        ~BaseWinProc();
-
-    protected:
-        WNDPROC Procedure;
-        virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-    private:
-        winThunk * thunk;
-        static HANDLE eHeapAddr;
-        static int objInstances;
-
-#if defined(_M_IX86)
-        static LRESULT CALLBACK WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-            pThis->MessageFunc(hwnd, message, wParam, lParam);
-        }
-#elif defined(_M_AMD64)
-        static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis);
-#endif
-    };
-
-    BaseWinProc::BaseWinProc() {
-        ++objInstances;
-        if (!eHeapAddr) {
-            try {
-                eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
-            }
-            catch (...) {
-                throw;
-            }
-            try {
-                thunk = new(eHeapAddr)winThunk;
-            }
-            catch (...) {
-                throw;
-            }
-        }
-        thunk->Init(this, (DWORD_PTR)WndProc);
-        Procedure = thunk->GetThunkAddress();
-    }
-    BaseWinProc::~BaseWinProc() {
-        if (objInstances == 1) {
-            HeapDestroy(eHeapAddr);
-            eHeapAddr = NULL;
-            objInstances = 0;
-        }
-        else {
-            objInstances--;
-            delete thunk;
-        }
-    }
-
-    LRESULT BaseWinProc::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-        return DefWindowProc(hwnd, message, wParam, lParam);
-    }
-
-#if defined(_M_IX86)
-    LRESULT CALLBACK BaseWinProc::WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-#elif defined(_M_AMD64)
-    LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
-#endif
-        return pThis->MessageFunc(hwnd, message, wParam, lParam);
-    }
-
-    HANDLE BaseWinProc::eHeapAddr = nullptr;
-    int BaseWinProc::objInstances = 0;
-
-
-#pragma endregion
-
-#pragma region WinProc
-
-	class WinProc :public BaseWinProc {
-
+	class BaseWinProc {
 	public:
+		BaseWinProc();
+		~BaseWinProc();
+
+	protected:
+		//Returns the windows Procedure specific to our class Object
+		WNDPROC Procedure() {
+			return thunk->GetThunkAddress();
+		}
 		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	private:
+		winThunk * thunk;
+		static HANDLE eHeapAddr;
+		static int objInstances;
+
+#if defined(_M_IX86)
+		static LRESULT CALLBACK WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+			pThis->MessageFunc(hwnd, message, wParam, lParam);
+		}
+#elif defined(_M_AMD64)
+		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis);
+#endif
 	};
+
+	BaseWinProc::BaseWinProc() {
+		++objInstances;
+		if (!eHeapAddr) {
+			try {
+				eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
+			}
+			catch (...) {
+				throw;
+			}
+		}
+		try {
+			thunk = new(eHeapAddr)winThunk;
+		}
+		catch (...) {
+			throw;
+		}
+		thunk->Init(this, (DWORD_PTR)WndProc);
+	}
+	BaseWinProc::~BaseWinProc() {
+		if (objInstances == 1) {
+			HeapDestroy(eHeapAddr);
+			eHeapAddr = NULL;
+			objInstances = 0;
+		}
+		else {
+			objInstances--;
+			delete thunk;
+		}
+	}
+
+	LRESULT BaseWinProc::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
+#if defined(_M_IX86)
+	LRESULT CALLBACK BaseWinProc::WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+#elif defined(_M_AMD64)
+	LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
+#endif
+		return pThis->MessageFunc(hwnd, message, wParam, lParam);
+	}
+
+	HANDLE BaseWinProc::eHeapAddr = nullptr;
+	int BaseWinProc::objInstances = 0;
+
 
 #pragma endregion
 

@@ -1,40 +1,26 @@
 #pragma once
-#include"Wrappers.hpp"
-#include"WinProc.hpp"
+#include"GDI.hpp"
+#include"CustomWinClass.h"
+
 
 
 namespace WINAPIPP {
 
-
-	class Application : public BaseWin, public WINAPIPP::BaseWinProc {
+	class CustomApplication :public Window {
 
 	public:
-
-		virtual void InitClass(UINT style = CS_HREDRAW | CS_VREDRAW) {
-			WNDCLASS wndClass;
-			wndClass.lpszClassName = TEXT("MainWindow");
-			wndClass.style = style;
-			wndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-			wndClass.cbClsExtra = 0;
-			wndClass.cbWndExtra = 0;
-
-			wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-			wndClass.hInstance = Instance();
-			wndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-			wndClass.lpszMenuName = NULL;
-			wndClass.lpfnWndProc = Procedure;
-			CheckError();
-			if (!RegisterClass(&wndClass))
-				__debugbreak();
-			CheckError();
-		}
+		CustomApplication() = default;
 
 		WPARAM Run() {
+
 			ShowWindow(*this, WINAPIPP::CmdShow());
 			UpdateWindow(*this);
 
-			MSG msg;
+			return MessageProcess();
+		}
 
+		WPARAM MessageProcess() {
+			MSG msg;
 
 			while (true) {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -44,7 +30,6 @@ namespace WINAPIPP {
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
 				}
-
 				else {
 					Idle();
 				}
@@ -54,15 +39,48 @@ namespace WINAPIPP {
 		}
 
 		virtual WPARAM start() = 0;
+		virtual void Idle() {}
 
-		virtual void Idle() {
+		virtual ~CustomApplication() {} //= 0;
+	};
 
+	class Application : public CustomApplication {
+
+	public:
+
+		Application(const std::wstring &Tittle, DWORD style,
+			Helpers::CPPRectangle size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			//NOTE Because Application can't have parent maybe??
+			CreateWin(Tittle, style, size, nullptr);
 		}
+			
+		
+		CLASS_PROPERTIES(Application, CS_HREDRAW | CS_VREDRAW, NULL)
 
-	private:
-		//HWND hwnd;
+		virtual WPARAM start()override { return Run(); }
+			
+		DECLARE_MESSAGE_MAP();
+
+		//virtual int OnPaint() = 0;
+		//virtual int OnCreate() { return 0; }
+		virtual int OnDestroy() {
+			PostQuitMessage(0);
+			return 0;
+		}
+		virtual int OnSize(WPARAM wParam, LPARAM lParam) { return 0; }
+		virtual int OnMouseDown(WPARAM wParam, LPARAM lParam) { return 0; }
 
 	};
+
+	MESSAGE_MAP_BEGIN(Application)
+		case WM_CREATE: Init(hwnd); return 0;
+		//MESSAGE_MAP_ENTRY(OnCreate, WM_CREATE)
+		//MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
+		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
+		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
+		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
+		MESSAGE_MAP_END()
+
 }
 
 
