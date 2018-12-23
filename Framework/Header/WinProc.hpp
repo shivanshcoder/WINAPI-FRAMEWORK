@@ -258,6 +258,7 @@ namespace WINAPIPP {
 #elif defined(_M_AMD64)
 	LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
 #endif
+		
 		return pThis->MessageFunc(hwnd, message, wParam, lParam);
 	}
 

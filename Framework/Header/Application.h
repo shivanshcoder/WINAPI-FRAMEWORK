@@ -10,6 +10,7 @@ namespace WINAPIPP {
 
 	public:
 		CustomApplication() = default;
+		
 
 		WPARAM Run() {
 
@@ -37,8 +38,10 @@ namespace WINAPIPP {
 
 			return msg.wParam;
 		}
-
-		virtual WPARAM start() = 0;
+		//Can be overriden Called after Window creation
+		virtual WPARAM start() {
+			return Run();
+		}
 		virtual void Idle() {}
 
 		virtual ~CustomApplication() {} //= 0;
@@ -47,9 +50,9 @@ namespace WINAPIPP {
 	class Application : public CustomApplication {
 
 	public:
-
+		//using CustomApplication::CustomApplication;
 		Application(const std::wstring &Tittle, DWORD style,
-			Helpers::CPPRectangle size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			Helpers::Rect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
 			//NOTE Because Application can't have parent maybe??
 			CreateWin(Tittle, style, size, nullptr);
 		}

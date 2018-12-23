@@ -132,7 +132,7 @@ namespace WINAPIPP {
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-		Region(bool Elliptical, Helpers::CPPRectangle rect) {
+		Region(bool Elliptical, Helpers::Rect rect) {
 			if (Elliptical) {
 				Init(CreateEllipticRgnIndirect(&rect.rect));
 			}
@@ -141,7 +141,7 @@ namespace WINAPIPP {
 			}
 		}
 
-		/*Region(CPPRectangle rect, Pair CornerEllipse) {
+		/*Region(Rect rect, Pair CornerEllipse) {
 			Init(CreateRoundRectRgn(
 				rect.left, rect.top,
 				rect.right, rect.bottom,
@@ -219,7 +219,7 @@ namespace WINAPIPP {
 
 
 
-		bool FillRect(Helpers::CPPRectangle Rect, Brush &Brush) {
+		bool FillRect(Helpers::Rect Rect, Brush &Brush) {
 			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
 		}
 
@@ -304,8 +304,11 @@ namespace WINAPIPP {
 			hdc = GetDC(_hwnd);
 		}
 
+		QuickDC(QuickDC&) = delete;
+		QuickDC& operator=(QuickDC&) = delete;
+
 	private:
-		QuickDC(QuickDC&);
+//		QuickDC(QuickDC&);
 	};
 
 	//Should be made in WM_PAINT message only
@@ -329,9 +332,12 @@ namespace WINAPIPP {
 			return __ps;
 		}
 
+		PaintDC(PaintDC&) = delete;
+		PaintDC& operator=(PaintDC&) = delete;
+
 		//TODO make this private
 	private:
-		PaintDC(PaintDC&);
+	//	PaintDC(PaintDC&);
 
 		PAINTSTRUCT __ps;
 	};
