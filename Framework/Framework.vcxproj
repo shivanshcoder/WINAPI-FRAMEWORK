@@ -151,6 +151,7 @@
     <ClInclude Include="Header\WINAPIPP.h" />
     <ClInclude Include="Header\WinProc.hpp" />
     <ClInclude Include="Header\Wrappers.hpp" />
+    <ClInclude Include="Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
