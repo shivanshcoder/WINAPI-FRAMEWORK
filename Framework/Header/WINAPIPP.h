@@ -8,17 +8,37 @@
 
 //------------------Entry Point-------------------------
 
+namespace WINAPIPP {
+
+	void InitFramework(HINSTANCE Instance, int CmdShow) {
+		__ProgramInstance = Instance;
+		__ProgramCmdShow = CmdShow;
+
+		///TODO throw if Framework could not be initialzed 
+		/*if (0) {
+			throw std::exception("FrameWork could not be Initialized!!!");
+		}*/
+	}
+
+}
+
+
 #ifdef AUTO_ENTRY
 
 extern WINAPIPP::CustomApplication* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	WINAPIPP::__ProgramInstance = Instance;
-	WINAPIPP::__ProgramCmdShow = CmdShow;
+	WINAPIPP::InitFramework(Instance, CmdShow);
 
-	auto App = EntryApplication();
-	App->start();
-	delete App;
+	try {
+		auto App = EntryApplication();
+		App->start();
+		delete App;
+	}
+	catch (std::exception &e) {
+		auto t = e.what();
+		MessageBoxA(NULL, e.what(), "ERROR", MB_ICONERROR);
+	}
 }
 #define ENTRY_APP(APP)  WINAPIPP::CustomApplication* EntryApplication() { return new APP(); }
 //#else

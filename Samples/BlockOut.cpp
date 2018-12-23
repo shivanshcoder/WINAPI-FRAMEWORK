@@ -5,11 +5,11 @@
 
 class HelloWin : public WINAPIPP::CustomApplication {
 	CLASS_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, NULL)
-	DECLARE_MESSAGE_MAP();
+		DECLARE_MESSAGE_MAP();
 public:
 
 	HelloWin() {
-		CreateWin(std::wstring(), WS_OVERLAPPEDWINDOW, Helpers::Rect(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
+		CreateWin(std::wstring(), WS_OVERLAPPEDWINDOW, Helpers::CPPRectangle(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
 	}
 
 	WPARAM start() { return Run(); }
@@ -58,7 +58,7 @@ public:
 			fBlocking = false;
 			fValidBox = true;
 
-			::InvalidateRect(*this, NULL, true);
+			InvalidateRect(*this, NULL, true);
 		}
 		return 0;
 	}

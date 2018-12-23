@@ -44,21 +44,21 @@ namespace Helpers {
 	typedef Point Pair;
 	
 
-	class CPPRectangle {
+	class Rect {
 
 	public:
-		CPPRectangle() {
+		Rect() {
 			SetRectEmpty(&rect);
 		}
 
-		CPPRectangle(int xLeft, int yTop, int xRight, int yBottom) {
+		Rect(int xLeft, int yTop, int xRight, int yBottom) {
 			SetRect(&rect, xLeft, yTop, xRight, yBottom);
 		}
 
 
-		static CPPRectangle Random(
+		static Rect Random(
 			unsigned long long xlimit , unsigned long long ylimit) {
-			return CPPRectangle(
+			return Rect(
 				rand() % xlimit,rand() % ylimit,
 				rand() % xlimit,rand() % ylimit
 			);
@@ -74,14 +74,14 @@ namespace Helpers {
 			InflateRect(&rect, dx, dy);
 		}
 
-		CPPRectangle Intersection(CPPRectangle otherRect) const {
-			CPPRectangle temp;
+		Rect Intersection(Rect otherRect) const {
+			Rect temp;
 			IntersectRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}
 
-		CPPRectangle Union(CPPRectangle otherRect) const {
-			CPPRectangle temp;
+		Rect Union(Rect otherRect) const {
+			Rect temp;
 			UnionRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}
@@ -94,6 +94,13 @@ namespace Helpers {
 			return PtInRect(&rect, p.pt);
 		}
 
+		LONG xLength() {
+			return right - left;
+		}
+
+		LONG yLength() {
+			return bottom - top;
+		}
 
 			/*---------------Wrappers-------------------*/
 

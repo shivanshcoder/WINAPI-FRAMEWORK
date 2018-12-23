@@ -31,8 +31,3 @@ struct Params {
 
 
 #pragma endregion
-
-void fn() {
-	Params t;
-	auto tt = UNPACK_PARAMS(t, WM_CREATE);
-}
