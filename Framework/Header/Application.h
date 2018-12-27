@@ -1,7 +1,8 @@
 #pragma once
 #include"GDI.hpp"
-#include"CustomWinClass.h"
-
+#include"BaseWin.hpp"
+#include"Messages.h"
+#include"Input.h"
 
 
 namespace WINAPIPP {

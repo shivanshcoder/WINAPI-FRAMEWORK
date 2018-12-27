@@ -35,9 +35,8 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 		App->start();
 		delete App;
 	}
-	catch (std::exception &e) {
-		auto t = e.what();
-		MessageBoxA(NULL, e.what(), "ERROR", MB_ICONERROR);
+	catch (WINAPIPP::Exceptions &e) {
+		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
 #define ENTRY_APP(APP)  WINAPIPP::CustomApplication* EntryApplication() { return new APP(); }

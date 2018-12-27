@@ -2,10 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Framework",
+    "\\Framework\\Header",
     "\\Framework\\x64",
     "\\Samples",
     "\\x64"
   ],
-  "SelectedNode": "\\Samples\\BlockOut.cpp",
+  "SelectedNode": "\\Framework\\Header\\Input.h",
   "PreviewInSolutionExplorer": false
 }

@@ -15,6 +15,21 @@ return DefWindowProc(hwnd, message, wParam, lParam); }
 
 #define MESSAGE_MAP_ENTRY_SINGLE(STATEMENT, RETURN_VAL, MESSAGE_VAL) case MESSAGE_VAL: STATEMENT; return RETURN_VAL;
 
+#define MESSAGE_MAP_KEYBOARD(KEYBOARD) \
+		case WM_ACTIVATE	:\
+		case WM_APPCOMMAND	:\
+		case WM_CHAR		:\
+		case WM_DEADCHAR	:\
+		case WM_HOTKEY		:\
+		case WM_KEYDOWN		:\
+		case WM_KEYUP		:\
+		case WM_KILLFOCUS	:\
+		case WM_SETFOCUS	:\
+		case WM_SYSDEADCHAR	:\
+		case WM_SYSKEYDOWN	:\
+		case WM_SYSKEYUP	:\
+		case WM_UNICHAR		: return KEYBOARD.Process(message, wParam,lParam);
+
 struct Params {
 	WPARAM wParam;
 	LPARAM lParam;

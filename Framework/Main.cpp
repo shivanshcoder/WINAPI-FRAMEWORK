@@ -12,7 +12,7 @@ public:
 		CreateWin(std::wstring(), WS_CHILDWINDOW | WS_VISIBLE, Helpers::Rect(0, 0, 0, 0), &Parent, (HMENU)index);
 	}
 
-	CLASS_ALL_PROPERTIES(ChildWindows, CS_HREDRAW | CS_VREDRAW, NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
+	CLASS_ALL_PROPERTIES(ChildWindows, CS_HREDRAW | CS_VREDRAW, NULL,NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 		DECLARE_MESSAGE_MAP();
 
 	int KeyDown(WPARAM wParam, LPARAM lParam) {
@@ -83,20 +83,29 @@ class HelloWin : public WINAPIPP::CustomApplication {
 	std::vector<std::vector<std::unique_ptr<ChildWindows> > > Children;
 	int cxBlock, cyBlock;
 
+	//WINAPIPP::Keyboard<HelloWin>keyInterface;
 public:
-	CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
+	CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION),NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 
 		DECLARE_MESSAGE_MAP();
 
-	HelloWin() {
+	HelloWin() 
+	{
 		CreateWin(std::wstring(), WS_OVERLAPPEDWINDOW, Helpers::Rect(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
 		Children.resize(5);
 		for (int x = 0; x < DIV; ++x)
 			for (int y = 0; y < DIV; ++y)
 				Children[x].push_back(std::make_unique<ChildWindows>(*this, (y << 8 | x)));
+		InitKeys();
 	}
 
-	WPARAM start() { return Run(); }
+
+	WPARAM start() {
+		//auto t = &HelloWin::start;
+		//std::function<int(HelloWin)
+		//auto t = std::mem_fn(HelloWin::start);
+		
+		return Run(); }
 
 	int OnSize(WPARAM wParam, LPARAM lParam) {
 
@@ -110,9 +119,17 @@ public:
 		}
 		return 0;
 	}
+
 	int OnMouseDown(WPARAM wParam, LPARAM lParam) {
 		MessageBeep(0);
 		return 0;
+	}
+
+	int  t() { return 0; }
+	void InitKeys() {
+		//keyInterface.AttachKey(VK_UP, [&]()->int { return 1; });
+
+		std::function<int(HelloWin &)>tmep = &HelloWin::t;
 	}
 	int KeyDown(WPARAM wParam, LPARAM lParam) {
 		int x = idFocus & 0xff;
@@ -136,7 +153,6 @@ public:
 		SetFocus(GetDlgItem(*this, idFocus));
 		return 0;
 	}
-
 };
 
 MESSAGE_MAP_BEGIN(HelloWin)

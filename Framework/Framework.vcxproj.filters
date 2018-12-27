@@ -42,13 +42,10 @@
     <ClInclude Include="Header\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\CustomWinClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="Header\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

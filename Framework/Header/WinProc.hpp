@@ -1,7 +1,11 @@
 #pragma once
-#include<Windows.h>
+/*
+	Code Seems complete as of 27-12-2018
+	No need of change!!
+*/
 
-inline void CheckError();
+#include"Core.h"
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /*                                 This Code doesn't belong to me                                 */
@@ -93,7 +97,8 @@ bool winThunk::Init(void* Instance_to_attach, DWORD_PTR Function_to_suppply) {
 		return true;
 	else
 		//Fail
-		return false;
+		throw WINAPIPP::WinExceptions();
+	return false;
 }
 
 WNDPROC winThunk::GetThunkAddress() {
@@ -126,15 +131,13 @@ bool winThunk::Init(void *pThis, DWORD_PTR proc) {
 	ProcImm = (unsigned long long)proc;
 	RaxJmp = 0xe0ff;                     //jmp rax (FF EO)
 	if (!FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
-	{ //error
-		CheckError();
-		__debugbreak();
-		return FALSE;
+	{
+		throw WINAPIPP::WinExceptions();
+		return false;
 	}
-	else
-	{//succeeded
-		return TRUE;
-	}
+	//succeeded
+	return true;
+
 }
 
 WNDPROC winThunk::GetThunkAddress() {
@@ -166,17 +169,6 @@ HANDLE winThunk::eHeapAddr = NULL;
 
 
 
-//Function to place breakpoint in case of error
-inline void CheckError() {
-	char buf[256];
-	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		buf, sizeof(buf), NULL);
-	if (strcmp(buf, "The operation completed successfully.\r\n")) {
-		__debugbreak();
-	}
-	return;
-}
 
 namespace WINAPIPP {
 
@@ -204,7 +196,9 @@ namespace WINAPIPP {
 		WNDPROC Procedure() {
 			return thunk->GetThunkAddress();
 		}
-		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+			return DefWindowProc(hwnd, message, wParam, lParam);
+		}
 	private:
 		winThunk * thunk;
 		static HANDLE eHeapAddr;
@@ -212,33 +206,34 @@ namespace WINAPIPP {
 
 #if defined(_M_IX86)
 		static LRESULT CALLBACK WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-			pThis->MessageFunc(hwnd, message, wParam, lParam);
-		}
 #elif defined(_M_AMD64)
-		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis);
+		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
 #endif
+			return pThis->MessageFunc(hwnd, message, wParam, lParam);
+		}
+
 	};
 
 	BaseWinProc::BaseWinProc() {
 		++objInstances;
 		if (!eHeapAddr) {
-			try {
-				eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
-			}
-			catch (...) {
-				throw;
-			}
+			eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
+
+			if (!eHeapAddr)
+				throw WINAPIPP::WinExceptions();
 		}
 		try {
 			thunk = new(eHeapAddr)winThunk;
 		}
 		catch (...) {
-			throw;
+			throw WINAPIPP::Exceptions(L"Thunk could not be allocated");
 		}
+
 		thunk->Init(this, (DWORD_PTR)WndProc);
 	}
 	BaseWinProc::~BaseWinProc() {
 		if (objInstances == 1) {
+			//TOOD Check for Error or not?
 			HeapDestroy(eHeapAddr);
 			eHeapAddr = NULL;
 			objInstances = 0;
@@ -247,19 +242,6 @@ namespace WINAPIPP {
 			objInstances--;
 			delete thunk;
 		}
-	}
-
-	LRESULT BaseWinProc::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		return DefWindowProc(hwnd, message, wParam, lParam);
-	}
-
-#if defined(_M_IX86)
-	LRESULT CALLBACK BaseWinProc::WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-#elif defined(_M_AMD64)
-	LRESULT CALLBACK BaseWinProc::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
-#endif
-		
-		return pThis->MessageFunc(hwnd, message, wParam, lParam);
 	}
 
 	HANDLE BaseWinProc::eHeapAddr = nullptr;
