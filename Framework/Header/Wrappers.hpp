@@ -1,7 +1,7 @@
 #pragma once
 #include"BaseWin.hpp"
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 
 	//TODO make ScrollWIndowClass

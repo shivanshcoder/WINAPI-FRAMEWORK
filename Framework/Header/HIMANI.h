@@ -1,6 +1,7 @@
 #pragma once
 
 //To be included by user for using framework
+#include"PredefinedWin.h"
 #include"Application.h"
 
 
@@ -8,7 +9,7 @@
 
 //------------------Entry Point-------------------------
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 	void InitFramework(HINSTANCE Instance, int CmdShow) {
 		__ProgramInstance = Instance;
@@ -25,21 +26,21 @@ namespace WINAPIPP {
 
 #ifdef AUTO_ENTRY
 
-extern WINAPIPP::CustomApplication* EntryApplication();
+extern HIMANI::CustomApplication* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	WINAPIPP::InitFramework(Instance, CmdShow);
+	HIMANI::InitFramework(Instance, CmdShow);
 
 	try {
 		auto App = EntryApplication();
 		App->start();
 		delete App;
 	}
-	catch (WINAPIPP::Exceptions &e) {
+	catch (HIMANI::Exceptions &e) {
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
-#define ENTRY_APP(APP)  WINAPIPP::CustomApplication* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  HIMANI::CustomApplication* EntryApplication() { return new APP(); }
 
 #endif
 

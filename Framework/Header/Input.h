@@ -4,7 +4,7 @@
 #include<functional>
 #include<queue>
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 	template<class T>
 	class Keyboard {

@@ -2,7 +2,7 @@
 #include"Helpers.h"
 #include"WinProc.hpp"
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
@@ -83,7 +83,7 @@ namespace WINAPIPP {
 //Defines WNDCLASS properties for each UserDefined Class
 #define CLASS_ALL_PROPERTIES(ClassName__, Style, Icon, IconSm, Cursor, Background, MenuName)	DEFINE_CLASSNAME(ClassName__)	\
  bool __ClassProp() override {		\
-		static bool __ValidClass = WINAPIPP::RegisterWinClass(Style, WINAPIPP::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
+		static bool __ValidClass = HIMANI::RegisterWinClass(Style, HIMANI::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
 		return __ValidClass;\
 }
 
@@ -178,34 +178,7 @@ namespace WINAPIPP {
 		BaseWin wndParent;
 	};
 
-	class StaticWindow :public PredefinedWindow {
-	public:
-		OVERRIDE_PREDEFINEDCLASS(static)
+	
 
-			StaticWindow(const std::wstring &Tittle, int Style, Helpers::Rect Size, const BaseWin &_Parent = BaseWin()) :PredefinedWindow(_Parent) {
-			CreateWin(Tittle, Style, Size, NULL);
-		}
-
-		StaticWindow(const StaticWindow&) = delete;
-		StaticWindow& operator=(const StaticWindow&) = delete;
-
-	};
-
-	template<class T, int Size>
-	class WinArray {
-	public:
-		/*WinArray(const std::wstring &Tittle, int Style, Helpers::Rect rect, const WINAPIPP::BaseWin &Parent) {
-			for (int i = 0; i < Size; ++i) {
-				Windows[i] = std::make_unique<T>(Tittle, Style, rect, Parent);
-			}
-		}*/
-		template<class... _Types>
-		WinArray(_Types&&... _Args) {
-			for (int i = 0; i < Size; ++i)
-				Windows[i] = std::make_unique<T>(std::forward<T>(_Args));
-
-		}
-	public:
-		std::unique_ptr<T>Windows[Size];
-	};
+	
 }

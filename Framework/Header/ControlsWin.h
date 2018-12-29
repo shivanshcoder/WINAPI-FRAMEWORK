@@ -2,7 +2,7 @@
 #include"BaseWin.hpp"
 
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 	class Controls :public PredefinedWindow {
 	public:

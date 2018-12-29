@@ -1,7 +1,7 @@
 #define AUTO_ENTRY
-#include"WINAPIPP.h"
+#include"HIMANI.h"
 
-class Graph :public WINAPIPP::CustomApplication {
+class Graph :public HIMANI::CustomApplication {
 	CLASS_PROPERTIES(Graph, CS_VREDRAW | CS_HREDRAW, NULL)
 		DECLARE_MESSAGE_MAP();
 
@@ -54,11 +54,11 @@ MESSAGE_MAP_ENTRY_PARAMS(MouseMove, WM_MOUSEMOVE)
 MESSAGE_MAP_ENTRY_PARAMS(MouseUp, WM_LBUTTONUP)
 MESSAGE_MAP_ENTRY(Paint, WM_PAINT)
 MESSAGE_MAP_ENTRY_SINGLE(PostQuitMessage(0), 0, WM_DESTROY)
-MESSAGE_MAP_END(WINAPIPP::CustomApplication)
+MESSAGE_MAP_END(HIMANI::CustomApplication)
 
 
 int Graph::Paint() {
-	WINAPIPP::PaintDC dc(*this);
+	HIMANI::PaintDC dc(*this);
 	Helpers::Rect rect = GetClientRect();
 	int xSteps = rect.xLength() / 10;
 	int ySteps = rect.yLength() / 10;

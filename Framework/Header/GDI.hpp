@@ -4,7 +4,7 @@
 #include<memory>
 #include<chrono>
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 	enum GDIObjectType {
 		pen,

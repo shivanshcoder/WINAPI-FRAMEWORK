@@ -171,7 +171,7 @@ HANDLE winThunk::eHeapAddr = NULL;
 
 
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 
 	//The Default Callback Windows Procedure for every window
@@ -227,7 +227,7 @@ namespace WINAPIPP {
 			thunk = new(eHeapAddr)winThunk;
 		}
 		catch (...) {
-			throw WINAPIPP::Exceptions(L"Thunk could not be allocated");
+			throw HIMANI::Exceptions(L"Thunk could not be allocated");
 		}
 
 		thunk->Init(this, (DWORD_PTR)WndProc);

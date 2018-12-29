@@ -149,8 +149,9 @@
     <ClInclude Include="Header\Helpers.h" />
     <ClInclude Include="Header\Input.h" />
     <ClInclude Include="Header\Messages.h" />
+    <ClInclude Include="Header\PredefinedWin.h" />
     <ClInclude Include="Header\SysMets.h" />
-    <ClInclude Include="Header\WINAPIPP.h" />
+    <ClInclude Include="Header\HIMANI.h" />
     <ClInclude Include="Header\WinProc.hpp" />
     <ClInclude Include="Header\Wrappers.hpp" />
   </ItemGroup>

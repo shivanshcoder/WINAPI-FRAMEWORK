@@ -123,7 +123,24 @@ namespace Helpers {
 		};
 	};
 
+	template<class T, int Size>
+	class WinArray {
+	public:
 
+		template<class... _Types>
+		WinArray(_Types&&... _Args) {
+			for (int i = 0; i < Size; ++i)
+				Windows[i] = std::make_unique<T>((_Args)...);
+
+		}
+
+		T& operator[](unsigned int index)const {
+			return *Windows[index];
+		}
+
+	public:
+		std::unique_ptr<T>Windows[Size];
+	};
 
 }
 

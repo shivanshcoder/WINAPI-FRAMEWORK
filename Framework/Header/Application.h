@@ -5,7 +5,7 @@
 #include"Input.h"
 
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 	class CustomApplication :public Window {
 
@@ -15,7 +15,7 @@ namespace WINAPIPP {
 
 		WPARAM Run() {
 
-			ShowWindow(*this, WINAPIPP::CmdShow());
+			ShowWindow(*this, HIMANI::CmdShow());
 			UpdateWindow(*this);
 
 			return MessageProcess();

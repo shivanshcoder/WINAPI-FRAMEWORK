@@ -33,9 +33,6 @@
     <ClInclude Include="Header\SysMets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\WINAPIPP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -49,6 +46,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\ControlsWin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\HIMANI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PredefinedWin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

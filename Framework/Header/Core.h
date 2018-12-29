@@ -3,7 +3,7 @@
 #include<string>	
 
 
-namespace WINAPIPP {
+namespace HIMANI{
 
 
 	HINSTANCE __ProgramInstance;
@@ -61,7 +61,7 @@ namespace WINAPIPP {
 #define S_(x) S(x)
 #define __S_LINE__ S_(__LINE__)
 
-#define CheckDefaultWinError	if (GetLastError())	throw WINAPIPP::WinExceptions(__LINE__,TEXT(__FILE__))
+#define CheckDefaultWinError	if (GetLastError())	throw HIMANI::WinExceptions(__LINE__,TEXT(__FILE__))
 
 	/*------------------------------------Error Handling------------------------------------*/
 
