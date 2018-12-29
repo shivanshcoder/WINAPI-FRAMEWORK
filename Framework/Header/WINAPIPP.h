@@ -40,16 +40,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 	}
 }
 #define ENTRY_APP(APP)  WINAPIPP::CustomApplication* EntryApplication() { return new APP(); }
-//#else
-//extern void MAIN();
-//
-//int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-//	WINAPIPP::__ProgramInstance = Instance;
-//	WINAPIPP::__ProgramCmdShow = CmdShow;
-//
-//	MAIN();
-//}
-//#define ENTRY_FUNC(func) void MAIN(){func();}
+
 #endif
 
 

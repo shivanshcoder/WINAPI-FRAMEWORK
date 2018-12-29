@@ -1,5 +1,7 @@
 #pragma once
 #include<Windows.h>
+#include<memory>
+#include<string>
 #include<vector>
 
 namespace Helpers {
@@ -12,8 +14,7 @@ namespace Helpers {
 		MainWindow,
 		Static
 	};*/
-
-
+	
 
 	class Point {
 	public:
@@ -123,6 +124,6 @@ namespace Helpers {
 	};
 
 
-	
+
 }
 

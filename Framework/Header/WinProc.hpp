@@ -97,7 +97,7 @@ bool winThunk::Init(void* Instance_to_attach, DWORD_PTR Function_to_suppply) {
 		return true;
 	else
 		//Fail
-		throw WINAPIPP::WinExceptions();
+		CheckDefaultWinError;
 	return false;
 }
 
@@ -130,13 +130,14 @@ bool winThunk::Init(void *pThis, DWORD_PTR proc) {
 	Rax2Mov = 0xb848;                    //movabs rax (48 B8), proc
 	ProcImm = (unsigned long long)proc;
 	RaxJmp = 0xe0ff;                     //jmp rax (FF EO)
-	if (!FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
-	{
-		throw WINAPIPP::WinExceptions();
-		return false;
-	}
-	//succeeded
-	return true;
+	//write block from data cache and flush from instruction cache
+	if (FlushInstructionCache(GetCurrentProcess(), this, sizeof(winThunk)))
+		//Success
+		return true;
+	else
+		//Fail
+		CheckDefaultWinError;
+	return false;
 
 }
 
@@ -175,7 +176,7 @@ namespace WINAPIPP {
 
 	//The Default Callback Windows Procedure for every window
 	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		if (message == WM_NCCREATE) {
+		if (message == WM_CREATE) {
 
 			//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
 			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
@@ -220,7 +221,7 @@ namespace WINAPIPP {
 			eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
 
 			if (!eHeapAddr)
-				throw WINAPIPP::WinExceptions();
+				CheckDefaultWinError;
 		}
 		try {
 			thunk = new(eHeapAddr)winThunk;

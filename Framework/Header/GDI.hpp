@@ -12,10 +12,7 @@ namespace WINAPIPP {
 		base
 	};
 
-
-
 	//	BaseObject class for auto deletion of object
-
 	class BaseObject {
 		friend class GDIObject;
 
@@ -24,7 +21,6 @@ namespace WINAPIPP {
 			if (Object)
 				DeleteObject(Object);
 		}
-
 
 		BaseObject(HGDIOBJ Obj) {
 			Object = Obj;
@@ -41,20 +37,23 @@ namespace WINAPIPP {
 		HGDIOBJ Object;
 	};
 
-	//TODO: Same GDIObject can be selected for multiple DC, need to verify if that is okay
-	//It is okay to have same logical pen for different DCs
 	//Wrapper for hiding std::shared_ptr and base class for GDIObjects
 	class GDIObject {
 		friend class DC;
 		friend class SafeDC;
 
 	protected:
+
 		//For Getting underlying Handle
 		HGDIOBJ RetrieveObject() const {
 			return Object->Object;
 		}
 
+		//Should not be inititialzed with NULL
 		void Init(HGDIOBJ Obj) {
+			if (!Obj)
+				throw Exceptions(__LINE__, TEXT(__FILE__), TEXT("Object Initialized with NULL"));
+
 			Object = std::make_shared<BaseObject>(Obj);
 		}
 
@@ -211,8 +210,6 @@ namespace WINAPIPP {
 			::RestoreDC(hdc, -1);
 		}
 
-
-
 		void TextOut(Helpers::Point point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
@@ -275,20 +272,14 @@ namespace WINAPIPP {
 
 		//For attaching the object which already has a scope from calling place
 		void Attach(GDIObject &Object)override {
-			//TODO better checking
-			//Strange
-			if (Object.Type() == base)
-				__debugbreak();
+
 			Objects[Object.Type()] = Object;
 			SelectObject(hdc, (Object.RetrieveObject()));
 		}
 
 		//For on the go constructor type Object
 		void Attach(const GDIObject &Object) {
-			//TODO better checking
-			//Strange
-			if (Object.Type() == base)
-				__debugbreak();
+
 			Objects[Object.Type()] = GDIObject(Object);
 			SelectObject(hdc, Objects[Object.Type()].RetrieveObject());
 		}
@@ -308,7 +299,7 @@ namespace WINAPIPP {
 		QuickDC& operator=(QuickDC&) = delete;
 
 	private:
-//		QuickDC(QuickDC&);
+		//		QuickDC(QuickDC&);
 	};
 
 	//Should be made in WM_PAINT message only
@@ -316,7 +307,7 @@ namespace WINAPIPP {
 	public:
 		PaintDC(HWND _hwnd) :SafeDC(_hwnd) {
 			hwnd = _hwnd;
-			hdc = BeginPaint(hwnd, &__ps);
+			hdc = BeginPaint(hwnd, &ps);
 		}
 
 		operator HDC() {
@@ -325,28 +316,15 @@ namespace WINAPIPP {
 
 		~PaintDC() {
 			if (hwnd) {
-				EndPaint(hwnd, &__ps);
+				EndPaint(hwnd, &ps);
 			}
-		}
-		PAINTSTRUCT ps() const {
-			return __ps;
 		}
 
 		PaintDC(PaintDC&) = delete;
 		PaintDC& operator=(PaintDC&) = delete;
 
-		//TODO make this private
-	private:
-	//	PaintDC(PaintDC&);
-
-		PAINTSTRUCT __ps;
+		PAINTSTRUCT ps;
 	};
 
 
-	//TODO Implement DrawText with this class
-	class TextCursor {
-
-
-
-	};
 }

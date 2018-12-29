@@ -28,9 +28,10 @@ namespace WINAPIPP {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 					if (msg.message == WM_QUIT)
 						break;
-
+					
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
+					
 				}
 				else {
 					Idle();
@@ -39,6 +40,15 @@ namespace WINAPIPP {
 
 			return msg.wParam;
 		}
+
+		//void ProcessSpecialMessages(MSG msg) {
+		//	switch (msg.message) {
+		//	
+		//		//case 
+
+		//	}
+		//}
+
 		//Can be overriden Called after Window creation
 		virtual WPARAM start() {
 			return Run();
@@ -55,7 +65,8 @@ namespace WINAPIPP {
 		Application(const std::wstring &Tittle, DWORD style,
 			Helpers::Rect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
 			//NOTE Because Application can't have parent maybe??
-			CreateWin(Tittle, style, size, nullptr);
+			CreateWin(Tittle, style, size);
+			
 		}
 			
 		
@@ -77,13 +88,12 @@ namespace WINAPIPP {
 	};
 
 	MESSAGE_MAP_BEGIN(Application)
-		case WM_CREATE: Init(hwnd); return 0;
 		//MESSAGE_MAP_ENTRY(OnCreate, WM_CREATE)
 		//MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
 		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
-		MESSAGE_MAP_END()
+		MESSAGE_MAP_END(CustomApplication)
 
 }
 

@@ -89,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/W4 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="Header\Application.h" />
     <ClInclude Include="Header\BaseWin.hpp" />
+    <ClInclude Include="Header\ControlsWin.h" />
     <ClInclude Include="Header\Core.h" />
     <ClInclude Include="Header\GDI.hpp" />
     <ClInclude Include="Header\Helpers.h" />
