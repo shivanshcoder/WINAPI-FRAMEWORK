@@ -97,8 +97,7 @@ bool winThunk::Init(void* Instance_to_attach, DWORD_PTR Function_to_suppply) {
 		return true;
 	else
 		//Fail
-		CheckDefaultWinError;
-	return false;
+		return false;
 }
 
 WNDPROC winThunk::GetThunkAddress() {
@@ -136,8 +135,7 @@ bool winThunk::Init(void *pThis, DWORD_PTR proc) {
 		return true;
 	else
 		//Fail
-		CheckDefaultWinError;
-	return false;
+		return false;
 
 }
 
@@ -185,12 +183,12 @@ namespace HIMANI{
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
-#pragma region BaseWinProc
+#pragma region HBaseWinProc
 
-	class BaseWinProc {
+	class HBaseWinProc {
 	public:
-		BaseWinProc();
-		~BaseWinProc();
+		HBaseWinProc();
+		~HBaseWinProc();
 
 	protected:
 		//Returns the windows Procedure specific to our class Object
@@ -206,16 +204,16 @@ namespace HIMANI{
 		static int objInstances;
 
 #if defined(_M_IX86)
-		static LRESULT CALLBACK WndProc(BaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		static LRESULT CALLBACK WndProc(HBaseWinProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 #elif defined(_M_AMD64)
-		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, BaseWinProc* pThis) {
+		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HBaseWinProc* pThis) {
 #endif
 			return pThis->MessageFunc(hwnd, message, wParam, lParam);
 		}
 
 	};
 
-	BaseWinProc::BaseWinProc() {
+	HBaseWinProc::HBaseWinProc() {
 		++objInstances;
 		if (!eHeapAddr) {
 			eHeapAddr = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_GENERATE_EXCEPTIONS, 0, 0);
@@ -230,9 +228,10 @@ namespace HIMANI{
 			throw HIMANI::Exceptions(L"Thunk could not be allocated");
 		}
 
-		thunk->Init(this, (DWORD_PTR)WndProc);
+		if (!thunk->Init(this, (DWORD_PTR)WndProc))
+			CheckDefaultWinError;
 	}
-	BaseWinProc::~BaseWinProc() {
+	HBaseWinProc::~HBaseWinProc() {
 		if (objInstances == 1) {
 			//TOOD Check for Error or not?
 			HeapDestroy(eHeapAddr);
@@ -245,8 +244,8 @@ namespace HIMANI{
 		}
 	}
 
-	HANDLE BaseWinProc::eHeapAddr = nullptr;
-	int BaseWinProc::objInstances = 0;
+	HANDLE HBaseWinProc::eHeapAddr = nullptr;
+	int HBaseWinProc::objInstances = 0;
 
 
 #pragma endregion

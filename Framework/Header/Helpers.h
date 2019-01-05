@@ -16,12 +16,12 @@ namespace Helpers {
 	};*/
 	
 
-	class Point {
+	class HPoint {
 	public:
-		Point()
+		HPoint()
 			:x(0), y(0) {}
 
-		Point(int _x, int _y)
+		HPoint(int _x, int _y)
 			:x(_x), y(_y) {}
 
 	//TOOO maybe make private??
@@ -42,24 +42,27 @@ namespace Helpers {
 		};
 	};
 
-	typedef Point Pair;
+	typedef HPoint Pair;
 	
 
-	class Rect {
+	class HRect {
 
 	public:
-		Rect() {
+		HRect() {
 			SetRectEmpty(&rect);
 		}
 
-		Rect(int xLeft, int yTop, int xRight, int yBottom) {
+		HRect(int xLeft, int yTop, int xRight, int yBottom) {
 			SetRect(&rect, xLeft, yTop, xRight, yBottom);
 		}
 
+		HRect(int length, int width) {
+			SetRect(&rect, 0, 0, length, width);
+		}
 
-		static Rect Random(
+		static HRect Random(
 			unsigned long long xlimit , unsigned long long ylimit) {
-			return Rect(
+			return HRect(
 				rand() % xlimit,rand() % ylimit,
 				rand() % xlimit,rand() % ylimit
 			);
@@ -75,14 +78,14 @@ namespace Helpers {
 			InflateRect(&rect, dx, dy);
 		}
 
-		Rect Intersection(Rect otherRect) const {
-			Rect temp;
+		HRect Intersection(HRect otherRect) const {
+			HRect temp;
 			IntersectRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}
 
-		Rect Union(Rect otherRect) const {
-			Rect temp;
+		HRect Union(HRect otherRect) const {
+			HRect temp;
 			UnionRect(&temp.rect, &rect, &otherRect.rect);
 			return temp;
 		}
@@ -91,7 +94,7 @@ namespace Helpers {
 			IsRectEmpty(&rect);
 		}
 
-		bool PointIn(Point p) {
+		bool PointIn(HPoint p) {
 			return PtInRect(&rect, p.pt);
 		}
 
@@ -123,15 +126,19 @@ namespace Helpers {
 		};
 	};
 
-	template<class T, int Size>
-	class WinArray {
+	template<class T,unsigned int Size>
+	class HWinArray {
 	public:
 
 		template<class... _Types>
-		WinArray(_Types&&... _Args) {
+		HWinArray(_Types&&... _Args) {
 			for (int i = 0; i < Size; ++i)
 				Windows[i] = std::make_unique<T>((_Args)...);
 
+		}
+
+		unsigned int size() {
+			return Size;
 		}
 
 		T& operator[](unsigned int index)const {

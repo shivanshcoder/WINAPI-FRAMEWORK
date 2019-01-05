@@ -1,7 +1,7 @@
 #define AUTO_ENTRY
 #include"HIMANI.h"
 
-class Graph :public HIMANI::CustomApplication {
+class Graph :public HIMANI::HCustomApplication {
 	CLASS_PROPERTIES(Graph, CS_VREDRAW | CS_HREDRAW, NULL)
 		DECLARE_MESSAGE_MAP();
 
@@ -54,7 +54,7 @@ MESSAGE_MAP_ENTRY_PARAMS(MouseMove, WM_MOUSEMOVE)
 MESSAGE_MAP_ENTRY_PARAMS(MouseUp, WM_LBUTTONUP)
 MESSAGE_MAP_ENTRY(Paint, WM_PAINT)
 MESSAGE_MAP_ENTRY_SINGLE(PostQuitMessage(0), 0, WM_DESTROY)
-MESSAGE_MAP_END(HIMANI::CustomApplication)
+MESSAGE_MAP_END(HIMANI::HCustomApplication)
 
 
 int Graph::Paint() {

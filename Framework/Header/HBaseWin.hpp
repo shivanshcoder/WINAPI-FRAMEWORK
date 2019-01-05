@@ -23,16 +23,16 @@ namespace HIMANI{
 		return true;
 	}
 
-	class BaseWin {
-		friend class Window;
-		friend class PredefinedWindow;
-		friend class WrapperWin;
+	class HBaseWin {
+		friend class HWindow;
+		friend class HPredefinedWindow;
+		//friend class HWrapperWin;
 	public:
-		//Return Empty BaseWin as NULL
-		BaseWin() {
+		//Return Empty HBaseWin as NULL
+		HBaseWin() {
 			hwnd = NULL;
 		}
-		BaseWin(HWND _hwnd) {
+		HBaseWin(HWND _hwnd) {
 			hwnd = _hwnd;
 		}
 
@@ -40,36 +40,78 @@ namespace HIMANI{
 			return hwnd;
 		}
 
-		~BaseWin() {}
+		~HBaseWin() {}
+	protected:
+		//Checks if the handle to window is NULL or not
+		HWND Handle() {
+			if (!hwnd)
+				throw HIMANI::Exceptions(L"NULL Window Handle");
+		}
+	
 	private:
 		HWND hwnd;
 	};
 
 
-	class WrapperWin :public BaseWin {
+	class HWrapperWin :public HBaseWin {
 	public:
-		Helpers::Rect GetClientRect() {
-			Helpers::Rect rect;
-			if (!::GetClientRect(hwnd, &rect.rect)) {
-				throw std::exception("Rect error");
-			}
+
+		std::wstring GetWinText() {
+			int size = GetWindowTextLength(Handle());
+			std::wstring str;
+			str.resize(size);
+
+			GetWindowText(Handle(), &str[0], size);
+			return str;
+		}
+
+
+		Helpers::HRect GetClientRect() {
+			Helpers::HRect rect;
+			::GetClientRect(Handle(), &rect.rect);
+		
 			return rect;
 		}
 
-		Helpers::Rect GetWinRect() {
-			Helpers::Rect rect;
-			if (!::GetWindowRect(hwnd, &rect.rect)) {
-				throw std::exception("Rect error");
-			}
+		Helpers::HRect GetWinRect() {
+			Helpers::HRect rect;
+			::GetWindowRect(Handle(), &rect.rect);
 			return rect;
 		}
 
-		void InvalidateRect(Helpers::Rect rect, bool redraw) {
-			if (!::InvalidateRect(hwnd, &rect.rect, redraw))
-				throw std::exception("Error");
-
+		void InvalidateRect(Helpers::HRect rect, bool redraw) {
+			::InvalidateRect(Handle(), &rect.rect, redraw);
 		}
 
+		void MoveWindow(Helpers::HRect rect, bool Repaint) {
+			::MoveWindow(Handle(), rect.left, rect.top, rect.xLength(), rect.yLength(), Repaint);
+		}
+
+		void SetScrollInfo(LPSCROLLINFO Info, int nBar, bool Redraw) {
+			::SetScrollInfo(Handle(), nBar, Info, Redraw);
+		}
+		void GetScrollInfo(LPSCROLLINFO Info, int nBar) {
+			::GetScrollInfo(Handle(), nBar, Info);
+		}
+
+
+
+		void SetFocus() {
+			::SetFocus(Handle());
+		}
+
+		void Show(int CmdShow) {
+			::ShowWindow(Handle(), CmdShow);
+		}
+		bool IsVisible() {
+			return IsWindowVisible(Handle());
+		}
+		void Enable() {
+			::EnableWindow(Handle(), true);
+		}
+		void Disable() {
+			::EnableWindow(Handle(), false);
+		}
 
 	};
 
@@ -94,20 +136,20 @@ namespace HIMANI{
 #pragma endregion
 
 	/*
-	------------------------	Custom Window Classes ------------------------------
-	Derive from Window Class
+	------------------------	Custom HWindow Classes ------------------------------
+	Derive from HWindow Class
 	Define Class properties using MACRO CLASS_ALL_PROPERTIES or CLASS_PROPERTIES
 	*/
-	class Window :public WrapperWin, public BaseWinProc {
+	class HWindow :public HWrapperWin, public HBaseWinProc {
 
 	public:
-		Window(const BaseWin &_Parent = BaseWin()) {
+		HWindow(const HBaseWin &_Parent = HBaseWin()) {
 			wndParent = _Parent;
 		}
-		BaseWin Parent() { return wndParent; }
+		HBaseWin Parent() { return wndParent; }
 
-		Window(const Window&) = delete;
-		Window& operator=(const Window&) = delete;
+		HWindow(const HWindow&) = delete;
+		HWindow& operator=(const HWindow&) = delete;
 	protected:
 
 		//Will be overriden using macro CLASS_ALL_PROPERTIES or CLASS_PROPERTIES
@@ -116,58 +158,59 @@ namespace HIMANI{
 
 
 		//TODO make it void
-		HWND CreateWin(const std::wstring &Tittle, DWORD style, Helpers::Rect size, HMENU Menu = nullptr) {
+		HWND CreateWin(const std::wstring &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
 			bool ValidClass = __ClassProp();
 
 			if (!ValidClass)
-				throw std::exception("Class Not Registered");
+				throw HIMANI::Exceptions(L"Class Not Registered");
 
 			hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 				Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
-				Parent(), //Parent Window
+				wndParent.hwnd, //Parent HWindow
 				Menu, Instance(),
 				Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
 			);
 
 			if (!hwnd)
-				throw WinExceptions(__LINE__, TEXT(__FILE__) L"Window Creation Unsuccessful");
+				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
 			return hwnd;
 		}
 
 
-		BaseWin wndParent;
+		HBaseWin wndParent;
 	};
 
 	//Static predefined Windows Classes
-	class PredefinedWindow :public WrapperWin, public BaseWinProc {
+	class HPredefinedWindow :public HWrapperWin, public HBaseWinProc {
 	public:
-		PredefinedWindow(const BaseWin &_Parent = BaseWin()) {
+		HPredefinedWindow(const HBaseWin &_Parent = HBaseWin()) {
 			wndParent = _Parent;
 		}
 
-		PredefinedWindow(const PredefinedWindow&) = delete;
-		PredefinedWindow& operator=(const PredefinedWindow&) = delete;
+		HPredefinedWindow(const HPredefinedWindow&) = delete;
+		HPredefinedWindow& operator=(const HPredefinedWindow&) = delete;
 
 	protected:
-		BaseWin Parent() { return wndParent; }
+		HBaseWin Parent() { return wndParent; }
 
 		//Will be overriden using macro OVERRIDE_PREDEFINEDCLASS
 		virtual LPCWSTR ClassName() = 0;
 
-		void CreateWin(const std::wstring &Tittle, DWORD style, Helpers::Rect size, HMENU Menu = nullptr) {
+		void CreateWin(const std::wstring &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
 
 			hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 				Tittle.c_str(), style,
 				size.left, size.top, size.right, size.bottom,
-				Parent(), //Parent Window
+				Parent(), //Parent HWindow
 				Menu, Instance(), nullptr
 			);
-
+			if ((!hwnd))
+				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
 			OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
 
-			if ((!hwnd) || (!OldProc))
-				throw WinExceptions(__LINE__, TEXT(__FILE__) L"Window Creation Unsuccessful");
+			if ( !OldProc)
+				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Procedure swap Unsuccessful");
 
 		}
 
@@ -175,10 +218,7 @@ namespace HIMANI{
 			return OldProc(hwnd, message, wParam, lParam);
 		}
 		WNDPROC OldProc;
-		BaseWin wndParent;
+		HBaseWin wndParent;
 	};
 
-	
-
-	
 }

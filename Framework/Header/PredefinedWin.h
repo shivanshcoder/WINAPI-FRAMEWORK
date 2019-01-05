@@ -1,16 +1,17 @@
 #pragma once
-#include"BaseWin.hpp"
+#include"HBaseWin.hpp"
 namespace HIMANI {
-	class StaticWindow :public PredefinedWindow {
+	class HStaticWindow :public HPredefinedWindow {
 	public:
 		OVERRIDE_PREDEFINEDCLASS(static)
 
-			StaticWindow(const std::wstring &Tittle, int Style, const Helpers::Rect &Size, const BaseWin &_Parent = BaseWin()) :PredefinedWindow(_Parent) {
+			HStaticWindow(const std::wstring &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow(_Parent) {
 			CreateWin(Tittle, Style, Size, NULL);
 		}
 
-		StaticWindow(const StaticWindow&) = delete;
-		StaticWindow& operator=(const StaticWindow&) = delete;
+		HStaticWindow(const HStaticWindow&) = delete;
+		HStaticWindow& operator=(const HStaticWindow&) = delete;
 
 	};
+
 }

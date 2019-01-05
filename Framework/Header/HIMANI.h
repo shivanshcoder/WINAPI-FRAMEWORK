@@ -2,6 +2,7 @@
 
 //To be included by user for using framework
 #include"PredefinedWin.h"
+#include"ControlsWin.h"
 #include"Application.h"
 
 
@@ -26,7 +27,7 @@ namespace HIMANI{
 
 #ifdef AUTO_ENTRY
 
-extern HIMANI::CustomApplication* EntryApplication();
+extern HIMANI::HCustomApplication* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
 	HIMANI::InitFramework(Instance, CmdShow);
@@ -40,7 +41,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
-#define ENTRY_APP(APP)  HIMANI::CustomApplication* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  HIMANI::HCustomApplication* EntryApplication() { return new APP(); }
 
 #endif
 

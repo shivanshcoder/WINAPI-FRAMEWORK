@@ -142,7 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Header\Application.h" />
-    <ClInclude Include="Header\BaseWin.hpp" />
+    <ClInclude Include="Header\HBaseWin.hpp" />
     <ClInclude Include="Header\ControlsWin.h" />
     <ClInclude Include="Header\Core.h" />
     <ClInclude Include="Header\GDI.hpp" />
@@ -150,7 +150,6 @@
     <ClInclude Include="Header\Input.h" />
     <ClInclude Include="Header\Messages.h" />
     <ClInclude Include="Header\PredefinedWin.h" />
-    <ClInclude Include="Header\SysMets.h" />
     <ClInclude Include="Header\HIMANI.h" />
     <ClInclude Include="Header\WinProc.hpp" />
     <ClInclude Include="Header\Wrappers.hpp" />

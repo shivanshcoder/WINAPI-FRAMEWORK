@@ -1,5 +1,5 @@
 #pragma once
-#include"BaseWin.hpp"
+#include"HBaseWin.hpp"
 
 namespace HIMANI{
 
@@ -8,9 +8,9 @@ namespace HIMANI{
 
 
 	//TODO check this window with SB_CTL type
-	class ScrollBar {
+	class __ScrollBar {
 	public:
-		ScrollBar(short int ScrollBarType, BaseWin *Win)
+		__ScrollBar(short int ScrollBarType, HBaseWin *Win)
 			:Type(ScrollBarType) {
 			Info.cbSize = sizeof(Info);
 			Parent = Win;
@@ -125,7 +125,7 @@ namespace HIMANI{
 	private:
 		short int Type;
 		SCROLLINFO Info;
-		BaseWin *Parent;
+		HBaseWin *Parent;
 	};
 
 }

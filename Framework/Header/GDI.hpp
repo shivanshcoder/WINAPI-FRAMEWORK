@@ -1,6 +1,6 @@
 #pragma once
 #include"Helpers.h"
-#include"BaseWin.hpp"
+#include"HBaseWin.hpp"
 #include<memory>
 #include<chrono>
 
@@ -33,7 +33,7 @@ namespace HIMANI{
 	protected:
 		//NOTE Disabled CopyConstructor
 		BaseObject(BaseObject& t) = delete;
-
+		BaseObject& operator=(const BaseObject&) = delete;
 		HGDIOBJ Object;
 	};
 
@@ -62,6 +62,11 @@ namespace HIMANI{
 
 	private:
 		std::shared_ptr<BaseObject>Object;
+	};
+
+	class GDIStockObject {
+
+
 	};
 
 	class Pen :public GDIObject {
@@ -131,7 +136,7 @@ namespace HIMANI{
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1));
 		}
-		Region(bool Elliptical, Helpers::Rect rect) {
+		Region(bool Elliptical, Helpers::HRect rect) {
 			if (Elliptical) {
 				Init(CreateEllipticRgnIndirect(&rect.rect));
 			}
@@ -140,7 +145,7 @@ namespace HIMANI{
 			}
 		}
 
-		/*Region(Rect rect, Pair CornerEllipse) {
+		/*Region(HRect rect, Pair CornerEllipse) {
 			Init(CreateRoundRectRgn(
 				rect.left, rect.top,
 				rect.right, rect.bottom,
@@ -210,14 +215,14 @@ namespace HIMANI{
 			::RestoreDC(hdc, -1);
 		}
 
-		void TextOut(Helpers::Point point, std::wstring string) {
+		void TextOut(Helpers::HPoint point, std::wstring string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 
 
 
-		bool FillRect(Helpers::Rect Rect, Brush &Brush) {
-			return ::FillRect(hdc, &Rect.rect, static_cast<HBRUSH>(Brush));
+		bool FillRect(Helpers::HRect HRect, Brush &Brush) {
+			return ::FillRect(hdc, &HRect.rect, static_cast<HBRUSH>(Brush));
 		}
 
 		bool FrameRgn(Region &Reg, Brush &brush, int width, int height) {

@@ -1,16 +1,16 @@
 #pragma once
 #include"GDI.hpp"
-#include"BaseWin.hpp"
+#include"HBaseWin.hpp"
 #include"Messages.h"
 #include"Input.h"
 
 
 namespace HIMANI{
 
-	class CustomApplication :public Window {
+	class HCustomApplication :public HWindow {
 
 	public:
-		CustomApplication() = default;
+		HCustomApplication() = default;
 		
 
 		WPARAM Run() {
@@ -49,28 +49,28 @@ namespace HIMANI{
 		//	}
 		//}
 
-		//Can be overriden Called after Window creation
+		//Can be overriden Called after HWindow creation
 		virtual WPARAM start() {
 			return Run();
 		}
 		virtual void Idle() {}
 
-		virtual ~CustomApplication() {} //= 0;
+		virtual ~HCustomApplication() {} //= 0;
 	};
 
-	class Application : public CustomApplication {
+	class HApplication : public HCustomApplication {
 
 	public:
-		//using CustomApplication::CustomApplication;
-		Application(const std::wstring &Tittle, DWORD style,
-			Helpers::Rect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
-			//NOTE Because Application can't have parent maybe??
+		//using HCustomApplication::HCustomApplication;
+		HApplication(const std::wstring &Tittle, DWORD style,
+			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			//NOTE Because HApplication can't have parent maybe??
 			CreateWin(Tittle, style, size);
 			
 		}
 			
 		
-		CLASS_PROPERTIES(Application, CS_HREDRAW | CS_VREDRAW, NULL)
+		CLASS_PROPERTIES(HApplication, CS_HREDRAW | CS_VREDRAW, NULL)
 
 		virtual WPARAM start()override { return Run(); }
 			
@@ -87,13 +87,13 @@ namespace HIMANI{
 
 	};
 
-	MESSAGE_MAP_BEGIN(Application)
+	MESSAGE_MAP_BEGIN(HApplication)
 		//MESSAGE_MAP_ENTRY(OnCreate, WM_CREATE)
 		//MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
 		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
-		MESSAGE_MAP_END(CustomApplication)
+		MESSAGE_MAP_END(HCustomApplication)
 
 }
 
