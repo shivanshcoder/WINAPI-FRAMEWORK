@@ -1,4 +1,5 @@
 #pragma once
+#include"Hpch.h"
 #include"Helpers.h"
 #include"WinProc.hpp"
 
@@ -28,24 +29,26 @@ namespace HIMANI{
 		friend class HPredefinedWindow;
 		//friend class HWrapperWin;
 	public:
-		//Return Empty HBaseWin as NULL
+		//Return Empty HBaseWin as nullptr
 		HBaseWin() {
-			hwnd = NULL;
+			hwnd = nullptr;
 		}
 		HBaseWin(HWND _hwnd) {
 			hwnd = _hwnd;
 		}
 
+		//Doesn't check if the handle is nullptr or not
 		operator HWND()const {
 			return hwnd;
 		}
 
 		~HBaseWin() {}
 	protected:
-		//Checks if the handle to window is NULL or not
+		//Checks if the handle to window is nullptr or not
 		HWND Handle() {
 			if (!hwnd)
-				throw HIMANI::Exceptions(L"NULL Window Handle");
+				throw HIMANI::Exceptions(L"nullptr Window Handle");
+			return hwnd;
 		}
 	
 	private:
@@ -63,6 +66,10 @@ namespace HIMANI{
 
 			GetWindowText(Handle(), &str[0], size);
 			return str;
+		}
+
+		void SetWinText(const std::wstring& Text) {
+			SetWindowText(Handle(), Text.c_str());
 		}
 
 
@@ -84,7 +91,7 @@ namespace HIMANI{
 		}
 
 		void MoveWindow(Helpers::HRect rect, bool Repaint) {
-			::MoveWindow(Handle(), rect.left, rect.top, rect.xLength(), rect.yLength(), Repaint);
+			auto t = ::MoveWindow(Handle(), rect.left, rect.top, rect.right, rect.bottom, Repaint);
 		}
 
 		void SetScrollInfo(LPSCROLLINFO Info, int nBar, bool Redraw) {

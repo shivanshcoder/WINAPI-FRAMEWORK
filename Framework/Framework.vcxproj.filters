@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\pch">
+      <UniqueIdentifier>{0bc6aba0-eeb1-4c45-b672-34b7aed849ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\GDI.hpp">
@@ -51,10 +54,16 @@
     <ClInclude Include="Header\HBaseWin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Hpch.h">
+      <Filter>Header Files\pch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Header\Hpch.cpp">
+      <Filter>Header Files\pch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

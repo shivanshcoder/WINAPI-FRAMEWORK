@@ -90,6 +90,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/W4 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -147,6 +149,7 @@
     <ClInclude Include="Header\Core.h" />
     <ClInclude Include="Header\GDI.hpp" />
     <ClInclude Include="Header\Helpers.h" />
+    <ClInclude Include="Header\Hpch.h" />
     <ClInclude Include="Header\Input.h" />
     <ClInclude Include="Header\Messages.h" />
     <ClInclude Include="Header\PredefinedWin.h" />
@@ -155,6 +158,10 @@
     <ClInclude Include="Header\Wrappers.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Header\Hpch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hpch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

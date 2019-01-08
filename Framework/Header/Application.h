@@ -41,21 +41,13 @@ namespace HIMANI{
 			return msg.wParam;
 		}
 
-		//void ProcessSpecialMessages(MSG msg) {
-		//	switch (msg.message) {
-		//	
-		//		//case 
-
-		//	}
-		//}
-
 		//Can be overriden Called after HWindow creation
 		virtual WPARAM start() {
 			return Run();
 		}
 		virtual void Idle() {}
 
-		virtual ~HCustomApplication() {} //= 0;
+		virtual ~HCustomApplication() {} 
 	};
 
 	class HApplication : public HCustomApplication {
@@ -75,25 +67,20 @@ namespace HIMANI{
 		virtual WPARAM start()override { return Run(); }
 			
 		DECLARE_MESSAGE_MAP();
-
-		//virtual int OnPaint() = 0;
-		//virtual int OnCreate() { return 0; }
 		virtual int OnDestroy() {
 			PostQuitMessage(0);
 			return 0;
 		}
 		virtual int OnSize(WPARAM wParam, LPARAM lParam) { return 0; }
 		virtual int OnMouseDown(WPARAM wParam, LPARAM lParam) { return 0; }
-
+		
 	};
 
 	MESSAGE_MAP_BEGIN(HApplication)
-		//MESSAGE_MAP_ENTRY(OnCreate, WM_CREATE)
-		//MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
 		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
-		MESSAGE_MAP_END(HCustomApplication)
+	MESSAGE_MAP_END(HCustomApplication)
 
 }
 

@@ -1,8 +1,5 @@
 #pragma once
-#include<Windows.h>
-#include<unordered_map>
-#include<functional>
-#include<queue>
+#include"Core.h"
 
 namespace HIMANI{
 

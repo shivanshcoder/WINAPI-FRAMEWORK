@@ -1,4 +1,5 @@
 #pragma once
+#include"Hpch.h"
 #include"HBaseWin.hpp"
 
 namespace HIMANI{
@@ -8,12 +9,12 @@ namespace HIMANI{
 
 
 	//TODO check this window with SB_CTL type
-	class __ScrollBar {
+	class HScrollBar {
 	public:
-		__ScrollBar(short int ScrollBarType, HBaseWin *Win)
+		HScrollBar(short int ScrollBarType, HBaseWin *Win)
 			:Type(ScrollBarType) {
 			Info.cbSize = sizeof(Info);
-			Parent = Win;
+			Owner = Win;
 		}
 
 		void SetRange(int Min, int Max) {
@@ -64,14 +65,14 @@ namespace HIMANI{
 		}
 
 		void SetInfo(bool Erase) {
-			SetScrollInfo(*Parent, Type, &Info, Erase);
+			SetScrollInfo(*Owner, Type, &Info, Erase);
 			Info.fMask = 0;
 		}
 
 		void GetInfo() {
 			//TODO change the default SIF_ALL later on
 			Info.fMask = SIF_ALL;
-			GetScrollInfo(*Parent, Type, &Info);
+			GetScrollInfo(*Owner, Type, &Info);
 			Info.fMask = 0;
 		}
 
@@ -125,7 +126,7 @@ namespace HIMANI{
 	private:
 		short int Type;
 		SCROLLINFO Info;
-		HBaseWin *Parent;
+		HBaseWin *Owner;
 	};
 
 }

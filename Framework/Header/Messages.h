@@ -1,6 +1,5 @@
 #pragma once
-#include<Windows.h>
-#include<iostream>
+#include"Core.h"
 
 //TODO fix the HWND initialization for WM_CREATE
 //NOTE Dont override WM_CREATE instead use the constructor space ofr doing stuff
