@@ -1,8 +1,14 @@
 #pragma once
 #include"Hpch.h"
 
-namespace HIMANI{
+namespace HIMANI {
 
+
+#ifdef UNICODE
+	typedef std::wstring HString;
+#else
+	typedef std::string HString;
+#endif
 
 	HINSTANCE __ProgramInstance;
 	int __ProgramCmdShow;
@@ -15,6 +21,16 @@ namespace HIMANI{
 		return __ProgramCmdShow;
 	}
 
+	//TODO make HandleWrapperClass for all types of handles
+	template<class HandleType>
+	class HHandleWrappersClass {
+
+
+	private:
+		HandleType Handle;
+	};
+
+
 
 #pragma region ErrorHandling
 
@@ -24,8 +40,8 @@ namespace HIMANI{
 
 	public:
 
-		Exceptions(const std::wstring &data = L"Unknown Error") :Data(data) {}
-		Exceptions(int LineNumber, const std::wstring FilePath, const std::wstring &data = L"Unknown Error") {
+		Exceptions(const HString &data = L"Unknown Error") :Data(data) {}
+		Exceptions(int LineNumber, const HString FilePath, const HString &data = L"Unknown Error") {
 			Data += L"Line :";
 			Data += std::to_wstring(LineNumber);
 			Data += L"  ";
@@ -37,19 +53,19 @@ namespace HIMANI{
 			return Data.c_str();
 		}
 	protected:
-		std::wstring Data;
+		HString Data;
 	};
 
 	class WinExceptions :public Exceptions {
 	public:
-		WinExceptions(int LineNumber, const std::wstring FilePath)
+		WinExceptions(int LineNumber, const HString FilePath)
 			:Exceptions(L"") {
 			wchar_t *buf;
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
 				NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				(LPWSTR)&buf, sizeof(buf), NULL);
 			Data += L" Windows Error: ";
-			Data += std::wstring(buf);
+			Data += HString(buf);
 		}
 
 	};

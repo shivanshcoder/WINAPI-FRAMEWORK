@@ -90,7 +90,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/W4 %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Header\Application.h" />
+    <ClInclude Include="Header\Dialogs.h" />
     <ClInclude Include="Header\HBaseWin.hpp" />
     <ClInclude Include="Header\ControlsWin.h" />
     <ClInclude Include="Header\Core.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Header\Helpers.h" />
     <ClInclude Include="Header\Hpch.h" />
     <ClInclude Include="Header\Input.h" />
+    <ClInclude Include="Header\Menu.h" />
     <ClInclude Include="Header\Messages.h" />
     <ClInclude Include="Header\PredefinedWin.h" />
     <ClInclude Include="Header\HIMANI.h" />

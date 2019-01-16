@@ -28,7 +28,8 @@ namespace HIMANI{
 	}
 
 }
-
+//CLEAN
+#define AUTO_ENTRY
 
 #ifdef AUTO_ENTRY
 

@@ -3,7 +3,7 @@
 #include"Helpers.h"
 #include"WinProc.hpp"
 
-namespace HIMANI{
+namespace HIMANI {
 
 
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
@@ -50,7 +50,7 @@ namespace HIMANI{
 				throw HIMANI::Exceptions(L"nullptr Window Handle");
 			return hwnd;
 		}
-	
+
 	private:
 		HWND hwnd;
 	};
@@ -59,16 +59,16 @@ namespace HIMANI{
 	class HWrapperWin :public HBaseWin {
 	public:
 
-		std::wstring GetWinText() {
+		HString GetWinText() {
 			int size = GetWindowTextLength(Handle());
-			std::wstring str;
+			HString str;
 			str.resize(size);
 
 			GetWindowText(Handle(), &str[0], size);
 			return str;
 		}
 
-		void SetWinText(const std::wstring& Text) {
+		void SetWinText(const HString& Text) {
 			SetWindowText(Handle(), Text.c_str());
 		}
 
@@ -76,7 +76,7 @@ namespace HIMANI{
 		Helpers::HRect GetClientRect() {
 			Helpers::HRect rect;
 			::GetClientRect(Handle(), &rect.rect);
-		
+
 			return rect;
 		}
 
@@ -101,7 +101,9 @@ namespace HIMANI{
 			::GetScrollInfo(Handle(), nBar, Info);
 		}
 
-
+		void SetMenu(HMENU menu) {
+			::SetMenu(Handle(), menu);
+		}
 
 		void SetFocus() {
 			::SetFocus(Handle());
@@ -165,7 +167,7 @@ namespace HIMANI{
 
 
 		//TODO make it void
-		HWND CreateWin(const std::wstring &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
+		HWND CreateWin(const HString &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
 			bool ValidClass = __ClassProp();
 
 			if (!ValidClass)
@@ -204,7 +206,7 @@ namespace HIMANI{
 		//Will be overriden using macro OVERRIDE_PREDEFINEDCLASS
 		virtual LPCWSTR ClassName() = 0;
 
-		void CreateWin(const std::wstring &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
+		void CreateWin(const HString &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr) {
 
 			hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 				Tittle.c_str(), style,
@@ -216,7 +218,7 @@ namespace HIMANI{
 				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
 			OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
 
-			if ( !OldProc)
+			if (!OldProc)
 				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Procedure swap Unsuccessful");
 
 		}

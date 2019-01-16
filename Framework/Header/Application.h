@@ -2,6 +2,7 @@
 #include"GDI.hpp"
 #include"HBaseWin.hpp"
 #include"Messages.h"
+#include"Menu.h"
 #include"Input.h"
 
 
@@ -17,11 +18,10 @@ namespace HIMANI{
 
 			ShowWindow(*this, HIMANI::CmdShow());
 			UpdateWindow(*this);
-
 			return MessageProcess();
 		}
 
-		WPARAM MessageProcess() {
+		virtual WPARAM MessageProcess() {
 			MSG msg;
 
 			while (true) {
@@ -54,7 +54,7 @@ namespace HIMANI{
 
 	public:
 		//using HCustomApplication::HCustomApplication;
-		HApplication(const std::wstring &Tittle, DWORD style,
+		HApplication(const HString &Tittle, DWORD style,
 			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
 			//NOTE Because HApplication can't have parent maybe??
 			CreateWin(Tittle, style, size);

@@ -33,7 +33,7 @@ namespace HIMANI {
 
 	public:
 		HScrollBar(int ScrollBarStyle, Helpers::HRect Size, const HBaseWin &Parent) :HControls(Parent) {
-			CreateWin(std::wstring(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
+			CreateWin(HString(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
 		}
 
 		INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam)override {
@@ -48,10 +48,10 @@ namespace HIMANI {
 			sInfo.nMin = Min;
 			sInfo.nMax = Max;
 			if (Page == 0)
-				sInfo.nPage = (Max - Min) / 10;
+				sInfo.nPage = (Max - Min) / 20;
 
 			sInfo.nPos = Pos;
-			sInfo.fMask = SIF_POS | SIF_RANGE | SIF_RANGE;
+			sInfo.fMask = SIF_POS | SIF_RANGE | SIF_RANGE | SIF_PAGE;
 
 			SetScrollInfo(&sInfo, SB_CTL, Redraw);
 		}
@@ -61,7 +61,7 @@ namespace HIMANI {
 			info.cbSize = sizeof(SCROLLINFO);
 			info.fMask = SIF_ALL;
 			GetScrollInfo(&info, SB_CTL);
-		//	int oldPos = info.nPos;
+			//	int oldPos = info.nPos;
 			switch (LOWORD(wParam)) {
 			case SB_LINEUP:
 				//case 	SB_LINELEFT:
@@ -85,7 +85,7 @@ namespace HIMANI {
 				break;
 			case SB_PAGEDOWN:
 				//case 	SB_PAGERIGHT:
-				info.nPos -= info.nPage;
+				info.nPos += info.nPage;
 				break;
 
 			case SB_THUMBPOSITION:
@@ -102,8 +102,6 @@ namespace HIMANI {
 			return 0;
 		}
 
-
-
 		//TODO make enums for the styles!!!!
 		//enum HorzScrollBarStyle {
 		//					SBS_TOPALIGN
@@ -115,9 +113,6 @@ namespace HIMANI {
 		//					SBS_SIZEBOX
 		//};
 
-		//enum VertScrollBarStyle {
-
-		//};
 
 		DECLARE_MESSAGE_MAP();
 
@@ -130,14 +125,14 @@ namespace HIMANI {
 		MESSAGE_MAP_ENTRY_PARAMS(Scroll, WM_VSCROLL)
 		MESSAGE_MAP_ENTRY_PARAMS(Scroll, WM_HSCROLL)
 
-	MESSAGE_MAP_END(HControls);
+		MESSAGE_MAP_END(HControls);
 
 
 	class HStaticWindow :public HPredefinedWindow {
 	public:
 		OVERRIDE_PREDEFINEDCLASS(static)
 
-			HStaticWindow(const std::wstring &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent }/*,
+			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent }/*,
 			BckBrush{RGB(0,0,0) }*/ {
 			CreateWin(Tittle, Style, Size, (HMENU)this);
 		}
@@ -149,6 +144,7 @@ namespace HIMANI {
 			SetTextColor(hdcStatic, TextColor);
 
 			SetBkColor((HDC)wParam, GetSysColor(COLOR_BTNHIGHLIGHT));
+
 			return (INT_PTR)GetSysColor(COLOR_BTNHIGHLIGHT);
 			/*
 			SetTextColor((HDC)wParam, RGB(rand() % 255, rand() % 255, 0));

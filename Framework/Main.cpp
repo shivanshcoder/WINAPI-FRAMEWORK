@@ -9,64 +9,65 @@ class MainWin : public HIMANI::HApplication {
 	int cyClient;
 
 	int idFocus = 0;
-
+	int ClassColor[3] = {};
 	HIMANI::HStaticWindow ColorRect;
 	Helpers::HWinArray<HIMANI::HScrollBar, 3> Scroll;
 	Helpers::HWinArray<HIMANI::HStaticWindow, 3> Label;
 	Helpers::HWinArray<HIMANI::HStaticWindow, 3> Value;
-
+	Helpers::HRect Rectang;
 public:
-	CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
+	//CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 
 		DECLARE_MESSAGE_MAP();
 
+	void UpdateColor(int Index, int Val) {
+		std::wstringstream ws;
+		ws << Val;
+		Value[Index].SetWinText(ws.str());
+		ClassColor[Index] = Val;
+		DeleteObject((HBRUSH)
+		SetClassLongPtr(*this, GCLP_HBRBACKGROUND,
+			(LONG)CreateSolidBrush(RGB(ClassColor[0], ClassColor[1], ClassColor[2]))));
+		CheckDefaultWinError;
+		InvalidateRect(Rectang, true);
+	}
 
 	MainWin()
 		:HApplication(L"Color Scroll", WS_OVERLAPPEDWINDOW),
-		ColorRect(std::wstring(L""), SS_WHITERECT | WS_VISIBLE | WS_CHILD, Helpers::HRect(), *this),
+		ColorRect(HIMANI::HString(), SS_WHITERECT | WS_VISIBLE | WS_CHILD, Helpers::HRect(), *this),
 		Scroll(WS_TABSTOP | SBS_VERT, Helpers::HRect(), *this),
-		Label(std::wstring(), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this),
-		Value(std::wstring(L"0"), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this)
+		Label(HIMANI::HString(), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this),
+		Value(HIMANI::HString(L"0"), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this)
 	{
+		DeleteObject((HBRUSH)
+			SetClassLongPtr(*this, GCLP_HBRBACKGROUND,
+			(LONG)CreateSolidBrush(RGB(ClassColor[0], ClassColor[1], ClassColor[2]))));
 		for (int i = 0; i < Scroll.size(); ++i) {
 			Scroll[i].SetInfo(0, 255);
 		}
+		COLORREF colors[3] = {
+			RGB(255, 0, 0),
+			RGB(0, 255, 0),
+			RGB(0, 0, 255)
+		};
 
-		Label[0].SetWinText(L"Temp");
-		Label[1].SetWinText(L"Temp1");
-		Label[2].SetWinText(L"Temp2");
+		for (int i = 0; i < 3; ++i) {
+			Label[i].TextColor = colors[i];
+			Value[i].TextColor = colors[i];
+			Scroll[i].brush = HIMANI::HBrush(colors[i]);
 
-		Label[0].TextColor = RGB(255, 0, 0);
-		Label[1].TextColor = RGB(0, 255, 0);
-		Label[2].TextColor = RGB(0, 0, 255);
-
-		Value[0].TextColor = RGB(255, 0, 0);
-		Value[1].TextColor = RGB(0, 255, 0);
-		Value[2].TextColor = RGB(0, 0, 255);
-
-		Scroll[0].brush = HIMANI::HBrush(RGB(255, 0, 0));
-		Scroll[1].brush = HIMANI::HBrush(RGB(0, 255, 0));
-		Scroll[2].brush = HIMANI::HBrush(RGB(0, 0, 255));
-	
-
-		Value[0].SetWinText(L"Temp");
-		Value[1].SetWinText(L"Temp1");
-		Value[2].SetWinText(L"Temp2");
+		}
 
 		Scroll[0].ScrollCallbk = [&](int Val) {
-			std::wstringstream ws;
-			ws << Val;
-			Value[0].SetWinText(ws.str());
+			UpdateColor(0, Val);
 		};
+
 		Scroll[1].ScrollCallbk = [&](int Val) {
-			std::wstringstream ws;
-			ws << Val;
-			Value[1].SetWinText(ws.str());
+			UpdateColor(1, Val);
 		};
+
 		Scroll[2].ScrollCallbk = [&](int Val) {
-			std::wstringstream ws;
-			ws << Val;
-			Value[2].SetWinText(ws.str());
+			UpdateColor(2, Val);
 		};
 
 
@@ -80,6 +81,7 @@ public:
 		cyClient = HIWORD(lParam);
 
 		ColorRect.MoveWindow(Helpers::HRect(cxClient / 2, cyClient), true);
+		Rectang = Helpers::HRect(cxClient / 2, 0, cxClient, cyClient);
 
 		int cyChar = HIWORD(GetDialogBaseUnits());
 
@@ -97,6 +99,7 @@ public:
 
 			CheckDefaultWinError;
 		}
+		SetFocus();
 		return 0;
 	}
 

@@ -105,6 +105,7 @@ namespace HIMANI {
 		friend class DC;
 
 	public:
+
 		HBrush(COLORREF crColor) {
 			Init(CreateSolidBrush(crColor), false);
 		}
@@ -223,7 +224,7 @@ namespace HIMANI {
 			::RestoreDC(hdc, -1);
 		}
 
-		void TextOut(Helpers::HPoint point, std::wstring string) {
+		void TextOut(Helpers::HPoint point, HString string) {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 

@@ -57,6 +57,12 @@
     <ClInclude Include="Header\Hpch.h">
       <Filter>Header Files\pch</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Dialogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

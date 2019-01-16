@@ -7,7 +7,7 @@ namespace HIMANI {
 	//public:
 	//	OVERRIDE_PREDEFINEDCLASS(static)
 
-	//		HStaticWindow(const std::wstring &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent }/*,
+	//		HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent }/*,
 	//		BckBrush{RGB(0,0,0) }*/ {
 	//		CreateWin(Tittle, Style, Size,(HMENU) this);
 	//	}
