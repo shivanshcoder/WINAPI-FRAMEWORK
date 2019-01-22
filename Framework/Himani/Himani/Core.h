@@ -1,7 +1,7 @@
 #pragma once
 #include"Hpch.h"
 
-namespace HIMANI {
+namespace Himani {
 
 
 #ifdef UNICODE
@@ -81,7 +81,7 @@ namespace HIMANI {
 #define S_(x) S(x)
 #define __S_LINE__ S_(__LINE__)
 
-#define CheckDefaultWinError	if (GetLastError())	throw HIMANI::WinExceptions(__LINE__,TEXT(__FILE__))
+#define CheckDefaultWinError	if (GetLastError())	throw Himani::WinExceptions(__LINE__,TEXT(__FILE__))
 
 	/*------------------------------------Error Handling------------------------------------*/
 

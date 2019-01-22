@@ -2,7 +2,7 @@
 #include"HBaseWin.h"
 #include"Messages.h"
 #include"GDI.h"
-namespace HIMANI {
+namespace Himani {
 	//class HStaticWindow :public HPredefinedWindow {
 	//public:
 	//	OVERRIDE_PREDEFINEDCLASS(static)

@@ -1,7 +1,7 @@
 #include"Hpch.h"
 #include "HBaseWin.h"
 
-bool HIMANI::RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
+bool Himani::RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
 	WNDCLASSEX wndclass = {};
 	wndclass.cbSize = sizeof(WNDCLASSEX);
 	wndclass.style = Style;
@@ -21,26 +21,26 @@ bool HIMANI::RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm
 
 //Return Empty HBaseWin as nullptr
 
-inline HIMANI::HBaseWin::HBaseWin() {
+inline Himani::HBaseWin::HBaseWin() {
 	hwnd = nullptr;
 }
 
-inline HIMANI::HBaseWin::HBaseWin(HWND _hwnd) {
+inline Himani::HBaseWin::HBaseWin(HWND _hwnd) {
 	hwnd = _hwnd;
 }
 
 //Doesn't check if the handle is nullptr or not
 
-inline HIMANI::HBaseWin::operator HWND() const {
+inline Himani::HBaseWin::operator HWND() const {
 	return hwnd;
 }
 
-inline HIMANI::HBaseWin::~HBaseWin() {}
+inline Himani::HBaseWin::~HBaseWin() {}
 
 //Checks if the handle to window is nullptr or not
 
-inline HWND HIMANI::HBaseWin::Handle() {
+inline HWND Himani::HBaseWin::Handle() {
 	if (!hwnd)
-		throw HIMANI::Exceptions(L"nullptr Window Handle");
+		throw Himani::Exceptions(L"nullptr Window Handle");
 	return hwnd;
 }

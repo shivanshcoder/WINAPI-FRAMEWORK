@@ -169,7 +169,7 @@ HANDLE winThunk::eHeapAddr = NULL;
 
 
 
-namespace HIMANI{
+namespace Himani{
 
 
 	//The Default Callback Windows Procedure for every window
@@ -225,7 +225,7 @@ namespace HIMANI{
 			thunk = new(eHeapAddr)winThunk;
 		}
 		catch (...) {
-			throw HIMANI::Exceptions(L"Thunk could not be allocated");
+			throw Himani::Exceptions(L"Thunk could not be allocated");
 		}
 
 		if (!thunk->Init(this, (DWORD_PTR)WndProc))

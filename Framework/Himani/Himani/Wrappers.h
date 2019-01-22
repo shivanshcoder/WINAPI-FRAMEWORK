@@ -2,7 +2,7 @@
 #include"Hpch.h"
 #include"HBaseWin.h"
 
-namespace HIMANI{
+namespace Himani{
 
 
 	//TODO make ScrollWIndowClass

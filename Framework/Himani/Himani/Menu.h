@@ -2,7 +2,7 @@
 #include"Core.h"
 
 
-namespace HIMANI {
+namespace Himani {
 	class HMenu
 	{
 	public:

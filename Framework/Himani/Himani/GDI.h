@@ -3,7 +3,7 @@
 #include"HBaseWin.h"
 
 
-namespace HIMANI {
+namespace Himani {
 
 	enum HGDIObjectType {
 		pen,

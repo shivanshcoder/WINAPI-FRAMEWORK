@@ -3,7 +3,7 @@
 #include"Helpers.h"
 #include"WinProc.h"
 
-namespace HIMANI {
+namespace Himani {
 
 
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
@@ -47,7 +47,7 @@ namespace HIMANI {
 		//Checks if the handle to window is nullptr or not
 		HWND Handle() {
 			if (!hwnd)
-				throw HIMANI::Exceptions(L"nullptr Window Handle");
+				throw Himani::Exceptions(L"nullptr Window Handle");
 			return hwnd;
 		}
 
@@ -134,7 +134,7 @@ namespace HIMANI {
 //Defines WNDCLASS properties for each UserDefined Class
 #define CLASS_ALL_PROPERTIES(ClassName__, Style, Icon, IconSm, Cursor, Background, MenuName)	DEFINE_CLASSNAME(ClassName__)	\
  bool __ClassProp() override {		\
-		static bool __ValidClass = HIMANI::RegisterWinClass(Style, HIMANI::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
+		static bool __ValidClass = Himani::RegisterWinClass(Style, Himani::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
 		return __ValidClass;\
 }
 
@@ -171,7 +171,7 @@ namespace HIMANI {
 			bool ValidClass = __ClassProp();
 
 			if (!ValidClass)
-				throw HIMANI::Exceptions(L"Class Not Registered");
+				throw Himani::Exceptions(L"Class Not Registered");
 
 			hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 				Tittle.c_str(), style,

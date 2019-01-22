@@ -6,7 +6,7 @@
 #include"Input.h"
 
 
-namespace HIMANI{
+namespace Himani{
 
 	class HCustomApplication :public HWindow {
 
@@ -16,7 +16,7 @@ namespace HIMANI{
 
 		WPARAM Run() {
 
-			ShowWindow(*this, HIMANI::CmdShow());
+			ShowWindow(*this, Himani::CmdShow());
 			UpdateWindow(*this);
 			return MessageProcess();
 		}

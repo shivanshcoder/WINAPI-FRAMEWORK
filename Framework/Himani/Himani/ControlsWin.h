@@ -6,7 +6,7 @@
 //way to work with TABS when when control gets the focus and how to shift it further or back
 
 
-namespace HIMANI {
+namespace Himani {
 
 	class HControls :public HPredefinedWindow {
 	public:

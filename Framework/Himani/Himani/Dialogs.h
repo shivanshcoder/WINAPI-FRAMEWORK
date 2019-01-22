@@ -1,7 +1,7 @@
 #pragma once
 #include"Core.h"
 
-namespace HIMANI {
+namespace Himani {
 	class Dialog {
 	public:
 		Dialog() {
