@@ -1,3 +1,4 @@
+#include"Hpch.h"
 #include"HIMANI.h"
 #include"resource.h"
 
@@ -20,9 +21,10 @@ public:
 	//IconDemo():HCustomApplication(L"IconDemo",WS_OVERLAPPEDWINDOW) {}
 
 	ClipText() 
-	:Menu(IDR_MENU1){
+	/*:Menu(IDR_MENU1)*/{
 		CreateWin(L"Temp", WS_OVERLAPPEDWINDOW, Helpers::HRect(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
-		SetMenu(Menu.menu);
+
+
 	}
 
 	CLASS_PROPERTIES(ClipText,CS_VREDRAW|CS_HREDRAW,NULL)
@@ -50,8 +52,8 @@ public:
 
 	int OnCommand(WPARAM wParam, LPARAM lParam) {
 		//Menu was used
-		if (lParam == NULL)
-			Menu.callback(LOWORD(wParam));
+		//if (lParam == NULL)
+		//	Menu.callback(LOWORD(wParam));
 		//else child sent a message
 		return 0;
 	}
@@ -59,7 +61,7 @@ public:
 private:
 	int cxClient, cyClient;
 	int cxIcon, cyIcon;
-	HIMANI::HMenu Menu;
+	//HIMANI::HMenu Menu;
 };
 
 MESSAGE_MAP_BEGIN(ClipText)

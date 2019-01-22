@@ -10,6 +10,12 @@ namespace HIMANI {
 	typedef std::string HString;
 #endif
 
+#define DISABLE_CLASS_COPY_ASSIGNMENT(ClassName) \
+	ClassName(const ClassName&) = delete;\
+	ClassName& operator=(const ClassName&) = delete;
+
+
+
 	HINSTANCE __ProgramInstance;
 	int __ProgramCmdShow;
 
