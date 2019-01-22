@@ -1,7 +1,7 @@
 #pragma once
-#include"HBaseWin.hpp"
+#include"HBaseWin.h"
 #include"Messages.h"
-#include"GDI.hpp"
+#include"GDI.h"
 namespace HIMANI {
 	//class HStaticWindow :public HPredefinedWindow {
 	//public:

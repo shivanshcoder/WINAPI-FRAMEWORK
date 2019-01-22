@@ -1,7 +1,7 @@
 #pragma once
-#include"HBaseWin.hpp"
+#include"HBaseWin.h"
 #include"Messages.h"
-#include"GDI.hpp"
+#include"GDI.h"
 //TODO
 //way to work with TABS when when control gets the focus and how to shift it further or back
 

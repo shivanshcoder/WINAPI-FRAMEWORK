@@ -1,6 +1,6 @@
 #pragma once
-#include"GDI.hpp"
-#include"HBaseWin.hpp"
+#include"GDI.h"
+#include"HBaseWin.h"
 #include"Messages.h"
 #include"Menu.h"
 #include"Input.h"
