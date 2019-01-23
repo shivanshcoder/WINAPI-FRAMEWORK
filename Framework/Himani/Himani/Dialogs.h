@@ -5,9 +5,7 @@
 namespace Himani {
 	class Dialog :public HDialogProc{
 	public:
-		Dialog() {
-
-		}
+		Dialog();
 	};
 
 

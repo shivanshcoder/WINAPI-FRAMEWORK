@@ -36,6 +36,18 @@
     <ClCompile Include="Himani\Himani\GDI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\Dialogs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\Menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Himani\Hpch.h">
@@ -69,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\Messages.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Himani\Himani\SysMets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\WinProc.h">

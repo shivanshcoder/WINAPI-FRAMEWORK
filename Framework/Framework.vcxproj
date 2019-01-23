@@ -156,9 +156,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Himani\Himani\Application.cpp" />
+    <ClCompile Include="Himani\Himani\ControlsWin.cpp" />
     <ClCompile Include="Himani\Himani\Core.cpp" />
+    <ClCompile Include="Himani\Himani\Dialogs.cpp" />
     <ClCompile Include="Himani\Himani\GDI.cpp" />
     <ClCompile Include="Himani\Himani\HBaseWin.cpp" />
+    <ClCompile Include="Himani\Himani\Menu.cpp" />
     <ClCompile Include="Himani\Himani\WinProc.cpp" />
     <ClCompile Include="Himani\Hpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -189,7 +193,6 @@
     <ClInclude Include="Himani\Himani\Input.h" />
     <ClInclude Include="Himani\Himani\Menu.h" />
     <ClInclude Include="Himani\Himani\Messages.h" />
-    <ClInclude Include="Himani\Himani\SysMets.h" />
     <ClInclude Include="Himani\Himani\WinProc.h" />
     <ClInclude Include="Himani\Hpch.h" />
   </ItemGroup>

@@ -7,6 +7,7 @@
 
 
 namespace Himani {
+	//class HGDIObject;
 
 	class HControls :public HPredefinedWindow {
 	public:
@@ -16,16 +17,7 @@ namespace Himani {
 
 		virtual INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam) = 0;
 	};
-	MESSAGE_MAP_BEGIN(HControls)
-		MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORMSGBOX);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLOREDIT);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORLISTBOX);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORBTN);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORDLG);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORSCROLLBAR);
-	MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORSTATIC);
-	MESSAGE_MAP_END(HPredefinedWindow);
-
+	
 	class HScrollBar :public HControls {
 
 		//Overrides Windows scrollbar class
@@ -36,83 +28,13 @@ namespace Himani {
 			CreateWin(HString(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
 		}
 
-		INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam)override {
+		INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam)override;
 
-			return (INT_PTR)brush.RetrieveObject();
-		}
+		void SetInfo(int Min, int Max, int Page = 0, int Pos = 0, bool Redraw = false);
 
-		void SetInfo(int Min, int Max, int Page = 0, int Pos = 0, bool Redraw = false) {
-			SCROLLINFO sInfo;
+		int Scroll(WPARAM wParam, LPARAM lParam);
 
-			sInfo.cbSize = sizeof(SCROLLINFO);
-			sInfo.nMin = Min;
-			sInfo.nMax = Max;
-			if (Page == 0)
-				sInfo.nPage = (Max - Min) / 20;
-
-			sInfo.nPos = Pos;
-			sInfo.fMask = SIF_POS | SIF_RANGE | SIF_RANGE | SIF_PAGE;
-
-			SetScrollInfo(&sInfo, SB_CTL, Redraw);
-		}
-
-		int Scroll(WPARAM wParam, LPARAM lParam) {
-			SCROLLINFO info;
-			info.cbSize = sizeof(SCROLLINFO);
-			info.fMask = SIF_ALL;
-			GetScrollInfo(&info, SB_CTL);
-			//	int oldPos = info.nPos;
-			switch (LOWORD(wParam)) {
-			case SB_LINEUP:
-				//case 	SB_LINELEFT:
-				info.nPos -= 1;
-				break;
-			case SB_LINEDOWN:
-				//case 	SB_LINERIGHT:
-				info.nPos += 1;
-				break;
-			case SB_BOTTOM:
-				//	case 	SB_RIGHT:
-				info.nPos = info.nMax;
-				break;
-			case SB_TOP:
-				//	case 	SB_LEFT:
-				info.nPos = info.nMin;
-				break;
-			case SB_PAGEUP:
-				//case 	SB_PAGELEFT:
-				info.nPos -= info.nPage;
-				break;
-			case SB_PAGEDOWN:
-				//case 	SB_PAGERIGHT:
-				info.nPos += info.nPage;
-				break;
-
-			case SB_THUMBPOSITION:
-			case SB_THUMBTRACK:
-				info.nPos = info.nTrackPos;
-				break;
-			}
-
-			SetScrollInfo(&info, SB_CTL, true);
-			GetScrollInfo(&info, SB_CTL);
-
-
-			ScrollCallbk(info.nPos);
-			return 0;
-		}
-
-		//TODO make enums for the styles!!!!
-		//enum HorzScrollBarStyle {
-		//					SBS_TOPALIGN
-		//					SBS_LEFTALIGN
-		//					SBS_BOTTOMALIGN
-		//					SBS_RIGHTALIGN
-		//					SBS_SIZEBOXTOPLEFTALIGN
-		//					SBS_SIZEBOXBOTTOMRIGHTALIGN
-		//					SBS_SIZEBOX
-		//};
-
+		
 
 		DECLARE_MESSAGE_MAP();
 
@@ -121,19 +43,13 @@ namespace Himani {
 		std::function<void(int)>ScrollCallbk;
 	};
 
-	MESSAGE_MAP_BEGIN(HScrollBar)
-		MESSAGE_MAP_ENTRY_PARAMS(Scroll, WM_VSCROLL)
-		MESSAGE_MAP_ENTRY_PARAMS(Scroll, WM_HSCROLL)
-
-		MESSAGE_MAP_END(HControls);
-
+	
 
 	class HStaticWindow :public HPredefinedWindow {
 	public:
 		OVERRIDE_PREDEFINEDCLASS(static)
 
-			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent }/*,
-			BckBrush{RGB(0,0,0) }*/ {
+			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent } {
 			CreateWin(Tittle, Style, Size, (HMENU)this);
 		}
 
@@ -161,10 +77,6 @@ namespace Himani {
 		COLORREF TextColor = RGB(255, 255, 0);
 		//HBrush BckBrush;
 	};
-	MESSAGE_MAP_BEGIN(HStaticWindow)
-
-		MESSAGE_MAP_ENTRY_PARAMS(CTL_Color, WM_CTLCOLORSTATIC);
-	MESSAGE_MAP_END(HPredefinedWindow);
 
 	class Button :public HWindow {
 		//overrides Windwos button class
