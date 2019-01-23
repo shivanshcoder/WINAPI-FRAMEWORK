@@ -72,16 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>K:\WINAPI Framework\Framework;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,8 +93,9 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/W4 %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>K:\WINAPI Framework\Framework\Himani;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -104,6 +108,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>AUTO_ENTRY; _DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>K:\WINAPI Framework\Framework\Himani;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -118,6 +125,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>K:\WINAPI Framework\Framework\Himani;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -134,6 +144,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>K:\WINAPI Framework\Framework\Himani;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>Hpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -143,28 +156,45 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Header\Application.h" />
-    <ClInclude Include="Header\Dialogs.h" />
-    <ClInclude Include="Header\HBaseWin.hpp" />
-    <ClInclude Include="Header\ControlsWin.h" />
-    <ClInclude Include="Header\Core.h" />
-    <ClInclude Include="Header\GDI.hpp" />
-    <ClInclude Include="Header\Helpers.h" />
-    <ClInclude Include="Header\Hpch.h" />
-    <ClInclude Include="Header\Input.h" />
-    <ClInclude Include="Header\Menu.h" />
-    <ClInclude Include="Header\Messages.h" />
-    <ClInclude Include="Header\PredefinedWin.h" />
-    <ClInclude Include="Header\HIMANI.h" />
-    <ClInclude Include="Header\WinProc.hpp" />
-    <ClInclude Include="Header\Wrappers.hpp" />
+    <ClCompile Include="Himani\Himani\Application.cpp" />
+    <ClCompile Include="Himani\Himani\ControlsWin.cpp" />
+    <ClCompile Include="Himani\Himani\Core.cpp" />
+    <ClCompile Include="Himani\Himani\Dialogs.cpp" />
+    <ClCompile Include="Himani\Himani\GDI.cpp" />
+    <ClCompile Include="Himani\Himani\HBaseWin.cpp" />
+    <ClCompile Include="Himani\Himani\Menu.cpp" />
+    <ClCompile Include="Himani\Himani\WinProc.cpp" />
+    <ClCompile Include="Himani\Hpch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hpch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hpch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hpch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hpch.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Header\Hpch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hpch.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="Main.cpp" />
+    <ClInclude Include="Himani\Himani.h" />
+    <ClInclude Include="Himani\Himani\Application.h" />
+    <ClInclude Include="Himani\Himani\ControlsWin.h" />
+    <ClInclude Include="Himani\Himani\Core.h" />
+    <ClInclude Include="Himani\Himani\Dialogs.h" />
+    <ClInclude Include="Himani\Himani\GDI.h" />
+    <ClInclude Include="Himani\Himani\HBaseWin.h" />
+    <ClInclude Include="Himani\Himani\Helpers.h" />
+    <ClInclude Include="Himani\Himani\Input.h" />
+    <ClInclude Include="Himani\Himani\Menu.h" />
+    <ClInclude Include="Himani\Himani\Messages.h" />
+    <ClInclude Include="Himani\Himani\WinProc.h" />
+    <ClInclude Include="Himani\Hpch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

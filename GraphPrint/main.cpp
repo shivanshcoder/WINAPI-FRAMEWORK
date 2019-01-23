@@ -1,5 +1,4 @@
-#include"Hpch.h"
-#include"HIMANI.h"
+#include"Himani.h"
 #include"resource.h"
 
 #define CF_TCHAR CF_UNICODETEXT
@@ -7,7 +6,7 @@ const TCHAR DefaultText[] = TEXT("Defalt Text - UNICODE Version");
 const TCHAR Caption[] = TEXT("Clipboard Text Transfers - Unicode Version");
 
 
-class MyMenu :public HIMANI::HMenu {
+class MyMenu :public Himani::HMenu {
 public:
 	MyMenu() :HMenu(IDR_MENU1) {}
 
@@ -16,7 +15,7 @@ public:
 	}
 };
 
-class ClipText :public HIMANI::HCustomApplication {
+class ClipText :public Himani::HCustomApplication {
 public:
 	//IconDemo():HCustomApplication(L"IconDemo",WS_OVERLAPPEDWINDOW) {}
 
@@ -39,9 +38,9 @@ public:
 	}
 
 	int OnPaint() {
-		HIMANI::PaintDC dc(*this);
+		Himani::PaintDC dc(*this);
 
-		HICON Icon = LoadIcon(HIMANI::Instance(), MAKEINTRESOURCEW(IDI_ICON));
+		HICON Icon = LoadIcon(Himani::Instance(), MAKEINTRESOURCEW(IDI_ICON));
 		for (int x = 0; x < cxClient; x+=cxIcon) {
 			for (int y = 0; y < cyClient; y+=cyIcon) {
 				DrawIcon(dc, x, y, Icon);
@@ -61,7 +60,7 @@ public:
 private:
 	int cxClient, cyClient;
 	int cxIcon, cyIcon;
-	//HIMANI::HMenu Menu;
+	//Himani::HMenu Menu;
 };
 
 MESSAGE_MAP_BEGIN(ClipText)
@@ -69,6 +68,6 @@ MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 MESSAGE_MAP_ENTRY_PARAMS(OnCommand, WM_COMMAND)
 MESSAGE_MAP_ENTRY_SINGLE(PostQuitMessage(0), 0, WM_DESTROY)
-MESSAGE_MAP_END(HIMANI::HCustomApplication)
+MESSAGE_MAP_END(Himani::HCustomApplication)
 
 ENTRY_APP(ClipText)

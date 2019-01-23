@@ -1,19 +1,17 @@
-#include"Header/Hpch.h"
-#include"Header/HIMANI.h"
-#include<vector>
-#include<sstream>
+#include"Hpch.h"
+#include"Himani.h"
 #define ROUNDVAL(Val, i)	((Val++)%i)
 
-class MainWin : public HIMANI::HApplication {
+class MainWin : public Himani::HApplication {
 	int cxClient;
 	int cyClient;
 
 	int idFocus = 0;
 	int ClassColor[3] = {};
-	HIMANI::HStaticWindow ColorRect;
-	Helpers::HWinArray<HIMANI::HScrollBar, 3> Scroll;
-	Helpers::HWinArray<HIMANI::HStaticWindow, 3> Label;
-	Helpers::HWinArray<HIMANI::HStaticWindow, 3> Value;
+	Himani::HStaticWindow ColorRect;
+	Helpers::HWinArray<Himani::HScrollBar, 3> Scroll;
+	Helpers::HWinArray<Himani::HStaticWindow, 3> Label;
+	Helpers::HWinArray<Himani::HStaticWindow, 3> Value;
 	Helpers::HRect Rectang;
 public:
 	//CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
@@ -34,10 +32,10 @@ public:
 
 	MainWin()
 		:HApplication(L"Color Scroll", WS_OVERLAPPEDWINDOW),
-		ColorRect(HIMANI::HString(), SS_WHITERECT | WS_VISIBLE | WS_CHILD, Helpers::HRect(), *this),
+		ColorRect(Himani::HString(), SS_WHITERECT | WS_VISIBLE | WS_CHILD, Helpers::HRect(), *this),
 		Scroll(WS_TABSTOP | SBS_VERT, Helpers::HRect(), *this),
-		Label(HIMANI::HString(), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this),
-		Value(HIMANI::HString(L"0"), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this)
+		Label(Himani::HString(), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this),
+		Value(Himani::HString(L"0"), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this)
 	{
 		DeleteObject((HBRUSH)
 			SetClassLongPtr(*this, GCLP_HBRBACKGROUND,
@@ -54,7 +52,7 @@ public:
 		for (int i = 0; i < 3; ++i) {
 			Label[i].TextColor = colors[i];
 			Value[i].TextColor = colors[i];
-			Scroll[i].brush = HIMANI::HBrush(colors[i]);
+			Scroll[i].brush = Himani::HBrush(colors[i]);
 
 		}
 
@@ -136,7 +134,7 @@ LRESULT MainWin::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 		PostQuitMessage(0);
 		return 0;
 	}
-	return HIMANI::HCustomApplication::MessageFunc(hwnd, message, wParam, lParam);
+	return Himani::HCustomApplication::MessageFunc(hwnd, message, wParam, lParam);
 }
 //MESSAGE_MAP_BEGIN(MainWin)
 //MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
@@ -145,6 +143,6 @@ LRESULT MainWin::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 ////MESSAGE_MAP_ENTRY_PARAMS(KeyDown, WM_KEYDOWN)
 ////MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 //MESSAGE_MAP_ENTRY_SINGLE(PostQuitMessage(0), 0, WM_DESTROY)
-//MESSAGE_MAP_END(HIMANI::HCustomApplication)
+//MESSAGE_MAP_END(Himani::HCustomApplication)
 
 ENTRY_APP(MainWin);

@@ -6,16 +6,17 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 //To be included by user for using framework
-#include"PredefinedWin.h"
-#include"ControlsWin.h"
-#include"Application.h"
+#include"Himani/Core.h"
+//#include"Himani/PredefinedWin.h"
+#include"Himani/ControlsWin.h"
+#include"Himani/Application.h"
 
 
 
 
 //------------------Entry Point-------------------------
 
-namespace HIMANI{
+namespace Himani{
 
 	void InitFramework(HINSTANCE Instance, int CmdShow) {
 		__ProgramInstance = Instance;
@@ -33,21 +34,21 @@ namespace HIMANI{
 
 #ifdef AUTO_ENTRY
 
-extern HIMANI::HCustomApplication* EntryApplication();
+extern Himani::HCustomApplication* EntryApplication();
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	HIMANI::InitFramework(Instance, CmdShow);
+	Himani::InitFramework(Instance, CmdShow);
 
 	try {
 		auto App = EntryApplication();
 		App->start();
 		delete App;
 	}
-	catch (HIMANI::Exceptions &e) {
+	catch (Himani::Exceptions &e) {
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
-#define ENTRY_APP(APP)  HIMANI::HCustomApplication* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  Himani::HCustomApplication* EntryApplication() { return new APP(); }
 
 #endif
 

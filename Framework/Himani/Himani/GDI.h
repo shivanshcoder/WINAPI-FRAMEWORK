@@ -1,9 +1,9 @@
 #pragma once
 #include"Helpers.h"
-#include"HBaseWin.hpp"
+#include"HBaseWin.h"
 
 
-namespace HIMANI {
+namespace Himani {
 
 	enum HGDIObjectType {
 		pen,
@@ -56,12 +56,7 @@ namespace HIMANI {
 
 	protected:
 		//Should not be inititialzed with nullptr
-		void Init(HGDIOBJ Obj, bool stockObject) {
-			if (!Obj)
-				throw Exceptions(__LINE__, TEXT(__FILE__), TEXT("Object Initialized with nullptr"));
-
-			Object = std::make_shared<HBaseObject>(Obj, stockObject);
-		}
+		void Init(HGDIOBJ Obj, bool stockObject);
 
 		//Returns Type of Object
 		virtual HGDIObjectType Type()const { return base; }// = 0;
@@ -95,10 +90,6 @@ namespace HIMANI {
 			return (HPEN)RetrieveObject();
 		}
 		
-		//TODO store properties and use
-		//int Style;
-		//int Width;
-		//COLORREF color;
 	};
 
 	class HBrush :public HGDIObject {
@@ -144,50 +135,16 @@ namespace HIMANI {
 		Region() {
 			Init(CreateRectRgn(0, 0, 1, 1), false);
 		}
-		Region(bool Elliptical, Helpers::HRect rect) {
-			if (Elliptical) {
-				Init(CreateEllipticRgnIndirect(&rect.rect), false);
-			}
-			else {
-				Init(CreateRectRgnIndirect(&rect.rect), false);
-			}
-		}
+		Region(bool Elliptical, Helpers::HRect rect);
 
-		/*Region(HRect rect, Pair CornerEllipse) {
-			Init(CreateRoundRectRgn(
-				rect.left, rect.top,
-				rect.right, rect.bottom,
-				CornerEllipse.x, CornerEllipse.y
-			));
-		}*/
+		Region(std::vector<POINT>Points, int PolyFillMode);
 
-		Region(std::vector<POINT>Points, int PolyFillMode) {
-			Init(CreatePolygonRgn(&Points[0], Points.size(), PolyFillMode), false);
-		}
+		Region(Region &region1, Region &region2, int iMode);
 
-		Region(Region &region1, Region &region2, int iMode) {
-			HRGN temp = CreateRectRgn(0, 0, 1, 1);
-			CombineRgn(temp, static_cast<HRGN>(region1),
-				static_cast<HRGN>(region2), iMode);
-			Init(temp, false);
-		}
+		Region(const Region &region1, Region const &region2, int iMode);
 
-		Region(const Region &region1, Region const &region2, int iMode) {
-			HRGN temp = CreateRectRgn(0, 0, 1, 1);
-			CombineRgn(temp, static_cast<HRGN>(region1),
-				static_cast<HRGN>(region2), iMode);
-			Init(temp, false);
-		}
-
-		void clear() {
-			Init(CreateRectRgn(0, 0, 1, 1), false);
-		}
-		void Combine(const Region &region1, Region const &region2, int iMode) {
-			//HRGN temp = CreateRectRgn(0, 0, 1, 1);
-			CombineRgn(static_cast<HRGN>(*this), static_cast<HRGN>(region1),
-				static_cast<HRGN>(region2), iMode);
-			//Init(temp);
-		}
+		void clear();
+		void Combine(const Region &region1, Region const &region2, int iMode);
 
 
 		/*----Disabled Functions---*/
@@ -286,18 +243,10 @@ namespace HIMANI {
 
 		//CLEAN is it really needed???????????????????????????????
 		//For attaching the object which already has a scope from calling place
-		void Attach(HGDIObject &Object)override {
-
-			Objects[Object.Type()] = Object;
-			SelectObject(hdc, (Object.RetrieveObject()));
-		}
+		void Attach(HGDIObject &Object)override;
 
 		//For on the go constructor type Object
-		void Attach(const HGDIObject &Object) {
-
-			Objects[Object.Type()] = HGDIObject(Object);
-			SelectObject(hdc, Objects[Object.Type()].RetrieveObject());
-		}
+		void Attach(const HGDIObject &Object);
 
 	private:
 		//Saving reference of the selected objects
