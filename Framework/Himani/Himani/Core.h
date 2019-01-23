@@ -10,22 +10,18 @@ namespace Himani {
 	typedef std::string HString;
 #endif
 
-#define DISABLE_CLASS_COPY_ASSIGNMENT(ClassName) \
-	ClassName(const ClassName&) = delete;\
-	ClassName& operator=(const ClassName&) = delete;
 
 
+	extern HINSTANCE __ProgramInstance;
+	extern int __ProgramCmdShow;
 
-	HINSTANCE __ProgramInstance;
-	int __ProgramCmdShow;
-
-	HINSTANCE Instance() {
+	inline HINSTANCE Instance() {
 		return __ProgramInstance;
 	}
-
-	int CmdShow() {
+	inline int CmdShow() {
 		return __ProgramCmdShow;
 	}
+
 
 	//TODO make HandleWrapperClass for all types of handles
 	template<class HandleType>
@@ -47,32 +43,20 @@ namespace Himani {
 	public:
 
 		Exceptions(const HString &data = L"Unknown Error") :Data(data) {}
-		Exceptions(int LineNumber, const HString FilePath, const HString &data = L"Unknown Error") {
-			Data += L"Line :";
-			Data += std::to_wstring(LineNumber);
-			Data += L"  ";
-			Data += FilePath;
-			Data += L"  ";
-			Data += data;
-		}
+		
+		Exceptions(int LineNumber, const HString FilePath, const HString &data = L"Unknown Error");
+
 		const wchar_t * what() {
 			return Data.c_str();
 		}
+
 	protected:
 		HString Data;
 	};
 
 	class WinExceptions :public Exceptions {
 	public:
-		WinExceptions(int LineNumber, const HString FilePath)
-			:Exceptions(L"") {
-			wchar_t *buf;
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPWSTR)&buf, sizeof(buf), NULL);
-			Data += L" Windows Error: ";
-			Data += HString(buf);
-		}
+		WinExceptions(int LineNumber, const HString FilePath);
 
 	};
 
@@ -82,6 +66,12 @@ namespace Himani {
 #define __S_LINE__ S_(__LINE__)
 
 #define CheckDefaultWinError	if (GetLastError())	throw Himani::WinExceptions(__LINE__,TEXT(__FILE__))
+
+
+#define DISABLE_CLASS_COPY_ASSIGNMENT(ClassName) \
+	ClassName(const ClassName&) = delete;\
+	ClassName& operator=(const ClassName&) = delete;
+
 
 	/*------------------------------------Error Handling------------------------------------*/
 

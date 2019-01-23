@@ -2,17 +2,7 @@
 #include"Hpch.h"
 
 namespace Helpers {
-
-
-
-
-	//TODO make enums for system and local window class name strings
-	/*enum SystemClasses {
-		MainWindow,
-		Static
-	};*/
 	
-
 	class HPoint {
 	public:
 		HPoint()

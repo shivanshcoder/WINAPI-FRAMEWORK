@@ -1,8 +1,9 @@
 #pragma once
 #include"Core.h"
+#include"WinProc.h"
 
 namespace Himani {
-	class Dialog {
+	class Dialog :public HDialogProc{
 	public:
 		Dialog() {
 

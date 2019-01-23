@@ -1,46 +1,80 @@
 #include"Hpch.h"
-#include "HBaseWin.h"
+#include"HBaseWin.h"
 
-bool Himani::RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
-	WNDCLASSEX wndclass = {};
-	wndclass.cbSize = sizeof(WNDCLASSEX);
-	wndclass.style = Style;
-	wndclass.lpfnWndProc = Proc;
-	wndclass.hInstance = Instance();
-	wndclass.hbrBackground = Background;
-	wndclass.hIcon = Icon;
-	wndclass.hCursor = Cursor;
-	wndclass.lpszClassName = ClassName;
-	wndclass.lpszMenuName = MenuName;
-	wndclass.hIconSm = IconSm;
-	if (!RegisterClassEx(&wndclass)) {
-		CheckDefaultWinError;
+namespace Himani {
+	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
+		WNDCLASSEX wndclass = {};
+		wndclass.cbSize = sizeof(WNDCLASSEX);
+		wndclass.style = Style;
+		wndclass.lpfnWndProc = Proc;
+		wndclass.hInstance = Instance();
+		wndclass.hbrBackground = Background;
+		wndclass.hIcon = Icon;
+		wndclass.hCursor = Cursor;
+		wndclass.lpszClassName = ClassName;
+		wndclass.lpszMenuName = MenuName;
+		wndclass.hIconSm = IconSm;
+		if (!RegisterClassEx(&wndclass)) {
+			CheckDefaultWinError;
+		}
+		return true;
 	}
-	return true;
-}
 
-//Return Empty HBaseWin as nullptr
+	//TODO make it void
 
-inline Himani::HBaseWin::HBaseWin() {
-	hwnd = nullptr;
-}
+	HWND HWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
+		bool ValidClass = __ClassProp();
 
-inline Himani::HBaseWin::HBaseWin(HWND _hwnd) {
-	hwnd = _hwnd;
-}
+		if (!ValidClass)
+			throw Himani::Exceptions(L"Class Not Registered");
 
-//Doesn't check if the handle is nullptr or not
+		hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+			Tittle.c_str(), style,
+			size.left, size.top, size.right, size.bottom,
+			wndParent.hwnd, //Parent HWindow
+			Menu, Instance(),
+			Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
+		);
 
-inline Himani::HBaseWin::operator HWND() const {
-	return hwnd;
-}
+		if (!hwnd)
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
+		return hwnd;
+	}
+	void HPredefinedWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
 
-inline Himani::HBaseWin::~HBaseWin() {}
+		hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+			Tittle.c_str(), style,
+			size.left, size.top, size.right, size.bottom,
+			Parent(), //Parent HWindow
+			Menu, Instance(), nullptr
+		);
+		if ((!hwnd))
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
+		OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
 
-//Checks if the handle to window is nullptr or not
+		if (!OldProc)
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Procedure swap Unsuccessful");
 
-inline HWND Himani::HBaseWin::Handle() {
-	if (!hwnd)
-		throw Himani::Exceptions(L"nullptr Window Handle");
-	return hwnd;
+	}
+
+
+	HString HWrapperWin::GetWinText() {
+		int size = GetWindowTextLength(Handle());
+		HString str;
+		str.resize(size);
+
+		GetWindowText(Handle(), &str[0], size);
+		return str;
+	}
+	Helpers::HRect HWrapperWin::GetClientRect() {
+		Helpers::HRect rect;
+		::GetClientRect(Handle(), &rect.rect);
+
+		return rect;
+	}
+	Helpers::HRect HWrapperWin::GetWinRect() {
+		Helpers::HRect rect;
+		::GetWindowRect(Handle(), &rect.rect);
+		return rect;
+	}
 }

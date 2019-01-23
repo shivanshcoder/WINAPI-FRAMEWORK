@@ -24,6 +24,18 @@
     <ClCompile Include="Himani\Hpch.cpp">
       <Filter>Header Files\PrecompiledHeaders</Filter>
     </ClCompile>
+    <ClCompile Include="Himani\Himani\Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\WinProc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\HBaseWin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\GDI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Himani\Hpch.h">
@@ -59,16 +71,10 @@
     <ClInclude Include="Himani\Himani\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Himani\Himani\PredefinedWin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Himani\Himani\SysMets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\WinProc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Himani\Himani\Wrappers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani.h">

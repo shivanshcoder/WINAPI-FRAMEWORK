@@ -7,7 +7,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 //To be included by user for using framework
 #include"Himani/Core.h"
-#include"Himani/PredefinedWin.h"
+//#include"Himani/PredefinedWin.h"
 #include"Himani/ControlsWin.h"
 #include"Himani/Application.h"
 
