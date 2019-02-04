@@ -1,4 +1,6 @@
+#define INCLUDE_CPPS
 #include"Himani.h"
+
 #include"resource.h"
 
 #define CF_TCHAR CF_UNICODETEXT

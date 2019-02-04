@@ -162,6 +162,7 @@
     <ClCompile Include="Himani\Himani\Dialogs.cpp" />
     <ClCompile Include="Himani\Himani\GDI.cpp" />
     <ClCompile Include="Himani\Himani\HBaseWin.cpp" />
+    <ClCompile Include="Himani\Himani\Log System\Log.cpp" />
     <ClCompile Include="Himani\Himani\Menu.cpp" />
     <ClCompile Include="Himani\Himani\WinProc.cpp" />
     <ClCompile Include="Himani\Hpch.cpp">
@@ -191,6 +192,7 @@
     <ClInclude Include="Himani\Himani\HBaseWin.h" />
     <ClInclude Include="Himani\Himani\Helpers.h" />
     <ClInclude Include="Himani\Himani\Input.h" />
+    <ClInclude Include="Himani\Himani\Log System\Log.h" />
     <ClInclude Include="Himani\Himani\Menu.h" />
     <ClInclude Include="Himani\Himani\Messages.h" />
     <ClInclude Include="Himani\Himani\WinProc.h" />

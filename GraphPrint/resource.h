@@ -15,6 +15,9 @@
 #define IDC_RADIO7                      1020
 #define IDC_RADIO2                      1021
 #define IDC_RADIO8                      1022
+#define IDC_RADIO9                      1023
+#define IDC_RADIO10                     1024
+#define IDC_MFCMENUBUTTON1              1031
 #define ID_HELP                         40002
 #define ID_HELP_ABOUT                   40003
 #define ID_HELP_1                       40004
@@ -45,7 +48,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40025
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
