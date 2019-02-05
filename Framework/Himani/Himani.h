@@ -43,7 +43,11 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 	try {
 		auto App = EntryApplication();
 		//App->start();
-		LogSystem::WindowLog w;
+		LogSystem::WindowLog winLog;
+		winLog.Push(1, L"TTTEEEEEEEEE");
+		winLog.Push(1, L"Lol");
+		winLog.Push(1, L"B");
+		winLog.Refresh();
 		delete App;
 	}
 	catch (Himani::Exceptions &e) {
