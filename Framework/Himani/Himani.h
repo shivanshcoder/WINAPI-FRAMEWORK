@@ -11,7 +11,6 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include"Himani/ControlsWin.h"
 #include"Himani/Application.h"
 #include"Himani/Dialogs.h"
-#include"Himani/Log System/Log.h"
 
 
 
@@ -42,12 +41,8 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 
 	try {
 		auto App = EntryApplication();
-		//App->start();
-		LogSystem::WindowLog winLog;
-		winLog.Push(1, L"TTTEEEEEEEEE");
-		winLog.Push(1, L"Lol");
-		winLog.Push(1, L"B");
-		winLog.Refresh();
+		App->start();
+		
 		delete App;
 	}
 	catch (Himani::Exceptions &e) {

@@ -1,5 +1,6 @@
 #include"Hpch.h"
 #include"Himani.h"
+#include"Himani/Log System/Log.h"
 #define ROUNDVAL(Val, i)	((Val++)%i)
 
 class MainWin : public Himani::HApplication {
@@ -13,6 +14,7 @@ class MainWin : public Himani::HApplication {
 	Helpers::HWinArray<Himani::HStaticWindow, 3> Label;
 	Helpers::HWinArray<Himani::HStaticWindow, 3> Value;
 	Helpers::HRect Rectang;
+	LogSystem::WindowLog Logger;
 public:
 	//CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 
@@ -57,14 +59,18 @@ public:
 		}
 
 		Scroll[0].ScrollCallbk = [&](int Val) {
+			Logger.Push(1, L"RED Scroll used");
+			Logger.Refresh();
 			UpdateColor(0, Val);
 		};
 
 		Scroll[1].ScrollCallbk = [&](int Val) {
+			Logger.Push(1, L"GREEN Scroll used"); Logger.Refresh();
 			UpdateColor(1, Val);
 		};
 
 		Scroll[2].ScrollCallbk = [&](int Val) {
+			Logger.Push(1, L"BLUE Scroll used"); Logger.Refresh();
 			UpdateColor(2, Val);
 		};
 
@@ -75,6 +81,7 @@ public:
 
 	int OnSize(WPARAM wParam, LPARAM lParam) {
 
+		//CheckDefaultWinError;
 		cxClient = LOWORD(lParam);
 		cyClient = HIWORD(lParam);
 
@@ -95,7 +102,7 @@ public:
 				Helpers::HRect{ (4 * i + 1) * cxClient / 28, cyClient - 3 * cyChar / 2,
 				cxClient / 7, cyChar }, true);
 
-			CheckDefaultWinError;
+			//CheckDefaultWinError;
 		}
 		SetFocus();
 		return 0;

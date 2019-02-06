@@ -48,7 +48,9 @@ namespace LogSystem {
 
 	class WindowLog :public Log {
 	public:
-		WindowLog();
+		WindowLog() {
+			InitWindow();
+		}
 
 		void Refresh()override;
 	private:
@@ -61,7 +63,10 @@ namespace LogSystem {
 
 		void InitWindow();
 
+		
+
 		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		static void OnPaint(HWND);
 
 		HWND LogWindowHandle;
 	
