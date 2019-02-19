@@ -39,6 +39,7 @@ public:
 		Label(Himani::HString(), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this),
 		Value(Himani::HString(L"0"), WS_CHILD | WS_VISIBLE | SS_CENTER, Helpers::HRect(), *this)
 	{
+		LogSystem::QuickTimeLog Q1(Logger);
 		DeleteObject((HBRUSH)
 			SetClassLongPtr(*this, GCLP_HBRBACKGROUND,
 			(LONG)CreateSolidBrush(RGB(ClassColor[0], ClassColor[1], ClassColor[2]))));
@@ -52,6 +53,7 @@ public:
 		};
 
 		for (int i = 0; i < 3; ++i) {
+			LogSystem::QuickTimeLog Q(Logger);
 			Label[i].TextColor = colors[i];
 			Value[i].TextColor = colors[i];
 			Scroll[i].brush = Himani::HBrush(colors[i]);
@@ -59,18 +61,17 @@ public:
 		}
 
 		Scroll[0].ScrollCallbk = [&](int Val) {
-			Logger.Push(1, L"RED Scroll used");
-			Logger.Refresh();
+			Logger.Push(1, L"RED");
 			UpdateColor(0, Val);
 		};
 
 		Scroll[1].ScrollCallbk = [&](int Val) {
-			Logger.Push(1, L"GREEN Scroll used"); Logger.Refresh();
+			Logger.Push(1, L"GREEN");
 			UpdateColor(1, Val);
 		};
 
 		Scroll[2].ScrollCallbk = [&](int Val) {
-			Logger.Push(1, L"BLUE Scroll used"); Logger.Refresh();
+			Logger.Push(1, L"BLUE");
 			UpdateColor(2, Val);
 		};
 

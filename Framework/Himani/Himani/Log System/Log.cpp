@@ -10,10 +10,10 @@ namespace LogSystem {
 		std::wofstream File;
 		File.open(FileName, std::wofstream::app);
 
-		for (int i = 0; i < Entries.size(); ++i) {
+		for (int i = lastIndex; i < Entries.size(); ++i) {
 			File << Entries[i].Level << L": " << Entries[i].Entry << L"\n";
 		}
-		//Entries.clear();
+		lastIndex = Entries.size();
 	}
 
 
@@ -23,6 +23,20 @@ namespace LogSystem {
 		UpdateWindow(LogWindowHandle);
 	
 	}
+
+	void WindowLog::PushWinErrors(int ErrorCode)	{
+		wchar_t* buf;
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, ErrorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPWSTR)& buf, sizeof(buf), NULL);
+		Log::Push(1, std::wstring(buf));
+
+		//URGENT should it be deleted??
+		delete buf;
+
+	}
+
+
 	void WindowLog::DefaultColors() {
 		TextColor[LogLevels::Normal] = RGB(0, 150, 150);
 		TextColor[LogLevels::Moderate] = RGB(150, 150, 0);
@@ -37,12 +51,14 @@ namespace LogSystem {
 		wndclass.lpfnWndProc = &WindowLog::WndProc;
 		wndclass.lpszClassName = TEXT("LOGWINCLASS");
 		wndclass.style = CS_HREDRAW | CS_VREDRAW;
-		//wndclass.cbWndExtra = 4;
+		wndclass.cbWndExtra = 4;
 
 		RegisterClass(&wndclass);
 
 		LogWindowHandle = CreateWindow(TEXT("LOGWINCLASS"), TEXT("Log Window"), WS_OVERLAPPEDWINDOW | WS_VSCROLL |WS_HSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
+
 		SetWindowLongPtr(LogWindowHandle, GWLP_USERDATA, (LONG)&Entries);
+
 		UpdateWindow(LogWindowHandle);
 		ShowWindow(LogWindowHandle, SW_SHOW);
 

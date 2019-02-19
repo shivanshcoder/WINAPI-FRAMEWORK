@@ -16,14 +16,14 @@
     <Filter Include="Header Files\PrecompiledHeaders">
       <UniqueIdentifier>{2b88cc1c-2361-44e7-80cc-1a48e9d92ff9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TestingSource">
+      <UniqueIdentifier>{1363e167-06de-405b-a788-60cf3d83432c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LogSystem">
       <UniqueIdentifier>{e1e2cbfd-6ba6-4cda-8ecf-7adf2aee82fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Himani\Hpch.cpp">
       <Filter>Header Files\PrecompiledHeaders</Filter>
     </ClCompile>
@@ -53,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="Himani\Himani\Log System\Log.cpp">
       <Filter>LogSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>TestingSource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

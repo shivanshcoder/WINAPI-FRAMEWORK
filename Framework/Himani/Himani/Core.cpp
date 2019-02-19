@@ -23,5 +23,7 @@ namespace Himani {
 			(LPWSTR)&buf, sizeof(buf), NULL);
 		Data += L" Windows Error: ";
 		Data += HString(buf);
+		//URGENT should it be deleted??
+		delete buf;
 	}
 }

@@ -17,7 +17,6 @@
 #define IDC_RADIO8                      1022
 #define IDC_RADIO9                      1023
 #define IDC_RADIO10                     1024
-#define IDC_MFCMENUBUTTON1              1031
 #define ID_HELP                         40002
 #define ID_HELP_ABOUT                   40003
 #define ID_HELP_1                       40004
@@ -41,13 +40,15 @@
 #define ID_4_5                          40022
 #define ID_4_2                          40023
 #define ID_2_2                          40024
+#define ID_ELP_TEM                      40025
+#define ID_ELP_ADSD                     40026
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
-#define _APS_NEXT_COMMAND_VALUE         40025
+#define _APS_NEXT_COMMAND_VALUE         40027
 #define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
