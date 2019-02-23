@@ -106,11 +106,7 @@ namespace Himani {
 		FunctionThunk();
 		~FunctionThunk();
 
-	protected:
-		//Returns the windows Procedure specific to our class Object
-		WNDPROC Procedure() {
-			return thunk->GetThunkAddress();
-		}
+	
 
 
 	private:
@@ -127,9 +123,15 @@ namespace Himani {
 		}
 
 	protected:
+		//Returns the windows Procedure specific to our class Object
+		WNDPROC Procedure() {
+			return thunk->GetThunkAddress();
+		}
+
 		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 			return DefWindowProc(hwnd, message, wParam, lParam);
 		}
+
 
 	private:
 #if defined(_M_IX86)
@@ -150,11 +152,19 @@ namespace Himani {
 		}
 
 	protected:
+		//Returns the windows Procedure specific to our class Object
+		DLGPROC Procedure() {
+			//TODO maybe make GetThunkAddress return DGLPROC ALSO?
+			return (DLGPROC)thunk->GetThunkAddress();
+		}
+
 		virtual BOOL MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 			return DefWindowProc(hwnd, message, wParam, lParam);
 		}
 
 	private:
+		//TODO make it private?
+
 #if defined(_M_IX86)
 		static BOOL CALLBACK WndProc(HDialogProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 #elif defined(_M_AMD64)

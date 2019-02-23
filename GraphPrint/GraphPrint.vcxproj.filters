@@ -25,7 +25,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="IconDemo.rc">
+    <ResourceCompile Include="GraphPrint.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

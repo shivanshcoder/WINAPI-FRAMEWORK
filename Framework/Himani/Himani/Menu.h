@@ -26,7 +26,6 @@ namespace Himani {
 		HMenu(HMENU handle) {
 			menu = handle;
 		}
-		
 
 
 	public:

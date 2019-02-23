@@ -2,27 +2,17 @@
 #include "Dialogs.h"
 
 namespace Himani {
-	
-	HModalDialog::HModalDialog(HBaseWin * parent, int ResourceID)
-	{
-	}
-	BOOL HBaseDialog::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+
+	BOOL HBaseDialog::MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message) {
 
-			//WM_CHARTOITEM
-			//	WM_COMPAREITEM
-			//	WM_CTLCOLORBTN
-			//	WM_CTLCOLORDLG
-			//	WM_CTLCOLOREDIT
-			//	WM_CTLCOLORLISTBOX
-			//	WM_CTLCOLORSCROLLBAR
-			//	WM_CTLCOLORSTATIC
-			//	WM_INITDIALOG
-			//	WM_QUERYDRAGICON
-			//	WM_VKEYTOITEM
+		case WM_INITDIALOG: {
+			hDlg = _hDlg;
+		}break;
+
 		case WM_COMMAND:
-			OnCommand();
+			OnCommand(LOWORD(wParam));
 			break;
 
 		default:
@@ -30,5 +20,17 @@ namespace Himani {
 		}
 
 		return TRUE;
+	}
+	
+		
+	HModalDialog::HModalDialog(HBaseWin* parent, const HString& resourceName)
+		:HBaseDialog(parent, resourceName) {
+
+		DialogBox(Himani::Instance(), resourceName.c_str(), (HWND)* parent, Procedure());
+	}
+	
+	HModalDialog::HModalDialog(HBaseWin* parent, int resourceID)
+		: HBaseDialog(parent, resourceID) {
+		DialogBox(Himani::Instance(), MAKEINTRESOURCE(resourceID), (HWND)* parent, Procedure());
 	}
 }
