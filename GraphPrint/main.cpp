@@ -10,9 +10,13 @@ const TCHAR Caption[] = TEXT("Clipboard Text Transfers - Unicode Version");
 class MyDialogBox :public Himani::HModalDialog {
 
 public:
-	MyDialogBox(Himani::HBaseWin* parent)
+	MyDialogBox(Himani::HBaseWin& parent)
 		:HModalDialog(parent, IDD_DIALOG1) {
-		__debugbreak();
+		StartDialog();
+	}
+
+	void OnInit()override {
+
 	}
 
 	void OnCommand(int ID)override {
@@ -22,36 +26,41 @@ public:
 			EndDialog(TRUE);
 		}
 	}
-};
 
+	int selectedColor = IDC_BLACK;
+	int selectedFigure = IDC_RECTANGLE;
+};
 
 class MyMenu :public Himani::HMenu {
 public:
-	MyMenu(Himani::HBaseWin *parent) :HMenu(IDR_MENU1), Parent(parent) {}
+	MyMenu(Himani::HBaseWin &parent) :HMenu(IDR_MENU1), Parent(parent) {}
 
 	int callback(int ID)override {
 		switch (ID) {
 		case ID_HELP_ABOUT: {
-			MyDialogBox box(Parent);
+			
 		}
-							return 0;
+			return 0;
 	}
-
 	}
 
 private:
-	Himani::HBaseWin* Parent;
+	Himani::HBaseWin& Parent;
 };
 
 
 class ClipText :public Himani::HCustomApplication {
 public:
+	int iCurrentColor = IDC_BLACK;
+	int iCurrentFigure = IDC_RECTANGLE;
+
+
 	//IconDemo():HCustomApplication(L"IconDemo",WS_OVERLAPPEDWINDOW) {}
 
 	ClipText() 
-	:Menu(this){
+	/*:Menu(*this)*/{
 		CreateWin(L"Temp", WS_OVERLAPPEDWINDOW, Helpers::HRect(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
-		SetMenu(Menu.menu);
+		//SetMenu(Menu.menu);
 	}
 
 	CLASS_PROPERTIES(ClipText,CS_VREDRAW|CS_HREDRAW,NULL)
@@ -79,8 +88,8 @@ public:
 
 	int OnCommand(WPARAM wParam, LPARAM lParam) {
 		//Menu was used
-		if (lParam == NULL)
-			Menu.callback(LOWORD(wParam));
+	//	if (lParam == NULL)
+		//	Menu.callback(LOWORD(wParam));
 		//else child sent a message
 		return 0;
 	}
@@ -88,7 +97,7 @@ public:
 private:
 	int cxClient, cyClient;
 	int cxIcon, cyIcon;
-	MyMenu Menu;
+	//MyMenu Menu;
 };
 
 MESSAGE_MAP_BEGIN(ClipText)

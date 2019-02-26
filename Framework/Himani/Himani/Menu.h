@@ -10,12 +10,12 @@ namespace Himani {
 		HMenu(int ResourceID) {
 			menu = LoadMenu(Instance(), MAKEINTRESOURCE(ResourceID));
 			
-		//	Init();
+	
 		}
 
 		HMenu(const HString& Resource) {
 			menu = LoadMenu(Instance(), Resource.c_str());
-		//	Init();
+
 		}
 
 	//	~HMenu();
@@ -27,8 +27,37 @@ namespace Himani {
 			menu = handle;
 		}
 
+		class MenuItem {
+		public:
+			MenuItem(int Index, HMENU handleMenu)
+			:index(Index), parentMenu(handleMenu){}
+
+			bool Enable() {
+				EnableMenuItem(parentMenu, index, MF_ENABLED | MF_BYPOSITION);
+			}
+			bool Grayed() {
+				EnableMenuItem(parentMenu, index, MF_GRAYED| MF_BYPOSITION);
+			}
+			bool Disable() {
+				EnableMenuItem(parentMenu, index, MF_DISABLED | MF_BYPOSITION);
+			}
+
+			DWORD Check() {
+				CheckMenuItem(parentMenu, index, MF_CHECKED | MF_BYPOSITION);
+			}
+			DWORD UnCheck() {
+				CheckMenuItem(parentMenu, index, MF_UNCHECKED | MF_BYPOSITION);
+			}
+
+		private:
+			int index = 0;
+			HMENU parentMenu = NULL;
+		};
 
 	public:
+
+
+
 		HMenu operator[](int Index) {
 			HMENU Submenu = GetSubMenu(menu, Index);
 			if (Submenu) {
@@ -44,7 +73,6 @@ namespace Himani {
 			Info.dwStyle = MNS_NOTIFYBYPOS;
 
 			SetMenuInfo(menu, &Info);
-			CheckDefaultWinError;
 		}
 		//URGENT remove later
 	public:

@@ -30,7 +30,9 @@ namespace Himani {
 		}
 
 		~HBaseWin() {}
-	protected:
+
+		//Should it be protected?
+	//protected:
 		//Checks if the handle to window is nullptr or not
 		HWND Handle() {
 			if (!hwnd)

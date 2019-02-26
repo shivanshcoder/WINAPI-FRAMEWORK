@@ -7,20 +7,22 @@ namespace Himani {
 
 	class HBaseWin;
 
-	class HBaseDialog :public HDialogProc{
+	class HBaseDialog :public HDialogProc {
 	public:
-		HBaseDialog(HBaseWin* parent, const HString& resourceName)
+		HBaseDialog(HBaseWin& parent, const HString& resourceName)
 			:Parent(parent), ResourceName(resourceName) {}
 
-		HBaseDialog(HBaseWin* parent, int resourceID)
+		HBaseDialog(HBaseWin& parent, int resourceID)
 			:Parent(parent), ResourceID(resourceID) {}
 
 		virtual BOOL MessageFunc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
 
+		virtual void OnInit() {}
+
 		virtual void OnCommand(int ID) = 0;
 
 	protected:
-		HBaseWin *Parent;
+		HBaseWin& Parent;
 		int ResourceID;
 		HString ResourceName;
 
@@ -44,16 +46,19 @@ namespace Himani {
 	Simply Create Instance of this Class to get a ModalDialog box and this doesn't return untill the
 	Dialog Box processing is complete
 	*/
-	class HModalDialog :public HBaseDialog{
+	class HModalDialog :public HBaseDialog {
 	public:
-		//Constructor Initializes the ModalDialog
-
+		
 		using HBaseDialog::HBaseDialog;
 
 	protected:
-		void InitDialog() {
-			if(ResourceID)
-				DialogBox(Instance(), MAKEINTRESOURCE(ResourceID),*Parent, 
+
+		//Should be called in Constructor of the Derived class
+		void StartDialog() {
+			DialogBox(Instance(),
+				(ResourceID) ? MAKEINTRESOURCE(ResourceID) : ResourceName.c_str(),
+				Parent.Handle(), Procedure()
+			);
 		}
 	};
 
@@ -62,12 +67,12 @@ namespace Himani {
 	Modless DIalog Box Class
 	Saves the data using constructor and simply call Init function to start the Modless DialogBox
 	*/
-	class HModlessDialog :public HBaseDialog{
+	class HModlessDialog :public HBaseDialog {
 	public:
 		using HBaseDialog::HBaseDialog;
 
 		//Initializes the Modless Dialog
-		void Init();
+		void StartDialog();
 	};
 
 }
