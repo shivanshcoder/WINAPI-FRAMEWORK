@@ -9,19 +9,16 @@ namespace Himani {
 	public:
 		HMenu(int ResourceID) {
 			menu = LoadMenu(Instance(), MAKEINTRESOURCE(ResourceID));
-			
-	
 		}
 
 		HMenu(const HString& Resource) {
 			menu = LoadMenu(Instance(), Resource.c_str());
-
 		}
 
-	//	~HMenu();
 
-		virtual int callback(int ID);
-
+		//~HMenu() {
+		//	DestroyMenu(menu);
+		//}
 	private:
 		HMenu(HMENU handle) {
 			menu = handle;
@@ -30,13 +27,22 @@ namespace Himani {
 		class MenuItem {
 		public:
 			MenuItem(int Index, HMENU handleMenu)
-			:index(Index), parentMenu(handleMenu){}
+				:index(Index), parentMenu(handleMenu) {
+				wchar_t temp[64];
+				GetMenuString(parentMenu, Index, temp, 64, MF_BYPOSITION);
+				//URGENT
+				HMENU Submenu = GetSubMenu(parentMenu, Index);
+				if (Submenu) {
+					parentMenu = Submenu;
+					index = -1;
+				}
+			}
 
 			bool Enable() {
 				EnableMenuItem(parentMenu, index, MF_ENABLED | MF_BYPOSITION);
 			}
 			bool Grayed() {
-				EnableMenuItem(parentMenu, index, MF_GRAYED| MF_BYPOSITION);
+				EnableMenuItem(parentMenu, index, MF_GRAYED | MF_BYPOSITION);
 			}
 			bool Disable() {
 				EnableMenuItem(parentMenu, index, MF_DISABLED | MF_BYPOSITION);
@@ -49,6 +55,12 @@ namespace Himani {
 				CheckMenuItem(parentMenu, index, MF_UNCHECKED | MF_BYPOSITION);
 			}
 
+			MenuItem operator[](int Index) {
+			//	HMENU subMenu = GetSubMenu(parentMenu, index);
+			//	if (subMenu) {
+					return HMenu(parentMenu)[Index];
+				//}
+			}
 		private:
 			int index = 0;
 			HMENU parentMenu = NULL;
@@ -56,14 +68,9 @@ namespace Himani {
 
 	public:
 
-
-
-		HMenu operator[](int Index) {
-			HMENU Submenu = GetSubMenu(menu, Index);
-			if (Submenu) {
-				return HMenu(Submenu);
-			}
-			return *this;
+		MenuItem operator[](int Index) {
+			
+			return MenuItem(Index, menu);
 		}
 
 		void Init() {
@@ -74,8 +81,9 @@ namespace Himani {
 
 			SetMenuInfo(menu, &Info);
 		}
-		//URGENT remove later
-	public:
+
+
+	private:
 		HMENU menu;
 	};
 

@@ -65,7 +65,10 @@ namespace Himani {
 		std::shared_ptr<HBaseObject>Object;
 	};
 
-
+	/*
+		Pen Class for GDI
+	*/
+	//TODO Try Implementing GDI objects like the Shared_ptr Implementation
 	class HPen :public HGDIObject {
 		friend class DC;
 

@@ -31,22 +31,6 @@ public:
 	int selectedFigure = IDC_RECTANGLE;
 };
 
-class MyMenu :public Himani::HMenu {
-public:
-	MyMenu(Himani::HBaseWin &parent) :HMenu(IDR_MENU1), Parent(parent) {}
-
-	int callback(int ID)override {
-		switch (ID) {
-		case ID_HELP_ABOUT: {
-			
-		}
-			return 0;
-	}
-	}
-
-private:
-	Himani::HBaseWin& Parent;
-};
 
 
 class ClipText :public Himani::HCustomApplication {
@@ -59,6 +43,8 @@ public:
 
 	ClipText() 
 	/*:Menu(*this)*/{
+		Himani::HMenu tempMenu(IDR_MENU2);
+		tempMenu[0][0][1][1];
 		CreateWin(L"Temp", WS_OVERLAPPEDWINDOW, Helpers::HRect(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT));
 		//SetMenu(Menu.menu);
 	}
