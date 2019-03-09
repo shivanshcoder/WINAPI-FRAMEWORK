@@ -24,7 +24,7 @@ namespace Himani {
 		DEFINE_CLASSNAME(scrollbar)
 
 	public:
-		HScrollBar(int ScrollBarStyle, Helpers::HRect Size, const HBaseWin &Parent) :HControls(Parent) {
+		HScrollBar(int ScrollBarStyle, Helpers::HRect Size, const HWindow &Parent) :HControls(Parent) {
 			CreateWin(HString(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
 		}
 
@@ -49,7 +49,7 @@ namespace Himani {
 	public:
 		OVERRIDE_PREDEFINEDCLASS(static)
 
-			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HBaseWin &_Parent = HBaseWin()) :HPredefinedWindow{ _Parent } {
+			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HWindow &_Parent = HWindow()) :HPredefinedWindow{ _Parent } {
 			CreateWin(Tittle, Style, Size, (HMENU)this);
 		}
 
@@ -78,7 +78,7 @@ namespace Himani {
 		//HBrush BckBrush;
 	};
 
-	class Button :public HWindow {
+	class Button :public HCustomWindow {
 		//overrides Windwos button class
 		DEFINE_CLASSNAME(button)
 

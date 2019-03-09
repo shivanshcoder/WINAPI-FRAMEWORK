@@ -8,7 +8,7 @@
 
 namespace Himani {
 
-	class HCustomApplication :public HWindow {
+	class HCustomApplication :public HCustomWindow {
 
 	public:
 		HCustomApplication() = default;
@@ -18,7 +18,7 @@ namespace Himani {
 
 		virtual WPARAM MessageProcess();
 
-		//Can be overriden Called after HWindow creation
+		//Can be overriden Called after HCustomWindow creation
 		virtual WPARAM start() { return Run(); }
 		virtual void Idle() {}
 

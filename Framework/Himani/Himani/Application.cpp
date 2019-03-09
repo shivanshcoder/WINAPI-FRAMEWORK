@@ -4,8 +4,8 @@
 namespace Himani {
 	WPARAM Himani::HCustomApplication::Run() {
 
-		ShowWindow(*this, Himani::CmdShow());
-		UpdateWindow(*this);
+		Show(Himani::CmdShow());
+		Update();
 		return MessageProcess();
 	}
 

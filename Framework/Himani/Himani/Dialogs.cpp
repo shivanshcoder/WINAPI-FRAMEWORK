@@ -8,7 +8,7 @@ namespace Himani {
 		switch (message) {
 
 		case WM_INITDIALOG: {
-			hwnd = _hDlg;
+			InitHandle(_hDlg);
 			return OnInit();
 		}
 
@@ -26,13 +26,13 @@ namespace Himani {
 	}
 	
 		
-	/*HModalDialog::HModalDialog(HBaseWin& parent, const HString& resourceName)
+	/*HModalDialog::HModalDialog(HWindow& parent, const HString& resourceName)
 		:HBaseDialog(parent, resourceName) {
 
 		DialogBox(Himani::Instance(), resourceName.c_str(), (HWND)* parent, Procedure());
 	}
 	
-	HModalDialog::HModalDialog(HBaseWin& parent, int resourceID)
+	HModalDialog::HModalDialog(HWindow& parent, int resourceID)
 		: HBaseDialog(parent, resourceID) {
 		DialogBox(Himani::Instance(), MAKEINTRESOURCE(resourceID), (HWND)* parent, Procedure());
 	}*/

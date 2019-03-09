@@ -2,13 +2,8 @@
 #include"Himani.h"
 #include"resource.h"
 
-#define CF_TCHAR CF_UNICODETEXT
-const TCHAR DefaultText[] = TEXT("Defalt Text - UNICODE Version");
-const TCHAR Caption[] = TEXT("Clipboard Text Transfers - Unicode Version");
 
-
-//TODO  make it HBaseWin Compatible
-void PaintWindow(HWND Window, int Color, int Figure) {
+void PaintWindow(Himani::HWindow& Window, int Color, int Figure) {
 	COLORREF Colors[8] = {
 		RGB(0,0,0), RGB(0,0,255),
 		RGB(0,255,0), RGB(0,255,255),
@@ -16,11 +11,10 @@ void PaintWindow(HWND Window, int Color, int Figure) {
 		RGB(255,255,0), RGB(255,255,255)
 	};
 
-	Himani::QuickDC dc(Window);
+	Himani::QuickDC dc(Window.Handle());
 	RECT rect;
 
-	GetClientRect(Window, &rect);
-
+	GetClientRect(Window.Handle(), &rect);
 
 	Himani::HBrush Brush(Colors[Color - IDC_BLACK]);
 
@@ -30,7 +24,6 @@ void PaintWindow(HWND Window, int Color, int Figure) {
 		Rectangle(dc, rect.left, rect.top, rect.right, rect.bottom);
 	else
 		Ellipse(dc, rect.left, rect.top, rect.right, rect.bottom);
-
 }
 
 
@@ -38,10 +31,9 @@ void PaintWindow(HWND Window, int Color, int Figure) {
 class MyDialogBox :public Himani::HModalDialog {
 
 public:
-	MyDialogBox(Himani::HBaseWin& parent, int oldColor, int oldFigure)
+	MyDialogBox(Himani::HWindow& parent, int oldColor, int oldFigure)
 		:HModalDialog(parent, IDD_DIALOG1), selectedColor(oldColor), selectedFigure(oldFigure) {
 			StartDialog();
-	//	DialogBox(Himani::Instance(), MAKEINTRESOURCE(IDD_DIALOG1), parent, Procedure());
 	}
 
 
@@ -49,8 +41,9 @@ public:
 		CheckRadioButton(IDC_BLACK, IDC_WHITE, selectedColor);
 		CheckRadioButton(IDC_RECTANGLE, IDC_ELLIPSE, selectedFigure);
 
-		ctrlBlock = GetDlgItem(Handle(), IDC_PAINT);
-		::SetFocus(GetDlgItem(Handle(), selectedColor));
+		ctrlBlock = GetItem(IDC_PAINT);
+
+		GetItem(selectedColor).SetFocus();
 
 		return false;
 	}
@@ -60,9 +53,8 @@ public:
 		return false;
 	}
 	void PaintBlock() {
-		::InvalidateRect(ctrlBlock, NULL, true);
-		//InvalidateWhole(true);
-		UpdateWindow(ctrlBlock);
+		ctrlBlock.InvalidateClient(true);
+		ctrlBlock.Update();
 
 		PaintWindow(ctrlBlock, selectedColor, selectedFigure);
 	}
@@ -99,7 +91,7 @@ public:
 
 	int selectedColor = IDC_BLACK;
 	int selectedFigure = IDC_RECTANGLE;
-	HWND ctrlBlock;
+	HWindow ctrlBlock;
 };
 
 class ClipText :public Himani::HCustomApplication {
@@ -125,7 +117,7 @@ public:
 
 	int OnPaint() {
 		{
-			Himani::PaintDC dc(*this);
+			Himani::PaintDC dc(Handle());
 		}
 		PaintWindow(*this, iCurrentColor, iCurrentFigure);
 		return 0;
@@ -140,10 +132,9 @@ public:
 			iCurrentFigure = Box.selectedFigure;
 
 
-			InvalidateWhole(true);
-			//::InvalidateRect(*this, NULL, TRUE);
-
+			InvalidateClient(true);
 		}
+
 		}
 		return 0;
 	}
@@ -151,7 +142,6 @@ public:
 private:
 	int cxClient, cyClient;
 	int cxIcon, cyIcon;
-	//MyMenu Menu;
 };
 
 MESSAGE_MAP_BEGIN(ClipText)

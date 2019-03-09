@@ -5,14 +5,14 @@
 
 namespace Himani {
 
-	class HBaseWin;
+	class HWindow;
 
-	class HBaseDialog :public HWrapperWin, public HDialogProc {
+	class HBaseDialog :public HWindow, public HDialogProc {
 	public:
-		HBaseDialog(HBaseWin& parent, const HString& resourceName)
+		HBaseDialog(HWindow& parent, const HString& resourceName)
 			:Parent(parent), ResourceName(resourceName) {}
 
-		HBaseDialog(HBaseWin& parent, int resourceID)
+		HBaseDialog(HWindow& parent, int resourceID)
 			:Parent(parent), ResourceID(resourceID) {}
 
 		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
@@ -22,7 +22,7 @@ namespace Himani {
 		virtual void OnCommand(int ID) = 0;
 
 	protected:
-		HBaseWin& Parent;
+		HWindow& Parent;
 		int ResourceID;
 		HString ResourceName;
 
@@ -37,10 +37,12 @@ namespace Himani {
 			::CheckRadioButton(Handle(), StartID, EndID, CheckItemID);
 		}
 
-		//TODO
-	//private:
-	//protected:
-	//	HWND hDlg;
+		HWindow GetItem(int ItemID) {
+			//HWindow temp = ::GetDlgItem(Handle(), ItemID);
+			return ::GetDlgItem(Handle(), ItemID);
+		}
+
+
 	};
 
 	/*

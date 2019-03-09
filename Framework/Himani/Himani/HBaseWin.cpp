@@ -21,43 +21,49 @@ namespace Himani {
 	}
 
 
-	void HWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
+	void HCustomWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
 		bool ValidClass = __ClassProp();
 
 		if (!ValidClass)
 			throw Himani::Exceptions(L"Class Not Registered");
 
-		hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 			Tittle.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
-			wndParent.hwnd, //Parent HWindow
+			(HWND)wndParent, //Parent HCustomWindow
 			Menu, Instance(),
 			Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
 		);
+		InitHandle(tempHandle);
 
-		if (!hwnd)
-			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
+		if (!tempHandle)
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
 
 	}
 	void HPredefinedWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
 
-		hwnd = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
 			Tittle.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
-			Parent(), //Parent HWindow
+			(HWND)Parent(), //Parent HCustomWindow
 			Menu, Instance(), nullptr
 		);
-		if ((!hwnd))
-			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
-		OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
+		InitHandle(tempHandle);
+
+		if (!tempHandle)
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
+
+
+		OldProc = (WNDPROC)SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LONG_PTR)Procedure());
+
 
 		if (!OldProc)
-			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Procedure swap Unsuccessful");
+			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Procedure swap Unsuccessful");
 
 	}
 
 
-	HString HWrapperWin::GetWinText() {
+	HString HWindow::GetWinText() {
 		int size = GetWindowTextLength(Handle());
 		HString str;
 		str.resize(size);
@@ -65,13 +71,13 @@ namespace Himani {
 		GetWindowText(Handle(), &str[0], size);
 		return str;
 	}
-	Helpers::HRect HWrapperWin::GetClientRect() {
+	Helpers::HRect HWindow::GetClientRect() {
 		Helpers::HRect rect;
 		::GetClientRect(Handle(), &rect.rect);
 
 		return rect;
 	}
-	Helpers::HRect HWrapperWin::GetWinRect() {
+	Helpers::HRect HWindow::GetWinRect() {
 		Helpers::HRect rect;
 		::GetWindowRect(Handle(), &rect.rect);
 		return rect;

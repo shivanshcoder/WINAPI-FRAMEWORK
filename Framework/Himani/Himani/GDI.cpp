@@ -9,6 +9,7 @@ namespace Himani {
 
 		Object = std::make_shared<HBaseObject>(Obj, stockObject);
 	}
+
 	 Region::Region(bool Elliptical, Helpers::HRect rect) {
 		if (Elliptical) {
 			Init(CreateEllipticRgnIndirect(&rect.rect), false);
@@ -17,6 +18,7 @@ namespace Himani {
 			Init(CreateRectRgnIndirect(&rect.rect), false);
 		}
 	}
+
 	Region::Region(std::vector<POINT> Points, int PolyFillMode) {
 		Init(CreatePolygonRgn(&Points[0], Points.size(), PolyFillMode), false);
 	}

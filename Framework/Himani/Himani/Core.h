@@ -23,16 +23,7 @@ namespace Himani {
 	}
 
 
-	//TODO make HandleWrapperClass for all types of handles
-	template<class HandleType>
-	class HHandleWrappersClass {
-
-
-	private:
-		HandleType Handle;
-	};
-
-
+	
 
 #pragma region ErrorHandling
 
@@ -42,9 +33,9 @@ namespace Himani {
 
 	public:
 
-		Exceptions(const HString &data = L"Unknown Error") :Data(data) {}
+		Exceptions(const HString &data = TEXT("Unknown Error")) :Data(data) {}
 		
-		Exceptions(int LineNumber, const HString FilePath, const HString &data = L"Unknown Error");
+		Exceptions(int LineNumber, const HString FilePath, const HString &data = TEXT("Unknown Error"));
 
 		const wchar_t * what() {
 			return Data.c_str();
@@ -84,5 +75,44 @@ namespace Himani {
 	/*------------------------------------Error Handling------------------------------------*/
 
 #pragma endregion
+
+
+
+	//TODO make HandleWrapperClass for all types of handles
+	template<class HandleType>
+	class HHandleWrapperBaseClass {
+	public:
+		HHandleWrapperBaseClass() {
+			handle = (nullptr);
+		}
+		HHandleWrapperBaseClass(HandleType __handle) {
+			handle = __handle;
+		}
+
+		HandleType Handle()const {
+			if (handle)
+				return handle;
+			else
+				throw Exceptions(TEXT("Invalid Handle Being Returned!"));
+		}
+
+
+		explicit operator HandleType() {
+			return handle;
+		}
+
+		//This should be Protected?
+	//protected:
+		void InitHandle(HandleType __handle) {
+			handle = __handle;
+		}
+		
+		virtual ~HHandleWrapperBaseClass() {}
+
+	private:
+		HandleType handle;
+	};
+
+
 
 }
