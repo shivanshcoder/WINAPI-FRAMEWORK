@@ -63,6 +63,9 @@ namespace Himani {
 		void InvalidateRect(Helpers::HRect rect, bool redraw) {
 			::InvalidateRect(Handle(), &rect.rect, redraw);
 		}
+		void InvalidateWhole(bool redraw){
+			::InvalidateRect(Handle(), NULL, redraw);
+		}
 
 		
 		void Update() {
@@ -146,9 +149,7 @@ namespace Himani {
 		virtual bool __ClassProp() { return 0; }
 
 
-		//TODO make it void
-		HWND CreateWin(const HString &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr);
-
+		void CreateWin(const HString &Tittle, DWORD style, Helpers::HRect size, HMENU Menu = nullptr);
 
 		HBaseWin wndParent;
 	};

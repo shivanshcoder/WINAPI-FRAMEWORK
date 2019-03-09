@@ -8,14 +8,16 @@ namespace Himani {
 		switch (message) {
 
 		case WM_INITDIALOG: {
-			hDlg = _hDlg;
-			OnInit();
-		}break;
+			hwnd = _hDlg;
+			return OnInit();
+		}
 
 		case WM_COMMAND:
-			OnCommand(_hDlg, LOWORD(wParam));
+			OnCommand(LOWORD(wParam));
 			break;
 
+		case WM_PAINT:
+			return OnPaint();
 		default:
 			return FALSE;
 		}

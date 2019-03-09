@@ -20,9 +20,8 @@ namespace Himani {
 		return true;
 	}
 
-	//TODO make it void
 
-	HWND HWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
+	void HWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
 		bool ValidClass = __ClassProp();
 
 		if (!ValidClass)
@@ -38,7 +37,7 @@ namespace Himani {
 
 		if (!hwnd)
 			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HWindow Creation Unsuccessful");
-		return hwnd;
+
 	}
 	void HPredefinedWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
 

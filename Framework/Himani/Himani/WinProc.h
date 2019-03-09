@@ -136,7 +136,13 @@ namespace Himani {
 #elif defined(_M_AMD64)
 		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HWindowsProc* pThis) {
 #endif
-			return pThis->MessageFunc(hwnd, message, wParam, lParam);
+			try {
+				return pThis->MessageFunc(hwnd, message, wParam, lParam);
+			}
+			//TODO add std::exception Handling
+			catch (Himani::Exceptions & e) {
+				MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
+			}
 		}
 
 	};
@@ -151,7 +157,6 @@ namespace Himani {
 	protected:
 		//Returns the windows Procedure specific to our class Object
 		DLGPROC Procedure() {
-			//TODO maybe make GetThunkAddress return DGLPROC ALSO?
 			return (DLGPROC)thunk->GetThunkAddress();
 		}
 
@@ -160,14 +165,18 @@ namespace Himani {
 		}
 
 	private:
-		//TODO make it private?
-
 #if defined(_M_IX86)
 		static BOOL CALLBACK WndProc(HDialogProc* pThis, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 #elif defined(_M_AMD64)
 		static BOOL CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HDialogProc* pThis) {
 #endif
-			return pThis->MessageFunc(hwnd, message, wParam, lParam);
+			try {
+				return pThis->MessageFunc(hwnd, message, wParam, lParam);
+			}
+			//TODO add std::exception Handling
+			catch (Himani::Exceptions & e) {
+				MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
+			}
 		}
 
 	};

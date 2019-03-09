@@ -53,7 +53,7 @@ HANDLE winThunk::eHeapAddr = NULL;
 
 #pragma pack(push, 2)
 
-bool winThunk::Init(void *pThis, DWORD_PTR proc) {
+bool winThunk::Init(void* pThis, DWORD_PTR proc) {
 	RaxMov = 0xb848;                    //movabs rax (48 B8), pThis
 	RaxImm = (unsigned long long)pThis; //
 	RspMov = 0x24448948;                //mov qword ptr [rsp+28h], rax (48 89 44 24 28)

@@ -7,7 +7,7 @@ namespace Himani {
 
 	class HBaseWin;
 
-	class HBaseDialog :public HDialogProc {
+	class HBaseDialog :public HWrapperWin, public HDialogProc {
 	public:
 		HBaseDialog(HBaseWin& parent, const HString& resourceName)
 			:Parent(parent), ResourceName(resourceName) {}
@@ -17,9 +17,9 @@ namespace Himani {
 
 		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
 
-		virtual void OnInit() {}
-
-		virtual void OnCommand(HWND _hDlg, int ID) = 0;
+		virtual bool OnInit() { return FALSE; }
+		virtual bool OnPaint() { return FALSE; }
+		virtual void OnCommand(int ID) = 0;
 
 	protected:
 		HBaseWin& Parent;
@@ -29,19 +29,18 @@ namespace Himani {
 		/*Wrapper Functions*/
 
 		void EndDialog(int returnVal) {
-			::EndDialog(hDlg, returnVal);
+			::EndDialog(Handle(), returnVal);
 		}
 
 	public:
 		void CheckRadioButton(int StartID, int EndID, int CheckItemID) {
-			auto ret = ::CheckRadioButton(hDlg, StartID, EndID, CheckItemID);
-			return;
+			::CheckRadioButton(Handle(), StartID, EndID, CheckItemID);
 		}
 
 		//TODO
 	//private:
-	protected:
-		HWND hDlg;
+	//protected:
+	//	HWND hDlg;
 	};
 
 	/*
