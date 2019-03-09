@@ -168,7 +168,7 @@ namespace Himani {
 
 	public:
 		//if hwnd is nullptr, it won't get automatically deleted!
-		DC(HWND _hwnd)
+		DC(HWindow _hwnd)
 			:hwnd(_hwnd) {}
 
 		/*			Wrappers				*/
@@ -221,16 +221,17 @@ namespace Himani {
 		}
 
 		virtual ~DC() {
-			if (hwnd) {
-				::ReleaseDC(hwnd, hdc);
-			}
+			//if (hwnd) {
+				::ReleaseDC(hwnd.Handle(), hdc);
+		//	}
 		}
 
 		DC(DC&) = delete;
 		DC& operator=(DC&) = delete;
 
 	protected:
-		HWND hwnd;
+		//HWND hwnd;
+		HWindow hwnd;
 		HDC hdc;
 	};
 
@@ -259,8 +260,8 @@ namespace Himani {
 	class QuickDC :public DC {
 	public:
 		//TODO make it HWindow compatible only
-		QuickDC(HWND _hwnd) :DC(_hwnd) {
-			hdc = GetDC(_hwnd);
+		QuickDC(HWindow _hwnd) :DC(_hwnd) {
+			hdc = GetDC(_hwnd.Handle());
 		}
 
 		//
@@ -280,7 +281,7 @@ namespace Himani {
 	public:
 		PaintDC(HWND _hwnd) :SafeDC(_hwnd) {
 			hwnd = _hwnd;
-			hdc = BeginPaint(hwnd, &ps);
+			hdc = BeginPaint(hwnd.Handle(), &ps);
 		}
 
 		operator HDC() {
@@ -288,9 +289,9 @@ namespace Himani {
 		}
 
 		~PaintDC() {
-			if (hwnd) {
-				EndPaint(hwnd, &ps);
-			}
+			//if (hwnd) {
+				EndPaint(hwnd.Handle(), &ps);
+			//}
 		}
 
 		PaintDC(PaintDC&) = delete;
