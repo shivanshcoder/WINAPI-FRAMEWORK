@@ -24,6 +24,6 @@ namespace Himani {
 		Data += L" Windows Error: ";
 		Data += HString(buf);
 		//URGENT should it be deleted??
-		delete buf;
+		//delete buf;
 	}
 }

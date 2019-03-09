@@ -13,7 +13,7 @@ namespace Himani {
 		}break;
 
 		case WM_COMMAND:
-			OnCommand(LOWORD(wParam));
+			OnCommand(_hDlg, LOWORD(wParam));
 			break;
 
 		default:

@@ -67,6 +67,14 @@ namespace Himani {
 
 #define CheckDefaultWinError	if (GetLastError())	throw Himani::WinExceptions(__LINE__,TEXT(__FILE__))
 
+	//Delete or make something else
+#define CheckTempError if(GetLastError()){\
+	wchar_t *buf;	\
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,\
+		NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),\
+		(LPWSTR)& buf, sizeof(buf), NULL);\
+	__debugbreak();\
+	}
 
 #define DISABLE_CLASS_COPY_ASSIGNMENT(ClassName) \
 	ClassName(const ClassName&) = delete;\

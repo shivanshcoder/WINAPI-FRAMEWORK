@@ -15,11 +15,11 @@ namespace Himani {
 		HBaseDialog(HBaseWin& parent, int resourceID)
 			:Parent(parent), ResourceID(resourceID) {}
 
-		virtual BOOL MessageFunc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
+		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
 
 		virtual void OnInit() {}
 
-		virtual void OnCommand(int ID) = 0;
+		virtual void OnCommand(HWND _hDlg, int ID) = 0;
 
 	protected:
 		HBaseWin& Parent;
@@ -34,10 +34,13 @@ namespace Himani {
 
 	public:
 		void CheckRadioButton(int StartID, int EndID, int CheckItemID) {
-			::CheckRadioButton(hDlg, StartID, EndID, CheckItemID);
+			auto ret = ::CheckRadioButton(hDlg, StartID, EndID, CheckItemID);
+			return;
 		}
 
-	private:
+		//TODO
+	//private:
+	protected:
 		HWND hDlg;
 	};
 

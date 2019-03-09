@@ -14,6 +14,7 @@ namespace Himani {
 	class HBaseWin {
 		friend class HWindow;
 		friend class HPredefinedWindow;
+		friend class HBaseDialog;
 		//friend class HWrapperWin;
 	public:
 		//Return Empty HBaseWin as nullptr
@@ -61,6 +62,11 @@ namespace Himani {
 
 		void InvalidateRect(Helpers::HRect rect, bool redraw) {
 			::InvalidateRect(Handle(), &rect.rect, redraw);
+		}
+
+		
+		void Update() {
+			::UpdateWindow(Handle());
 		}
 
 		void MoveWindow(Helpers::HRect rect, bool Repaint) {

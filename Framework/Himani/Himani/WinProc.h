@@ -106,9 +106,6 @@ namespace Himani {
 		FunctionThunk();
 		~FunctionThunk();
 
-	
-
-
 	private:
 		winThunk * thunk;
 		static HANDLE eHeapAddr;
@@ -159,7 +156,7 @@ namespace Himani {
 		}
 
 		virtual BOOL MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-			return DefWindowProc(hwnd, message, wParam, lParam);
+			return TRUE;
 		}
 
 	private:

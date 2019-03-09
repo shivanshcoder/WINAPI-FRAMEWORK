@@ -258,6 +258,7 @@ namespace Himani {
 
 	class QuickDC :public DC {
 	public:
+		//TODO make it HBaseWin compatible only
 		QuickDC(HWND _hwnd) :DC(_hwnd) {
 			hdc = GetDC(_hwnd);
 		}
