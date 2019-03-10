@@ -17,8 +17,8 @@ namespace Himani {
 
 		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
 
-		virtual bool OnInit() { return FALSE; }
-		virtual bool OnPaint() { return FALSE; }
+		virtual bool OnInit() { return true; }
+		virtual bool OnPaint() { return false; }
 		virtual void OnCommand(int ID) = 0;
 
 	protected:
@@ -38,8 +38,7 @@ namespace Himani {
 		}
 
 		HWindow GetItem(int ItemID) {
-			//HWindow temp = ::GetDlgItem(Handle(), ItemID);
-			return ::GetDlgItem(Handle(), ItemID);
+			return HWindow(::GetDlgItem(Handle(), ItemID));
 		}
 
 
@@ -55,15 +54,25 @@ namespace Himani {
 		
 		using HBaseDialog::HBaseDialog;
 
+		bool Result() const{
+			return EndResult;
+		}
+
 	protected:
 
 		//Should be called in Constructor of the Derived class
 		void StartDialog() {
-			DialogBox(Instance(),
+			EndResult = DialogBox(Instance(),
 				(ResourceID) ? MAKEINTRESOURCE(ResourceID) : ResourceName.c_str(),
 				Parent.Handle(), Procedure()
 			);
 		}
+
+
+	private:
+		//True if Ok is pressed
+		//False if Cancel is pressed
+		bool EndResult;
 	};
 
 

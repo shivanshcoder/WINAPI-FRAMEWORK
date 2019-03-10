@@ -85,7 +85,8 @@ namespace Himani {
 		HHandleWrapperBaseClass() {
 			handle = (nullptr);
 		}
-		HHandleWrapperBaseClass(HandleType __handle) {
+
+		explicit HHandleWrapperBaseClass(HandleType __handle) {
 			handle = __handle;
 		}
 

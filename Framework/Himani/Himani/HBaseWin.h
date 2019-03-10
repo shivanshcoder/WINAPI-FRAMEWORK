@@ -64,6 +64,8 @@ namespace Himani {
 		void InvalidateRect(Helpers::HRect rect, bool redraw)const {
 			::InvalidateRect(Handle(), &rect.rect, redraw);
 		}
+
+		//Invalidates whole Cient Area
 		void InvalidateClient(bool redraw)const{
 			::InvalidateRect(Handle(), NULL, redraw);
 		}

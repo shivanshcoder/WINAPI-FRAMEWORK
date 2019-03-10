@@ -188,8 +188,14 @@ namespace Himani {
 			::TextOut(hdc, point.x, point.y, string.c_str(), string.size());
 		}
 
+		void SetBkColor(COLORREF color) {
+			::SetBkColor(hdc, color);
+		}
 
-
+		void SetTextColor(COLORREF color) {
+			::SetTextColor(hdc, color);
+		}
+		
 		bool FillRect(Helpers::HRect HRect, HBrush &HBrush) {
 			return ::FillRect(hdc, &HRect.rect, static_cast<HBRUSH>(HBrush));
 		}
@@ -264,22 +270,22 @@ namespace Himani {
 			hdc = GetDC(_hwnd.Handle());
 		}
 
-		//
-		QuickDC(HDC dc):DC(nullptr) {
-			hdc = dc;
-		}
+		//URGENT
+		//SHouldn' it be disabled?
+		//QuickDC(HDC dc):DC(nullptr) {
+		//	hdc = dc;
+		//}
 
 		QuickDC(QuickDC&) = delete;
 		QuickDC& operator=(QuickDC&) = delete;
 
 	private:
-		//		QuickDC(QuickDC&);
 	};
 
 	//Should be made in WM_PAINT message only
 	class PaintDC :public SafeDC {
 	public:
-		PaintDC(HWND _hwnd) :SafeDC(_hwnd) {
+		PaintDC(HWindow _hwnd) :SafeDC(_hwnd) {
 			hwnd = _hwnd;
 			hdc = BeginPaint(hwnd.Handle(), &ps);
 		}

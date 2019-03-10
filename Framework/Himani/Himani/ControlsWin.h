@@ -16,6 +16,9 @@ namespace Himani {
 		DECLARE_MESSAGE_MAP();
 
 		virtual INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam) = 0;
+
+		//TODO make a enum for types of derived classes? and make it pure virtual
+		virtual int ControlType()const {}
 	};
 	
 	class HScrollBar :public HControls {
