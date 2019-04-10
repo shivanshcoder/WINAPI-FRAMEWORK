@@ -1,4 +1,0 @@
-0: TEMP0
-1: TEMP1
-2: TEMP2
-3: TEMP3

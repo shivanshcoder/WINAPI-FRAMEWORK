@@ -11,7 +11,7 @@ public:
 	}
 
 	void OnCommand(int ID)override {
-		if (ID == IDOK)
+		//if (ID == IDOK)
 			EndDialog(0);
 	}
 };
@@ -35,7 +35,7 @@ public:
 
 		Ellipse(dc, Rect.left, Rect.top, Rect.right, Rect.bottom);
 		DrawText(dc, WinText.c_str(), -1, &Rect.rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-
+		return 0;
 	}
 	
 	int OnKeyUp(WPARAM wParam, LPARAM lParam) {
@@ -94,6 +94,12 @@ public:
 		}
 		return 0;
 	}
+
+	int OnDes() {
+		PostQuitMessage(0);
+		SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)(Himani::StaticWndProc));
+		return 0;
+	}
 	DECLARE_MESSAGE_MAP();
 private:
 	int cxClient, cyClient;
@@ -104,7 +110,7 @@ MESSAGE_MAP_BEGIN(ClipText)
 MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
 MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
 MESSAGE_MAP_ENTRY_PARAMS(OnCommand, WM_COMMAND)
-MESSAGE_MAP_ENTRY_SINGLE(PostQuitMessage(0), 0, WM_DESTROY)
+MESSAGE_MAP_ENTRY(OnDes, WM_DESTROY)
 MESSAGE_MAP_END(Himani::HCustomApplication)
 
 ENTRY_APP(ClipText)

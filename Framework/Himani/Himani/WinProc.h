@@ -94,6 +94,8 @@ namespace Himani {
 			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
 			//return TRUE;
 		}
+		if (message == WM_NCDESTROY)
+			__debugbreak();
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 

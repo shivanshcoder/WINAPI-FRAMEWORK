@@ -9,6 +9,7 @@ namespace LogSystem {
 
 		std::wofstream File;
 		File.open(FileName, std::wofstream::app);
+		
 
 		for (int i = lastIndex; i < Entries.size(); ++i) {
 			File << Entries[i].Level << L": " << Entries[i].Entry << L"\n";

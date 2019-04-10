@@ -2,7 +2,6 @@
 #include<chrono>
 
 
-
 namespace LogSystem {
 
 

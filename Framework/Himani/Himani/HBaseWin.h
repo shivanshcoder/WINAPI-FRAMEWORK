@@ -111,25 +111,6 @@ namespace Himani {
 	};
 
 
-#pragma region CUSTOM_CLASS_MACROS
-	//Function for Getting class Name
-#define DEFINE_CLASSNAME(ClassName__) LPCWSTR ClassName()override { return L###ClassName__; } 
-
-#define OVERRIDE_PREDEFINEDCLASS(ClassName__) DEFINE_CLASSNAME(ClassName__)
-
-//Defines WNDCLASS properties for each UserDefined Class
-#define CLASS_ALL_PROPERTIES(ClassName__, Style, Icon, IconSm, Cursor, Background, MenuName)	DEFINE_CLASSNAME(ClassName__)	\
- bool __ClassProp() override {		\
-		static bool __ValidClass = Himani::RegisterWinClass(Style, Himani::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
-		return __ValidClass;\
-}
-
-//Defines WNDCLASS properties for each UserDefined Class
-#define CLASS_PROPERTIES(ClassName__, Style, MenuName) CLASS_ALL_PROPERTIES(ClassName__, Style, (LoadIcon(NULL, IDI_APPLICATION)), NULL, (LoadCursor(NULL, IDC_ARROW)),(HBRUSH)GetStockObject(WHITE_BRUSH), MenuName)
-
-
-#pragma endregion
-
 	/*
 	------------------------	Custom HCustomWindow Classes ------------------------------
 	Derive from HCustomWindow Class

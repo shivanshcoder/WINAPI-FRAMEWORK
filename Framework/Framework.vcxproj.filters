@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
@@ -13,54 +9,58 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\PrecompiledHeaders">
-      <UniqueIdentifier>{2b88cc1c-2361-44e7-80cc-1a48e9d92ff9}</UniqueIdentifier>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{8e9338fe-344c-4972-a7ac-ba5708c7fefd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TestingSource">
-      <UniqueIdentifier>{1363e167-06de-405b-a788-60cf3d83432c}</UniqueIdentifier>
+    <Filter Include="Header Files\PreCompiled">
+      <UniqueIdentifier>{f5973d98-2fa6-4179-8e9f-fa76e2f70d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestSource">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="LogSystem">
-      <UniqueIdentifier>{e1e2cbfd-6ba6-4cda-8ecf-7adf2aee82fd}</UniqueIdentifier>
+      <UniqueIdentifier>{59b2532d-66f9-42ba-9a32-9d4f2973530b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Himani\Hpch.cpp">
-      <Filter>Header Files\PrecompiledHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\WinProc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\HBaseWin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\GDI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Himani\Himani\Dialogs.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>TestSource</Filter>
     </ClCompile>
     <ClCompile Include="Himani\Himani\Application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\Core.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\Dialogs.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\GDI.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\HBaseWin.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Himani\Himani\Menu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Himani\WinProc.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Himani\Hpch.cpp">
+      <Filter>Header Files\PreCompiled</Filter>
     </ClCompile>
     <ClCompile Include="Himani\Himani\Log System\Log.cpp">
       <Filter>LogSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>TestingSource</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Himani\Hpch.h">
-      <Filter>Header Files\PrecompiledHeaders</Filter>
+    <ClInclude Include="Himani\Himani.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\Application.h">
       <Filter>Header Files</Filter>
@@ -92,11 +92,14 @@
     <ClInclude Include="Himani\Himani\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Himani\Himani\SysMets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Himani\Himani\WinProc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Himani\Himani.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Himani\Hpch.h">
+      <Filter>Header Files\PreCompiled</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\Log System\Log.h">
       <Filter>LogSystem</Filter>

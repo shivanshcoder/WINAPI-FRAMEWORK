@@ -36,6 +36,7 @@ namespace Himani{
 
 extern Himani::HCustomApplication* EntryApplication();
 
+
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
 	Himani::InitFramework(Instance, CmdShow);
 

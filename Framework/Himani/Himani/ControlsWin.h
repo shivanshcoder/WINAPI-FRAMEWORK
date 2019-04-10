@@ -18,7 +18,7 @@ namespace Himani {
 		virtual INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam) = 0;
 
 		//TODO make a enum for types of derived classes? and make it pure virtual
-		virtual int ControlType()const {}
+		virtual int ControlType()const { return 0; }
 	};
 	
 	class HScrollBar :public HControls {
