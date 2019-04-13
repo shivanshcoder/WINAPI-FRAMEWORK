@@ -30,9 +30,6 @@
     <ClCompile Include="Himani\Himani\Application.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Himani\Himani\Core.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Himani\Himani\ControlsWin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\Core.h">

@@ -69,23 +69,28 @@ namespace Himani {
 		//TODO this expects lpCreateParams directly the WNDPROC type pointer
 		if (message == WM_NCCREATE) {
 			auto createArguments = (LPCREATESTRUCT)lParam;
-			auto wndProc = createArguments->lpCreateParams;
-
-			auto classInstance = OwnerWindow(
-				createArguments->lpszName,createArguments->style,
-				Helpers::HRect(createArguments->x, createArguments->y, createArguments->cx, createArguments->cy ),
-				createArguments->hwndParent);
+			//auto wndProc = createArguments->lpCreateParams;
+			if (!createArguments->lpCreateParams) {
+				auto classInstance = new OwnerWindow;
+				classInstance->UpdateProperties(hwnd);
+			}
+			else {
+				WNDPROC wndProc = (WNDPROC)createArguments->lpCreateParams;
+				if (wndProc)
+				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(wndProc));
+			}
 			//this is NULL if not created by FrameWork
 			
-			if (wndProc) {
+		//	if (wndProc) {
 				//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
-				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(wndProc));
+				
 				//return TRUE;
-			}
+		//	}
 			//Null when created by system 
-			else {
+			
 
-			}
+			//If no Error Occurs
+			return TRUE;
 		}
 
 		if (message == WM_DESTROYINSTANCE) {

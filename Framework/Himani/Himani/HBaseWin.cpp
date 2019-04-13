@@ -21,18 +21,21 @@ namespace Himani {
 	}
 
 
+	//std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
+
 	void HCustomWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size, HWindow* parent) {
 		wndParent = parent;
 
-		bool ValidClass = __ClassProp();
+		//bool ValidClass = __ClassProp();
 
 		HWND parentHandle = NULL;
 		if (parent)
 			parentHandle = (HWND)*parent;
-		if (!ValidClass)
-			throw Himani::Exceptions(L"Class Not Registered");
 
-		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+		/*if (!ValidClass)
+			throw Himani::Exceptions(L"Class Not Registered");*/
+
+		auto tempHandle = CreateWindowExW(0, ClassName().c_str(), //ClassName using virtual function
 			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
 			parentHandle, //Parent HWindow
@@ -46,6 +49,11 @@ namespace Himani {
 
 	}
 
+	void HCustomWindow::UpdateProperties(HWND hwnd) {
+		InitHandle(hwnd);
+		SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+	}
+
 	LRESULT HCustomWindow::MessageFunc(HWND hwnd,UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
 		case WM_GETPARENTINSTANCE:
@@ -55,27 +63,43 @@ namespace Himani {
 		}
 	}
 
-	void HPredefinedWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size) {
+	void HPredefinedWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size, HWindow *parent) {
 
-		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
+
+		HWND parentHandle = NULL;
+		if (parent)
+			parentHandle = (HWND)* parent;
+
+		auto tempHandle = CreateWindowExW(0, ClassName().c_str(), //ClassName using virtual function
 			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
-			(HWND)Parent(), //Parent HCustomWindow
+			(HWND)parentHandle, //Parent HCustomWindow
 			NULL, Instance(), nullptr
 		);
 
-		InitHandle(tempHandle);
+		//InitHandle(tempHandle);
 
 		if (!tempHandle)
 			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
 
 
-		OldProc = (WNDPROC)SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LONG_PTR)Procedure());
+		//OldProc = (WNDPROC)SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LONG_PTR)Procedure());
 
+	}
 
-		if (!OldProc)
-			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Procedure swap Unsuccessful");
+	inline LRESULT HPredefinedWindow::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
+		switch (message) {
+		case WM_CREATE: {
+			InitHandle(hwnd);
+			OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
+
+			if (!OldProc)
+				throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Procedure swap Unsuccessful");
+		}
+		}
+
+		return OldProc(hwnd, message, wParam, lParam);
 	}
 
 

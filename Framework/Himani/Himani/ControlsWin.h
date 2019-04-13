@@ -5,7 +5,6 @@
 //TODO
 //way to work with TABS when when control gets the focus and how to shift it further or back
 
-
 namespace Himani {
 	//class HGDIObject;
 
@@ -24,12 +23,13 @@ namespace Himani {
 	class HScrollBar :public HControls {
 
 		//Overrides Windows scrollbar class
-		DEFINE_CLASSNAME(scrollbar)
+		//DEFINE_CLASSNAME(scrollbar)
 
 	public:
-		HScrollBar(int ScrollBarStyle, Helpers::HRect Size, const HWindow &Parent) :HControls(Parent) {
-			CreateWin(HString(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
-		}
+		//URGENT fix LATER!!!!
+		//HScrollBar(int ScrollBarStyle, Helpers::HRect Size, const HWindow &Parent) :HControls(Parent) {
+			//CreateWin(HString(), WS_CHILD | WS_VISIBLE | ScrollBarStyle, Size, (HMENU)this);
+		//}
 
 		INT_PTR CTL_Color(WPARAM wParam, LPARAM lParam)override;
 
@@ -50,10 +50,10 @@ namespace Himani {
 
 	class HStaticWindow :public HPredefinedWindow {
 	public:
-		OVERRIDE_PREDEFINEDCLASS(static)
+		//OVERRIDE_PREDEFINEDCLASS(static)
 			//TODO HMENU arguement Removed 
-			HStaticWindow(const HString &Title, int Style, const Helpers::HRect &Size, const HWindow &_Parent = HWindow()) :HPredefinedWindow{ _Parent } {
-			CreateWin(Title, Style, Size);
+			HStaticWindow(const HString &Title, int Style, const Helpers::HRect &Size/*, const HWindow &_Parent = HWindow()*/) /*:HPredefinedWindow{ _Parent } */{
+		//	CreateWin(Title, Style, Size);
 		}
 
 		DECLARE_MESSAGE_MAP();
@@ -83,7 +83,7 @@ namespace Himani {
 
 	class Button :public HCustomWindow {
 		//overrides Windwos button class
-		DEFINE_CLASSNAME(button)
+		//DEFINE_CLASSNAME(button)
 
 			//	using HControls::HControls;
 

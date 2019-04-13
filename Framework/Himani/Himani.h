@@ -63,7 +63,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 #ifdef INCLUDE_CPPS
 
 #include"Himani/Application.cpp"
-#include"Himani/ControlsWin.cpp"
+//#include"Himani/ControlsWin.cpp"
 #include"Himani/Core.cpp"
 #include"Himani/Dialogs.cpp"
 #include"Himani/GDI.cpp"

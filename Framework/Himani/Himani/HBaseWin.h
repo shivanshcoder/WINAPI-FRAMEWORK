@@ -52,10 +52,10 @@ namespace Himani {
 	private:
 		//Create Instance using Raw Handle to Window
 		//Reserved for Framework Use only!
-		HWindow(HWND Handle) {
+	/*	HWindow(HWND Handle) {
 			InitHandle(Handle);
 		}
-
+*/
 	public:
 		using HHandleWrapperBaseClass<HWND>::HHandleWrapperBaseClass;
 
@@ -129,9 +129,9 @@ namespace Himani {
 	for std17++
 		inline static HWinClassProperties Object = { ... }; 
 	*/
-	class HWinClassProperties {
-	public:
+	struct HWinClassProperties {
 		HWinClassProperties(Himani::HString className, WNDPROC procAddr, int classStyle) {
+			ClassName = className;
 			ClassList.push_back({ className, procAddr, classStyle });
 
 		}
@@ -166,11 +166,11 @@ namespace Himani {
 			WNDPROC procAddr;
 			int classStyle;
 		};
-
-		static std::vector<ClassProperties>ClassList;
+		HString ClassName;
+		static inline std::vector<ClassProperties>ClassList;
+		
 	};
 
-	std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
 
 	/*
 	------------------------	Custom HCustomWindow Classes ------------------------------
@@ -184,19 +184,23 @@ namespace Himani {
 	class HCustomWindow :public HWindow, public HWindowsProc {
 
 	public:
+		HCustomWindow() = default;
 		HWindow* Parent() { return wndParent; }
 
 		HCustomWindow(const HCustomWindow&) = delete;
 		HCustomWindow& operator=(const HCustomWindow&) = delete;
 
+		void UpdateProperties(HWND hwnd);
 
 	protected:
+
+		virtual HString& ClassName() = 0;
 
 		DECLARE_MESSAGE_MAP();
 
 		//Will be overriden using macro CLASS_ALL_PROPERTIES or CLASS_PROPERTIES
-		virtual LPCWSTR ClassName() = 0;
-		virtual bool __ClassProp() { return 0; }
+		//virtual LPCWSTR ClassName() = 0;
+		//virtual bool __ClassProp() { return 0; }
 
 		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
 
@@ -206,9 +210,10 @@ namespace Himani {
 	//Static predefined Windows Classes
 	class HPredefinedWindow :public HWindow, public HWindowsProc {
 	public:
-		HPredefinedWindow(const HWindow& _Parent = HWindow()) {
+		/*HPredefinedWindow(const HWindow& _Parent = HWindow()) {
 			wndParent = _Parent;
-		}
+		}*/
+		HPredefinedWindow() = default;
 
 		HPredefinedWindow(const HPredefinedWindow&) = delete;
 		HPredefinedWindow& operator=(const HPredefinedWindow&) = delete;
@@ -217,19 +222,14 @@ namespace Himani {
 	protected:
 		DECLARE_MESSAGE_MAP();
 
-		HWindow Parent() { return wndParent; }
+		HWindow* Parent() { return wndParent; }
 
-		//Will be overriden using macro OVERRIDE_PREDEFINEDCLASS
-		virtual LPCWSTR ClassName() = 0;
+		virtual HString& ClassName() = 0;
 
-		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size);
-
-		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)override {
-			return OldProc(hwnd, message, wParam, lParam);
-		}
+		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
 
 		WNDPROC OldProc;
-		HWindow wndParent;
+		HWindow *wndParent = nullptr;
 	};
 
 }

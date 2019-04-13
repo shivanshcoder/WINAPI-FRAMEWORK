@@ -37,9 +37,9 @@ namespace Himani {
 			::CheckRadioButton(Handle(), StartID, EndID, CheckItemID);
 		}
 
-		HWindow GetItem(int ItemID) {
-			return HWindow(::GetDlgItem(Handle(), ItemID));
-		}
+	//	HWindow GetItem(int ItemID) {
+	//		return HWindow(::GetDlgItem(Handle(), ItemID));
+	//	}
 
 
 	};
@@ -80,12 +80,12 @@ namespace Himani {
 	Modless DIalog Box Class
 	Saves the data using constructor and simply call Init function to start the Modless DialogBox
 	*/
-	class HModlessDialog :public HBaseDialog {
-	public:
-		using HBaseDialog::HBaseDialog;
+	//class HModlessDialog :public HBaseDialog {
+	//public:
+	//	using HBaseDialog::HBaseDialog;
 
-		//Initializes the Modless Dialog
-		void StartDialog();
-	};
+	//	//Initializes the Modless Dialog
+	//	void StartDialog();
+	//};
 
 }

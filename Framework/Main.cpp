@@ -4,23 +4,43 @@
 #define ROUNDVAL(Val, i)	((Val++)%i)
 
 class MainWin : public Himani::HApplication {
-	LogSystem::WindowLog Logger;
+	//LogSystem::WindowLog Logger;
 public:
 	//CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 
-	//DECLARE_MESSAGE_MAP();
+	DECLARE_MESSAGE_MAP() {
+
+		return HApplication::MessageFunc(hwnd, message, wParam, lParam);
+		switch (message) {
+		case WM_PAINT: {
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(Handle(), &ps);
+			TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
+			EndPaint(Handle(), &ps);
+
+			CheckDefaultWinError;
+			return 0;
+		}
+		}
+	}
 
 
 
 	MainWin()
-		:HApplication(L"Color Scroll", WS_OVERLAPPEDWINDOW)
+		:Himani::HApplication(L"HOLA", WS_OVERLAPPEDWINDOW)
 	{
-		LogSystem::QuickTimeLog Q1(Logger);
-
+		//LogSystem::QuickTimeLog Q1(Logger);
+		CreateWin(L"HEYYE", WS_OVERLAPPEDWINDOW, Helpers::HRect(480 , 720), nullptr);
+		//CreateWindowEx(NULL,ClassName().c_str(), L"TITLE", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, Himani::Instance(), NULL);
 	}
 
 	//int OnSize(WPARAM wParam, LPARAM lParam) {
-
+	int OnPaint() {
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(Handle(), &ps);
+		TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
+		EndPaint(Handle(), &ps);
+	}
 	//	//CheckDefaultWinError;
 	//	cxClient = LOWORD(lParam);
 	//	cyClient = HIWORD(lParam);
@@ -59,5 +79,10 @@ public:
 
 
 };
+
+//MESSAGE_MAP_BEGIN(MainWin)
+//MESSAGE_MAP_ENTRY(OnPaint,WM_PAINT)
+//MESSAGE_MAP_END(Himani::HApplication)
+
 
 ENTRY_APP(MainWin);
