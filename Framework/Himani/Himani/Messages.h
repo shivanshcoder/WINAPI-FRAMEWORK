@@ -24,12 +24,15 @@ return ParentWinClass::MessageFunc(hwnd, message, wParam, lParam); }
 #define WM_DESTROYINSTANCE WM_USER+1
 #define WM_SAVEINSTANCE WM_USER+2
 
+//Sends to Parent Window and returns the Class Instance to be stored in children
+#define WM_GETPARENTINSTANCE WM_USER+3
+
 namespace Himani {
 
 	//Every class is registered with this class first
 	//TODO should it be static function for proper functioning???
 	static LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
+		
 		//TODO this expects lpCreateParams directly the WNDPROC type pointer
 		if (message == WM_NCCREATE) {
 			auto wndProc = ((LPCREATESTRUCT)lParam)->lpCreateParams;
@@ -59,4 +62,45 @@ namespace Himani {
 
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
+
+	template<class OwnerWindow>
+	LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
+		//TODO this expects lpCreateParams directly the WNDPROC type pointer
+		if (message == WM_NCCREATE) {
+			auto createArguments = (LPCREATESTRUCT)lParam;
+			auto wndProc = createArguments->lpCreateParams;
+
+			auto classInstance = OwnerWindow(
+				createArguments->lpszName,createArguments->style,
+				Helpers::HRect(createArguments->x, createArguments->y, createArguments->cx, createArguments->cy ),
+				createArguments->hwndParent);
+			//this is NULL if not created by FrameWork
+			
+			if (wndProc) {
+				//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
+				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(wndProc));
+				//return TRUE;
+			}
+			//Null when created by system 
+			else {
+
+			}
+		}
+
+		if (message == WM_DESTROYINSTANCE) {
+			if (wParam) {
+				/*
+					This Message deletes the Class Instance associated with particular Window
+				*/
+
+				//URGENT well it should work base most class
+				auto instance = (Himani::HHandleWrapperBaseClass<HWND>*)wParam;
+				delete instance;
+			}
+		}
+
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
 }

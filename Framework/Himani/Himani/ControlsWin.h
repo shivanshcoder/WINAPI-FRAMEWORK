@@ -51,9 +51,9 @@ namespace Himani {
 	class HStaticWindow :public HPredefinedWindow {
 	public:
 		OVERRIDE_PREDEFINEDCLASS(static)
-
-			HStaticWindow(const HString &Tittle, int Style, const Helpers::HRect &Size, const HWindow &_Parent = HWindow()) :HPredefinedWindow{ _Parent } {
-			CreateWin(Tittle, Style, Size, (HMENU)this);
+			//TODO HMENU arguement Removed 
+			HStaticWindow(const HString &Title, int Style, const Helpers::HRect &Size, const HWindow &_Parent = HWindow()) :HPredefinedWindow{ _Parent } {
+			CreateWin(Title, Style, Size);
 		}
 
 		DECLARE_MESSAGE_MAP();

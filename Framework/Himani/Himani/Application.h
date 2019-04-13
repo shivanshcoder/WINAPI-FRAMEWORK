@@ -29,10 +29,10 @@ namespace Himani {
 
 	public:
 		//using HCustomApplication::HCustomApplication;
-		HApplication(const HString &Tittle, DWORD style,
+		HApplication(const HString &Title, DWORD style,
 			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
 			//NOTE Because HApplication can't have parent maybe??
-			CreateWin(Tittle, style, size);
+			CreateWin(Title, style, size);
 
 		}
 

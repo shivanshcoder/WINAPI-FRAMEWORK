@@ -21,6 +21,7 @@
 //Defines WNDCLASS properties for each UserDefined Class
 #define CLASS_PROPERTIES(ClassName__, Style) CLASS_ALL_PROPERTIES(ClassName__, Style, (LoadIcon(NULL, IDI_APPLICATION)), NULL, (LoadCursor(NULL, IDC_ARROW)),(HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
 
+#define WINCLASS_PROPERTIES(ClassName, Style) inline static 
 
 #define DEFINE_WIN_CLASS(ClassName__, Style, MenuName)															\
 static LRESULT CALLBACK ClassName##StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){		\

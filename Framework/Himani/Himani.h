@@ -22,6 +22,8 @@ namespace Himani{
 		__ProgramInstance = Instance;
 		__ProgramCmdShow = CmdShow;
 
+		//Registers all the classes added 
+		HWinClassProperties::RegisterAllClasses();
 		///TODO throw if Framework could not be initialzed 
 		/*if (0) {
 			throw std::exception("FrameWork could not be Initialized!!!");

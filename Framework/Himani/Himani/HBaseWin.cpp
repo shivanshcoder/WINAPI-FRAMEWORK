@@ -21,17 +21,22 @@ namespace Himani {
 	}
 
 
-	void HCustomWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
+	void HCustomWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size, HWindow* parent) {
+		wndParent = parent;
+
 		bool ValidClass = __ClassProp();
 
+		HWND parentHandle = NULL;
+		if (parent)
+			parentHandle = (HWND)*parent;
 		if (!ValidClass)
 			throw Himani::Exceptions(L"Class Not Registered");
 
 		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
-			Tittle.c_str(), style,
+			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
-			(HWND)wndParent, //Parent HCustomWindow
-			Menu, Instance(),
+			parentHandle, //Parent HWindow
+			NULL, Instance(),
 			Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
 		);
 		InitHandle(tempHandle);
@@ -40,14 +45,25 @@ namespace Himani {
 			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
 
 	}
-	void HPredefinedWindow::CreateWin(const HString & Tittle, DWORD style, Helpers::HRect size, HMENU Menu) {
+
+	LRESULT HCustomWindow::MessageFunc(HWND hwnd,UINT message, WPARAM wParam, LPARAM lParam) {
+		switch (message) {
+		case WM_GETPARENTINSTANCE:
+			//Sends the Current Instance of the Class;
+			return (LRESULT)this;
+
+		}
+	}
+
+	void HPredefinedWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size) {
 
 		auto tempHandle = CreateWindowExW(0, ClassName(), //ClassName using virtual function
-			Tittle.c_str(), style,
+			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
 			(HWND)Parent(), //Parent HCustomWindow
-			Menu, Instance(), nullptr
+			NULL, Instance(), nullptr
 		);
+
 		InitHandle(tempHandle);
 
 		if (!tempHandle)
