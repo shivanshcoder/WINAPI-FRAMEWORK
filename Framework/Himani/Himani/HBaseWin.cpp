@@ -26,22 +26,20 @@ namespace Himani {
 	void HCustomWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size, HWindow* parent) {
 		wndParent = parent;
 
-		//bool ValidClass = __ClassProp();
-
 		HWND parentHandle = NULL;
 		if (parent)
 			parentHandle = (HWND)*parent;
 
-		/*if (!ValidClass)
-			throw Himani::Exceptions(L"Class Not Registered");*/
 
 		auto tempHandle = CreateWindowExW(0, ClassName().c_str(), //ClassName using virtual function
 			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
 			parentHandle, //Parent HWindow
 			NULL, Instance(),
-			Procedure()//Procedure is sent using extra param inorder to replace it with our static Procedure
+			(LPVOID)-1//Procedure is sent using extra param inorder to replace it with our static Procedure
 		);
+
+		SendMessage(tempHandle, WM_SWAPPROCADDR, NULL, (LPARAM)Procedure());
 		InitHandle(tempHandle);
 
 		if (!tempHandle)
@@ -61,6 +59,7 @@ namespace Himani {
 			return (LRESULT)this;
 
 		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 	void HPredefinedWindow::CreateWin(const HString & Title, DWORD style, Helpers::HRect size, HWindow *parent) {

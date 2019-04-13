@@ -2,14 +2,13 @@
 #include "Application.h"
 
 namespace Himani {
-	WPARAM Himani::HCustomApplication::Run() {
-
+	WPARAM Himani::HApplication::Run() {
 		Show(Himani::CmdShow());
 		Update();
 		return MessageProcess();
 	}
 
-	WPARAM Himani::HCustomApplication::MessageProcess() {
+	WPARAM Himani::HApplication::MessageProcess() {
 		MSG msg;
 
 		while (true) {
@@ -29,11 +28,17 @@ namespace Himani {
 		return msg.wParam;
 	}
 
+	LRESULT HApplication::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+		switch (message) {
+		case WM_SIZE:
+			return OnSize(wParam,lParam);
 
-	MESSAGE_MAP_BEGIN(HApplication) 
-		MESSAGE_MAP_ENTRY(OnDestroy, WM_DESTROY)
-		MESSAGE_MAP_ENTRY_PARAMS(OnSize, WM_SIZE)
-		MESSAGE_MAP_ENTRY_PARAMS(OnMouseDown, WM_LBUTTONDOWN)
-	MESSAGE_MAP_END(HCustomApplication)
+		case WM_DESTROY:
+			return OnDestroy();
+		}
+		return HCustomWindow::MessageFunc(hwnd, message, wParam, lParam);
+	}
+
+
 
 }

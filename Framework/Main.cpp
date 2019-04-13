@@ -3,26 +3,32 @@
 #include"Himani/Log System/Log.h"
 #define ROUNDVAL(Val, i)	((Val++)%i)
 
+class SampleClass :public Himani::HCustomWindow {
+public:
+	DECLARE_MESSAGE_MAP();
+
+	WINCLASS_PROPERTIES(SampleClass, CS_VREDRAW | CS_HREDRAW);
+	
+	int OnPaint() {
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(Handle(), &ps);
+		TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
+		TextOut(hdc, 150, 150, L"HELLO@ WORLD", 11);
+		TextOut(hdc, 250, 250, L"HELLO# WORLD", 11);
+		EndPaint(Handle(), &ps);
+		return 0;
+	}
+};
+
+MESSAGE_MAP_BEGIN(SampleClass)
+MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
+MESSAGE_MAP_END(Himani::HCustomWindow)
+
 class MainWin : public Himani::HApplication {
 	//LogSystem::WindowLog Logger;
 public:
-	//CLASS_ALL_PROPERTIES(HelloWin, CS_HREDRAW | CS_VREDRAW, LoadIcon(NULL, IDI_APPLICATION), NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
-
-	DECLARE_MESSAGE_MAP() {
-
-		return HApplication::MessageFunc(hwnd, message, wParam, lParam);
-		switch (message) {
-		case WM_PAINT: {
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(Handle(), &ps);
-			TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
-			EndPaint(Handle(), &ps);
-
-			CheckDefaultWinError;
-			return 0;
-		}
-		}
-	}
+	
+	DECLARE_MESSAGE_MAP();
 
 
 
@@ -30,16 +36,22 @@ public:
 		:Himani::HApplication(L"HOLA", WS_OVERLAPPEDWINDOW)
 	{
 		//LogSystem::QuickTimeLog Q1(Logger);
-		CreateWin(L"HEYYE", WS_OVERLAPPEDWINDOW, Helpers::HRect(480 , 720), nullptr);
-		//CreateWindowEx(NULL,ClassName().c_str(), L"TITLE", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, Himani::Instance(), NULL);
+		//CreateWin(L"HEYYE", WS_OVERLAPPEDWINDOW, Helpers::HRect(480 , 720), nullptr);
+		CreateWindowEx(NULL,L"SampleClass", L"SMALLWIN", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, Himani::Instance(), NULL);
+		//SampleClass s;
+		//s.CreateWin(TEXT("SMALLWIN"), WS_OVERLAPPEDWINDOW,Helpers::HRect(240,480),NULL);
+		//s.Show(SW_NORMAL);
+		//s.Update();
+		
 	}
-
+	
 	//int OnSize(WPARAM wParam, LPARAM lParam) {
 	int OnPaint() {
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(Handle(), &ps);
 		TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
 		EndPaint(Handle(), &ps);
+		return 0;
 	}
 	//	//CheckDefaultWinError;
 	//	cxClient = LOWORD(lParam);
@@ -80,9 +92,9 @@ public:
 
 };
 
-//MESSAGE_MAP_BEGIN(MainWin)
-//MESSAGE_MAP_ENTRY(OnPaint,WM_PAINT)
-//MESSAGE_MAP_END(Himani::HApplication)
+MESSAGE_MAP_BEGIN(MainWin)
+MESSAGE_MAP_ENTRY(OnPaint,WM_PAINT)
+MESSAGE_MAP_END(Himani::HApplication)
 
 
 ENTRY_APP(MainWin);

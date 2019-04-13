@@ -9,26 +9,9 @@
 
 #define OVERRIDE_PREDEFINEDCLASS(ClassName__) DEFINE_CLASSNAME(ClassName__)
 
-//Defines WNDCLASS properties for each UserDefined Class
-#define CLASS_ALL_PROPERTIES(ClassName__, Style, Icon, IconSm, Cursor, Background, MenuName)	DEFINE_CLASSNAME(ClassName__)	\
- bool __ClassProp() override {		\
-		static bool __ValidClass = Himani::RegisterWinClass(Style, Himani::StaticWndProc , Icon, IconSm, Cursor, Background, MenuName, ClassName());	\
-		return __ValidClass;\
-}
-
-#define APLLICATION_PROPERTIES(ClassName__, Style, Icon, Cursor) CLASS_ALL_PROPERTIES(ClassName__, Style, Icon, NULL, Cursor, (LoadCursor(NULL, IDC_ARROW)),(HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
-
-//Defines WNDCLASS properties for each UserDefined Class
-#define CLASS_PROPERTIES(ClassName__, Style) CLASS_ALL_PROPERTIES(ClassName__, Style, (LoadIcon(NULL, IDI_APPLICATION)), NULL, (LoadCursor(NULL, IDC_ARROW)),(HBRUSH)GetStockObject(WHITE_BRUSH), NULL)
-
-#define WINCLASS_PROPERTIES(ClassName, Style) inline static 
-
-#define DEFINE_WIN_CLASS(ClassName__, Style, MenuName)															\
-static LRESULT CALLBACK ClassName##StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){		\
-		StaticWndProc(hwnd,message,wParam,lParam);\
-	}\
-static void __RegisterWinClass(){																		\
-\
+#define WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), Himani::CommonWndProc<__ClassName>,(Style)};\
+	Himani::HString& ClassName()override {		\
+		return __Prop.ClassName;			\
 	}
 
 #pragma endregion

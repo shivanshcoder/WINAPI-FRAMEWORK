@@ -26,6 +26,7 @@ return ParentWinClass::MessageFunc(hwnd, message, wParam, lParam); }
 
 //Sends to Parent Window and returns the Class Instance to be stored in children
 #define WM_GETPARENTINSTANCE WM_USER+3
+#define WM_SWAPPROCADDR WM_USER+4
 
 namespace Himani {
 
@@ -70,26 +71,11 @@ namespace Himani {
 		if (message == WM_NCCREATE) {
 			auto createArguments = (LPCREATESTRUCT)lParam;
 			//auto wndProc = createArguments->lpCreateParams;
-			if (!createArguments->lpCreateParams) {
+			if (createArguments->lpCreateParams != (LPVOID)-1) {
 				auto classInstance = new OwnerWindow;
 				classInstance->UpdateProperties(hwnd);
 			}
-			else {
-				WNDPROC wndProc = (WNDPROC)createArguments->lpCreateParams;
-				if (wndProc)
-				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(wndProc));
-			}
-			//this is NULL if not created by FrameWork
 			
-		//	if (wndProc) {
-				//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
-				
-				//return TRUE;
-		//	}
-			//Null when created by system 
-			
-
-			//If no Error Occurs
 			return TRUE;
 		}
 

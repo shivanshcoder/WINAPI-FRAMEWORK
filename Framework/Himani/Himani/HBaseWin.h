@@ -179,6 +179,7 @@ namespace Himani {
 
 	The Derived Class should have Default Constructor!
 	constructor()
+
 	No other Constructor Should be made!
 	*/
 	class HCustomWindow :public HWindow, public HWindowsProc {
@@ -192,17 +193,13 @@ namespace Himani {
 
 		void UpdateProperties(HWND hwnd);
 
+		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
 	protected:
 
 		virtual HString& ClassName() = 0;
 
 		DECLARE_MESSAGE_MAP();
 
-		//Will be overriden using macro CLASS_ALL_PROPERTIES or CLASS_PROPERTIES
-		//virtual LPCWSTR ClassName() = 0;
-		//virtual bool __ClassProp() { return 0; }
-
-		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
 
 		HWindow* wndParent = nullptr;
 	};
@@ -210,9 +207,7 @@ namespace Himani {
 	//Static predefined Windows Classes
 	class HPredefinedWindow :public HWindow, public HWindowsProc {
 	public:
-		/*HPredefinedWindow(const HWindow& _Parent = HWindow()) {
-			wndParent = _Parent;
-		}*/
+		
 		HPredefinedWindow() = default;
 
 		HPredefinedWindow(const HPredefinedWindow&) = delete;

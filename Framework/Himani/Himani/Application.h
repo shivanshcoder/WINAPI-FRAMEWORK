@@ -8,48 +8,34 @@
 
 namespace Himani {
 
-	class HCustomApplication :public HCustomWindow {
+	class HApplication :public HCustomWindow {
 
 	public:
-		HCustomApplication() = default;
+		HApplication(const HString& Title, DWORD style,
+			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			//NOTE Because HApplication can't have parent maybe??
+			CreateWin(Title, style, size, NULL);
 
+		}
 
 		WPARAM Run();
 
 		virtual WPARAM MessageProcess();
 
-		//Can be overriden Called after HCustomWindow creation
+		//Can be overriden for Custom Startup!
+		//Should return by calling MessageProcess preferably
 		virtual WPARAM start() { return Run(); }
+
 		virtual void Idle() {}
 
-		virtual ~HCustomApplication() {}
+		virtual ~HApplication() {}
 
-	protected:
-		LRESULT CALLBACK AppCommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
-		}
-
-	};
-
-	class HApplication : public HCustomApplication {
-
-	public:
-		//using HCustomApplication::HCustomApplication;
-		HApplication(const HString &Title, DWORD style,
-			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
-			//NOTE Because HApplication can't have parent maybe??
-			CreateWin(Title, style, size,NULL);
-
-		}
-
-
-		//CLASS_PROPERTIES(HApplication, CS_HREDRAW | CS_VREDRAW, NULL)
+		LRESULT CALLBACK MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 
 		HString& ClassName()override {
 			return Prop.ClassName;
 		}
 
-		DECLARE_MESSAGE_MAP();
 		virtual int OnDestroy() {
 			PostQuitMessage(0);
 			return 0;
@@ -57,11 +43,22 @@ namespace Himani {
 		virtual int OnSize(WPARAM wParam, LPARAM lParam) { return 0; }
 		virtual int OnMouseDown(WPARAM wParam, LPARAM lParam) { return 0; }
 
+
+	protected:
+		static LRESULT CALLBACK AppCommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
+			switch (message) {
+			case WM_SWAPPROCADDR:
+				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(lParam));
+				return 0;
+			}
+			return DefWindowProc(hwnd, message, wParam, lParam);
+		}
+
 	private:
-		inline static Himani::HWinClassProperties Prop = { TEXT("HApplication"), Himani::CommonWndProc<HApplication>,CS_VREDRAW | CS_HREDRAW };
+		inline static Himani::HWinClassProperties Prop = { TEXT("HApplication"), Himani::HApplication::AppCommonWndProc,CS_VREDRAW | CS_HREDRAW };
 
 	};
-
 
 }
 

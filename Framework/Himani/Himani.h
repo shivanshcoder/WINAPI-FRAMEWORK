@@ -36,7 +36,7 @@ namespace Himani{
 
 #ifdef AUTO_ENTRY
 
-extern Himani::HCustomApplication* EntryApplication();
+extern Himani::HApplication* EntryApplication();
 
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
@@ -52,7 +52,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
-#define ENTRY_APP(APP)  Himani::HCustomApplication* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  Himani::HApplication* EntryApplication() { return new APP(); }
 
 #endif
 
