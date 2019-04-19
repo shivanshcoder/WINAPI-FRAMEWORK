@@ -15,7 +15,7 @@ namespace Himani {
 		HBaseDialog(HWindow& parent, int resourceID)
 			:Parent(parent), ResourceID(resourceID) {}
 
-		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) override;
+		virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) ;
 
 		virtual bool OnInit() { return true; }
 		virtual bool OnPaint() { return false; }

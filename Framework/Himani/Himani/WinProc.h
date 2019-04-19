@@ -121,13 +121,14 @@ namespace Himani {
 			thunk->Init(this, (DWORD_PTR)WndProc);
 		}
 
-	protected:
 		//Returns the windows Procedure specific to our class Object
 		WNDPROC Procedure() {
 			return thunk->GetThunkAddress();
 		}
 
-		virtual LRESULT MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	protected:
+
+		virtual LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 			return DefWindowProc(hwnd, message, wParam, lParam);
 		}
 
@@ -139,7 +140,7 @@ namespace Himani {
 		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HWindowsProc* pThis) {
 #endif
 			try {
-				return pThis->MessageFunc(hwnd, message, wParam, lParam);
+				return pThis->__MessageProc(hwnd, message, wParam, lParam);
 			}
 			//TODO add std::exception Handling
 			catch (Himani::Exceptions & e) {

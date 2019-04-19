@@ -2,15 +2,13 @@
 #include"HBaseWin.h"
 #include"Messages.h"
 #include"GDI.h"
-//TODO
-//way to work with TABS when when control gets the focus and how to shift it further or back
 
 namespace Himani {
 	//class HGDIObject;
-
-	class HControls :public HPredefinedWindow {
+	/*
+	class HControls :public HCustomWindow {
 	public:
-		using HPredefinedWindow::HPredefinedWindow;
+		using HCustomWindow::HCustomWindow;
 
 		DECLARE_MESSAGE_MAP();
 
@@ -52,7 +50,7 @@ namespace Himani {
 	public:
 		//OVERRIDE_PREDEFINEDCLASS(static)
 			//TODO HMENU arguement Removed 
-			HStaticWindow(const HString &Title, int Style, const Helpers::HRect &Size/*, const HWindow &_Parent = HWindow()*/) /*:HPredefinedWindow{ _Parent } */{
+			HStaticWindow(const HString &Title, int Style, const Helpers::HRect &Size/*, const HWindow &_Parent = HWindow()) :HPredefinedWindow{ _Parent } {
 		//	CreateWin(Title, Style, Size);
 		}
 
@@ -65,10 +63,10 @@ namespace Himani {
 			SetBkColor((HDC)wParam, GetSysColor(COLOR_BTNHIGHLIGHT));
 
 			return (INT_PTR)GetSysColor(COLOR_BTNHIGHLIGHT);
-			/*
+			
 			SetTextColor((HDC)wParam, RGB(rand() % 255, rand() % 255, 0));
 
-			CheckDefaultWinError;*/
+			CheckDefaultWinError;
 			//return (LONG_PTR)BckBrush.RetrieveObject();
 		}
 
@@ -80,14 +78,28 @@ namespace Himani {
 		COLORREF TextColor = RGB(255, 255, 0);
 		//HBrush BckBrush;
 	};
+	*/
 
-	class Button :public HCustomWindow {
-		//overrides Windwos button class
-		//DEFINE_CLASSNAME(button)
-
-			//	using HControls::HControls;
+	/*
+		SuperClassing the Windows standard button Class!
+	*/
+	class HButton :public HCustomWindow {
 
 	public:
+		HButton(const Himani::HClassInitializer& Args = HClassInitializer()) :HCustomWindow(Args) {	
+			if (OldBtnProc) {
+				WNDCLASSEX wndclass;
+				GetClassInfoEx(NULL, TEXT("button"), &wndclass);
+				OldBtnProc = wndclass.lpfnWndProc;
+			}
+		}
+
+		/*virtual void CreateControl(const HString& Text, enum ButtonStyle style, Helpers::HRect size, HWindow* parent) {
+			CreateWin(Text, WS_CHILD | WS_VISIBLE | style, size, parent);
+		}*/
+
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
+
 		enum ButtonStyle {
 			PushButton = BS_PUSHBUTTON,
 			DefPushButton = BS_DEFPUSHBUTTON,
@@ -104,7 +116,14 @@ namespace Himani {
 			LeftText = BS_LEFTTEXT,
 
 		};
+		
 
+	private:
+		WINCLASS_PROPERTIES(HButton, CS_HREDRAW | CS_VREDRAW);
+		static inline WNDPROC OldBtnProc = nullptr;
+	};
+
+	class HPushButton :HButton {
 
 	};
 }

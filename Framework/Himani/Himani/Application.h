@@ -12,7 +12,7 @@ namespace Himani {
 
 	public:
 		HApplication(const HString& Title, DWORD style,
-			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
+			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) :HCustomWindow(HClassInitializer()){
 			//NOTE Because HApplication can't have parent maybe??
 			CreateWin(Title, style, size, NULL);
 
@@ -30,7 +30,7 @@ namespace Himani {
 
 		virtual ~HApplication() {}
 
-		LRESULT CALLBACK MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+		LRESULT CALLBACK MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 		HString& ClassName()override {
 			return Prop.ClassName;
@@ -48,7 +48,7 @@ namespace Himani {
 		static LRESULT CALLBACK AppCommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
 			switch (message) {
-			case WM_SWAPPROCADDR:
+			case H_WM_SWAPPROCADDR:
 				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(lParam));
 				return 0;
 			}

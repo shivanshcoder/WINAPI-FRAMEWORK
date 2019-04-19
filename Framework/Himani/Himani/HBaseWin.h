@@ -121,18 +121,20 @@ namespace Himani {
 
 
 	/*
-	Class for Registering a Windows Class 
-	Add the Class properties to a Data Structure 
+	Class for Registering a Windows Class
+	Add the Class properties to a Data Structure
 
 	Usage:
 	static Object should be created using this class inside HCustomWindow
 	for std17++
-		inline static HWinClassProperties Object = { ... }; 
+		inline static HWinClassProperties Object = { ... };
 	*/
 	struct HWinClassProperties {
 		HWinClassProperties(Himani::HString className, WNDPROC procAddr, int classStyle) {
-			ClassName = className;
-			ClassList.push_back({ className, procAddr, classStyle });
+			ClassName += TEXT("Himani.WinClass.");
+			ClassName += className;
+
+			ClassList.push_back({ ClassName, procAddr, classStyle });
 
 		}
 
@@ -168,63 +170,66 @@ namespace Himani {
 		};
 		HString ClassName;
 		static inline std::vector<ClassProperties>ClassList;
-		
+
 	};
 
 
 	/*
 	------------------------	Custom HCustomWindow Classes ------------------------------
 	Derive from HCustomWindow Class
-	Define Class properties using MACRO CLASS_ALL_PROPERTIES or CLASS_PROPERTIES
+	Define Class properties using MACRO WINCLASS_PROP
 
-	The Derived Class should have Default Constructor!
-	constructor()
 
-	No other Constructor Should be made!
+	A Constructor should be made taking const HClassInitializer&
+		with default Initialization with HClassInitilizer()
+
+	!!!!No other Constructor Should be made!!!!
+
+	Don't Use Constructor for Operations using Window
+	Since the Window is created after calling CreateWin only!5
 	*/
 	class HCustomWindow :public HWindow, public HWindowsProc {
-
 	public:
-		HCustomWindow() = default;
-		HWindow* Parent() { return wndParent; }
+		//HCustomWindow() = default;
+
+		HCustomWindow(const HClassInitializer& Data) {
+			auto Z = sizeof(HHandleWrapperBaseClass<int*>);
+			auto ZX = sizeof(HWNDCLASS);
+			InitHandle(Data.hwnd);
+		}
+
+		HWindow* Parent() {
+			HWND parent = nullptr;
+			if (parent = GetParent(Handle())) {
+				return (HWindow*)SendMessage(parent, H_WM_GETPARENTINSTANCE, 0, 0);
+			}
+			return nullptr;
+		}
 
 		HCustomWindow(const HCustomWindow&) = delete;
-		HCustomWindow& operator=(const HCustomWindow&) = delete;
+			HCustomWindow& operator=(const HCustomWindow&) = delete;
 
+
+			void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
+	protected:
+
+		//Framework Reserved Function 
+		//Should Never be called by anyone and can Hinder proper Functioning
 		void UpdateProperties(HWND hwnd);
 
-		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
-	protected:
-
 		virtual HString& ClassName() = 0;
 
-		DECLARE_MESSAGE_MAP();
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
 
-		HWindow* wndParent = nullptr;
+		//HWindow* wndParent = nullptr;
+
+	private:
+		LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)final;
+		//Stores the Class Instance in case Class Object is Created using call to CreateWin and is automatically deleted at last!
+		//HHandleWrapperBaseClass<HWND>* InstanceHandler = nullptr;
+		//bool InstanceHandler;
 	};
 
-	//Static predefined Windows Classes
-	class HPredefinedWindow :public HWindow, public HWindowsProc {
-	public:
-		
-		HPredefinedWindow() = default;
-
-		HPredefinedWindow(const HPredefinedWindow&) = delete;
-		HPredefinedWindow& operator=(const HPredefinedWindow&) = delete;
-
-
-	protected:
-		DECLARE_MESSAGE_MAP();
-
-		HWindow* Parent() { return wndParent; }
-
-		virtual HString& ClassName() = 0;
-
-		void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
-
-		WNDPROC OldProc;
-		HWindow *wndParent = nullptr;
-	};
 
 }

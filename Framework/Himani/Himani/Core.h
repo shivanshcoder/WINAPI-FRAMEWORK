@@ -1,6 +1,13 @@
 #pragma once
 #include"Hpch.h"
 
+/*
+	Tasklist Tags!
+	URGENT
+	TODO
+	WARNING
+	VERSION
+*/
 
 
 #pragma region CUSTOM_CLASS_MACROS
@@ -12,7 +19,8 @@
 #define WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), Himani::CommonWndProc<__ClassName>,(Style)};\
 	Himani::HString& ClassName()override {		\
 		return __Prop.ClassName;			\
-	}
+	}											\
+friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #pragma endregion
 
@@ -68,7 +76,7 @@ namespace Himani {
 
 		std::vector<HString>ClassNameList;
 	};
-	
+
 
 #pragma region ErrorHandling
 
@@ -78,11 +86,11 @@ namespace Himani {
 
 	public:
 
-		Exceptions(const HString &data = TEXT("Unknown Error")) :Data(data) {}
-		
-		Exceptions(int LineNumber, const HString FilePath, const HString &data = TEXT("Unknown Error"));
+		Exceptions(const HString& data = TEXT("Unknown Error")) :Data(data) {}
 
-		const wchar_t * what() {
+		Exceptions(int LineNumber, const HString FilePath, const HString& data = TEXT("Unknown Error"));
+
+		const wchar_t* what() {
 			return Data.c_str();
 		}
 
@@ -119,8 +127,8 @@ namespace Himani {
 		HandleType Handle()const {
 			if (handle)
 				return handle;
-			else
-				throw Exceptions(TEXT("Invalid Handle Being Returned!"));
+		//	else
+			//	throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
 
 
@@ -133,13 +141,58 @@ namespace Himani {
 		void InitHandle(HandleType __handle) {
 			handle = __handle;
 		}
-		
+
 		virtual ~HHandleWrapperBaseClass() {}
 
 	private:
 		HandleType handle;
 	};
 
+	class HWNDCLASS {
+	public:
+		HWNDCLASS() {
+			handle = (nullptr);
+		}
+
+		explicit HWNDCLASS(HWND __handle) {
+			handle = __handle;
+		}
+
+		HWND Handle()const {
+			if (handle)
+				return handle;
+			//	else
+				//	throw Exceptions(TEXT("Handle yet not Initialized"));
+		}
+
+
+		explicit operator HWND() {
+			return handle;
+		}
+
+		//This should be Protected?
+	//protected:
+		void InitHandle(HWND __handle) {
+			handle = __handle;
+		}
+
+		virtual ~HWNDCLASS() {}
+
+	private:
+		HWND handle;
+	};
+
+	/*
+	----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
+	This is a helper class for Initializing Extra Data members even if class is being constructed using CreateWin!
+	HCustomWindow Derived Class Constructors will only take pointer to one of such class object(i.e. User should derive from
+	*/
+	struct HClassInitializer {
+		//friend class HCustomWindow;
+		HClassInitializer(HWND wnd=nullptr) :hwnd(wnd) {}
+	//private:
+		HWND hwnd;
+	};
 
 
 }

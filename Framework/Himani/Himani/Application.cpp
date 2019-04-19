@@ -28,7 +28,7 @@ namespace Himani {
 		return msg.wParam;
 	}
 
-	LRESULT HApplication::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
+	LRESULT HApplication::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam){
 		switch (message) {
 		case WM_SIZE:
 			return OnSize(wParam,lParam);
@@ -36,7 +36,7 @@ namespace Himani {
 		case WM_DESTROY:
 			return OnDestroy();
 		}
-		return HCustomWindow::MessageFunc(hwnd, message, wParam, lParam);
+		return HCustomWindow::MessageFunc(message, wParam, lParam);
 	}
 
 
