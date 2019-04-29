@@ -187,11 +187,20 @@ namespace Himani {
 	This is a helper class for Initializing Extra Data members even if class is being constructed using CreateWin!
 	HCustomWindow Derived Class Constructors will only take pointer to one of such class object(i.e. User should derive from
 	*/
-	struct HClassInitializer {
-		//friend class HCustomWindow;
-		HClassInitializer(HWND wnd = nullptr) :hwnd(wnd) {}
-		//private:
+	class HClassInitializer {
+		template<class OwnerWindow>
+		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		friend class HCustomWindow;
+
+	public:
+
+		HClassInitializer() :hwnd(nullptr), SelfDestruct(false) {}
+
+	private:
+		HClassInitializer(HWND wnd , bool AllowSelfDestruct) :hwnd(wnd),SelfDestruct(AllowSelfDestruct) {}
+
 		HWND hwnd;
+		bool SelfDestruct;
 	};
 
 	/*

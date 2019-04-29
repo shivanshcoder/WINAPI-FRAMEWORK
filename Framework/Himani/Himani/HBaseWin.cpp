@@ -25,7 +25,7 @@ namespace Himani {
 
 	void HCustomWindow::CreateWin(const HString& Title, DWORD style, HWindow* parent, Helpers::HRect size ) {
 		//wndParent = parent;
-
+		SelfDestruct = false;
 		HWND parentHandle = nullptr;
 		if (parent)
 			parentHandle = (HWND)* parent;
@@ -80,6 +80,8 @@ namespace Himani {
 				//WARNING 
 				//Strange code for sure and should only run if class Instance was created using External calls only 
 				//Not for Objects Intantited by Class itself
+			//SelfDestruct if the Instance was created using External Call!
+			if(SelfDestruct)
 				delete this;
 				return 0;
 			//InstanceHandler = nullptr;

@@ -55,6 +55,7 @@ class MainWins :public Himani::HBaseApp {
 public:
 	MainWins() {
 		newThread.StartThread();
+		//newThread2.StartThread();
 		fs.CreateWin(nullptr,&b, 10);
 	}
 	void Idle()override {
@@ -63,6 +64,7 @@ public:
 
 	FirstChild fs;
 	Himani::HThread<MainWin> newThread;
+	//Himani::HThread<MainWin> newThread2;
 };
 
 ENTRY_APP(MainWins);

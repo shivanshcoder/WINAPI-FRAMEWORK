@@ -119,7 +119,7 @@ namespace Himani {
 
 		~HWindow() {
 			//URGENT REMOVE THIS!!
-			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
+			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
 		}
 	};
 
@@ -198,6 +198,7 @@ namespace Himani {
 
 		HCustomWindow(const HClassInitializer& Data) {
 			InitHandle(Data.hwnd);
+			SelfDestruct = Data.SelfDestruct;
 		}
 
 		HWindow* Parent() {
@@ -209,10 +210,10 @@ namespace Himani {
 		}
 
 		HCustomWindow(const HCustomWindow&) = delete;
-			HCustomWindow& operator=(const HCustomWindow&) = delete;
+		HCustomWindow& operator=(const HCustomWindow&) = delete;
 
 
-			void CreateWin(const HString& Title, DWORD style , HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
+		void CreateWin(const HString& Title, DWORD style , HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
 		//Framework Reserved Function 
@@ -228,9 +229,10 @@ namespace Himani {
 
 	private:
 		LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)final;
-		//Stores the Class Instance in case Class Object is Created using call to CreateWin and is automatically deleted at last!
-		//HHandleWrapperBaseClass<HWND>* InstanceHandler = nullptr;
-		//bool InstanceHandler;
+		
+		//true if SelfDestruct is necessary
+		//made false if window is created using CreateWin member function
+		bool SelfDestruct = true;
 	};
 
 

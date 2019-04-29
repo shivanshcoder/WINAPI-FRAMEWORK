@@ -41,7 +41,7 @@ namespace Himani {
 				OwnerWindow* ClassInstance;
 
 				if(createArguments->lpCreateParams == NULL)
-					ClassInstance = new OwnerWindow(HClassInitializer(hwnd));
+					ClassInstance = new OwnerWindow(HClassInitializer(hwnd,true));
 				else {
 					//TODO
 					//Use Dynamic Cast or something like that maybe?
