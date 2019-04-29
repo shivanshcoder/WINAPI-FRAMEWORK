@@ -3,177 +3,91 @@
 #define AUTO_APP_ENTRY
 #include"Himani.h"
 #include"Himani/Log System/Log.h"
-#include"resource.h"
-#define ROUNDVAL(Val, i)	((Val++)%i)
 
-class EllipPush :public Himani::HCustomWindow {
+int a = 0;
+int b = 0;
+class FirstChild :public Himani::HSimpleWindow {
 public:
-	EllipPush(const Himani::HClassInitializer& Args) :Himani::HCustomWindow(Args) {}
-	DECLARE_MESSAGE_MAP();
-
-	WINCLASS_PROPERTIES(EllipPush, CS_VREDRAW | CS_HREDRAW);
-	int OnButtonUp(WPARAM wParam, LPARAM lParam) {
-
-		SendMessage(GetParent(Handle()), WM_COMMAND,
-			ID_OK, (LPARAM)Handle());
-		return 0;
-
+	void CreateWin(HWindow* parent,int* val,int time) {
+		ptr = val;
+		Himani::HSimpleWindow::CreateWin(TEXT(""), WS_OVERLAPPEDWINDOW|WS_VISIBLE, parent, Helpers::HRect(600,600));
+		SetTimer(Handle(),1, time, NULL);
 	}
-	int OnPaint() {
-		SetClassLongPtr(Handle(), GCLP_HBRBACKGROUND, (LONG_PTR)(COLOR_BTNFACE + 1));
-		SetWindowText(Handle(), L"OK");
-		auto rect = GetClientRect();
-		auto Text = GetWinText();
-		PAINTSTRUCT ps;
-
-		HDC dc = BeginPaint(Handle(), &ps);
-		HBRUSH  hBrush = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
-		hBrush = (HBRUSH)SelectObject(dc, hBrush);
-
-		SetBkColor(dc, GetSysColor(COLOR_WINDOW));
-		SetTextColor(dc, GetSysColor(COLOR_WINDOWTEXT));
-
-		Ellipse(dc, rect.left, rect.top, rect.right, rect.bottom);
-		DrawText(dc, Text.c_str(), -1, &rect.rect,
-			DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-
-		DeleteObject(SelectObject(dc, hBrush));
-
-
-		return 0;
-	}
-};
-
-MESSAGE_MAP_BEGIN(EllipPush)
-MESSAGE_MAP_ENTRY(OnPaint, WM_PAINT)
-MESSAGE_MAP_ENTRY_PARAMS(OnButtonUp, WM_LBUTTONUP)
-MESSAGE_MAP_END(Himani::HCustomWindow)
-
-BOOL CALLBACK AboutDlgProc(HWND hDlg, UINT message,
-	WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return TRUE;
-
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-		case ID_OK:
-			EndDialog(hDlg, 0);
-			return TRUE;
-		}
-		break;
-	}
-	return FALSE;
-}
-
-class MainWin : public Himani::HApplication {
-	//LogSystem::WindowLog Logger;
-public:
 
 	DECLARE_MESSAGE_MAP() {
-		switch (message)
-		{
-		case WM_COMMAND:
-			switch (LOWORD(wParam))
-			{
-
-			case ID_APP_ABOUT:
-				auto LL = DialogBox(Himani::Instance(), MAKEINTRESOURCE(IDD_DIALOG1), Handle(), (DLGPROC)AboutDlgProc);
-				CheckDefaultWinError;
-				return 0;
-			}
-			break;
+		std::wstringstream ws;
+		ws << *ptr;
+		switch (message) {
 
 
-			//case WM_DESTROY:
-			//	PostQuitMessage(0);
-			//	return 0;
+		case WM_TIMER:
+		case WM_LBUTTONDOWN: {
+			//(*ptr)++;
+			::InvalidateRect(Handle(), NULL, true);
+			return 0;
 		}
-		return Himani::HApplication::MessageFunc(message, wParam, lParam);
+
+
+		case WM_PAINT: {
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(Handle(), &ps);
+			TextOut(hdc, 50, 50, ws.str().c_str(), ws.str().size());
+			EndPaint(Handle(), &ps);
+			return 0;
+		}
+		}
+		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
-
-
-
-	MainWin()
-		:Himani::HApplication(L"HOLA", WS_OVERLAPPEDWINDOW) {
-		auto z = ::SetMenu(Handle(), LoadMenu(Himani::Instance(), MAKEINTRESOURCE(IDR_MENU1)));
-		CheckDefaultWinError;
-		//LogSystem::QuickTimeLog Q1(Logger);
-		//CreateWin(L"HEYYE", WS_OVERLAPPEDWINDOW, Helpers::HRect(480 , 720), nullptr);
-		//SampleClass s;
-		//s.CreateWin(TEXT("SMALLWIN"), WS_OVERLAPPEDWINDOW,Helpers::HRect(240,480),NULL);
-		//s.Show(SW_NORMAL);
-		//s.Update();
-		//CreateWindowEx(NULL, L"EllipPush", L"LOL", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, Handle(), NULL, Himani::Instance(), NULL);
-
-	}
-
-	//int OnSize(WPARAM wParam, LPARAM lParam) {
-	int OnPaint() {
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(Handle(), &ps);
-		TextOut(hdc, 50, 50, L"HELLO WORLD", 11);
-		EndPaint(Handle(), &ps);
-		return 0;
-	}
-	//	//CheckDefaultWinError;
-	//	cxClient = LOWORD(lParam);
-	//	cyClient = HIWORD(lParam);
-
-	//	ColorRect.MoveWindow(Helpers::HRect(cxClient / 2, cyClient), true);
-	//	Rectang = Helpers::HRect(cxClient / 2, 0, cxClient, cyClient);
-
-	//	int cyChar = HIWORD(GetDialogBaseUnits());
-
-	//	for (int i = 0; i < 3; ++i) {
-
-	//		Scroll[i].MoveWindow(
-	//			Helpers::HRect{ (2 * i + 1)*cxClient / 14, 2 * cyChar, cxClient / 14, cyClient - 4 * cyChar },
-	//			true);
-	//		Label[i].MoveWindow(
-	//			Helpers::HRect{ (4 * i + 1) * cxClient / 28, cyChar / 2,
-	//			cxClient / 7, cyChar }, true);
-	//		Value[i].MoveWindow(
-	//			Helpers::HRect{ (4 * i + 1) * cxClient / 28, cyClient - 3 * cyChar / 2,
-	//			cxClient / 7, cyChar }, true);
-
-	//		//CheckDefaultWinError;
-	//	}
-	//	SetFocus();
-	//	return 0;
-	//}
-
-	//int OnPaint() {
-	//	//return DefWindowProc(hwn)
-	//}
-
-	//int OnMouseDown(WPARAM wParam, LPARAM lParam) {
-	//	MessageBeep(0);
-	//	return 0;
-	//}
-
-
+	int* ptr;
 };
-//
-//MESSAGE_MAP_BEGIN(MainWin)
-//MESSAGE_MAP_ENTRY(OnPaint,WM_PAINT)
-//MESSAGE_MAP_END(Himani::HApplication)
+class MainWin :public Himani::HBaseApp {
+public:
+	MainWin() {
+		fs.CreateWin(nullptr,&a,10);
+	}
+	void Idle()override {
+		a++;
+	}
+	FirstChild fs;
+};
 
-//int WINAPI Main() {
-//	HWND hwnd = CreateWindow(L"Himani.WinClass.EllipPush", L"TEST", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, Himani::Instance(), NULL);
-//	MSG msg;
-//	CheckDefaultWinError;
-//	while (GetMessage(&msg, NULL, NULL, NULL)) {
+class MainWins :public Himani::HBaseApp {
+public:
+	MainWins() {
+		newThread.StartThread();
+		fs.CreateWin(nullptr,&b, 10);
+	}
+	void Idle()override {
+		b++;
+	}
+
+	FirstChild fs;
+	Himani::HThread<MainWin> newThread;
+};
+
+ENTRY_APP(MainWins);
 //
-//		if (IsDialogMessage(hwnd, &msg)) {
-//			TranslateMessage(&msg);
-//			DispatchMessage(&msg);
+//class MainWin :public Himani::HBaseApp {
+//public:
+//	MainWin() {
+//		const TCHAR* titles[] = {
+//			TEXT("CHILD1"),TEXT("CHILD2"),TEXT("CHILD3"),TEXT("CHILD4")
+//		};
+//
+//		for (int i = 0; i < 4; ++i) {
+//			MultiWins[i].CreateWin(this);
+//		}
+//
+//	}
+//	int OnSize(WPARAM wParam, LPARAM lParam)override {
+//		int cxClient = LOWORD(lParam);
+//		int cyClient = HIWORD(lParam);
+//		for (int i = 0; i < 4; i++) {
+//			MultiWins[i].MoveWindow(
+//				Helpers::HRect((i % 2) * cxClient / 2, (i > 1) * cyClient / 2, cxClient / 2, cyClient / 2), TRUE
+//			);
 //		}
 //	}
-//	return 0;
-//}
-
-ENTRY_APP(MainWin);
+//private:
+//	FirstChild MultiWins[4];
+//};

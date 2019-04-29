@@ -54,6 +54,9 @@
     <ClCompile Include="Himani\Himani\Log System\Log.cpp">
       <Filter>LogSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Himani\Himani.h">
@@ -86,9 +89,6 @@
     <ClInclude Include="Himani\Himani\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Himani\Himani\SysMets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Himani\Himani\WinProc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Himani\Himani\Log System\Log.h">
       <Filter>LogSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Himani\Himani\ControlsWin.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -117,6 +117,10 @@ namespace Himani {
 		}
 		/*						Simple Wrappers						*/
 
+		~HWindow() {
+			//URGENT REMOVE THIS!!
+			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
+		}
 	};
 
 
@@ -193,8 +197,6 @@ namespace Himani {
 		//HCustomWindow() = default;
 
 		HCustomWindow(const HClassInitializer& Data) {
-			auto Z = sizeof(HHandleWrapperBaseClass<int*>);
-			auto ZX = sizeof(HWNDCLASS);
 			InitHandle(Data.hwnd);
 		}
 
@@ -210,7 +212,7 @@ namespace Himani {
 			HCustomWindow& operator=(const HCustomWindow&) = delete;
 
 
-			void CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent);
+			void CreateWin(const HString& Title, DWORD style , HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
 		//Framework Reserved Function 

@@ -57,6 +57,11 @@ namespace Himani {
 			return TRUE;
 		}
 
+		if (message == H_WM_SWAPPROCADDR) {
+
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)lParam);
+		}
+
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 

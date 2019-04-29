@@ -23,10 +23,10 @@ namespace Himani {
 
 	//std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
 
-	void HCustomWindow::CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent) {
+	void HCustomWindow::CreateWin(const HString& Title, DWORD style, HWindow* parent, Helpers::HRect size ) {
 		//wndParent = parent;
 
-		HWND parentHandle = NULL;
+		HWND parentHandle = nullptr;
 		if (parent)
 			parentHandle = (HWND)* parent;
 
@@ -81,54 +81,14 @@ namespace Himani {
 				//Strange code for sure and should only run if class Instance was created using External calls only 
 				//Not for Objects Intantited by Class itself
 				delete this;
-
+				return 0;
 			//InstanceHandler = nullptr;
 			//delete this;
-			break;
-
 		}
 		return MessageFunc(message, wParam, lParam);
 	}
 
-	//void HPredefinedWindow::CreateWin(const HString& Title, DWORD style, Helpers::HRect size, HWindow* parent) {
-
-
-	//	HWND parentHandle = NULL;
-	//	if (parent)
-	//		parentHandle = (HWND)* parent;
-
-	//	auto tempHandle = CreateWindowExW(0, ClassName().c_str(), //ClassName using virtual function
-	//		Title.c_str(), style,
-	//		size.left, size.top, size.right, size.bottom,
-	//		(HWND)parentHandle, //Parent HCustomWindow
-	//		NULL, Instance(), (LPVOID)-1
-	//	);
-
-	//	//InitHandle(tempHandle);
-
-	//	if (!tempHandle)
-	//		throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
-
-
-	//	//OldProc = (WNDPROC)SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LONG_PTR)Procedure());
-
-	//}
-
-	//inline LRESULT HPredefinedWindow::MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
-	//	switch (message) {
-	//	case WM_CREATE: {
-	//		InitHandle(hwnd);
-	//		OldProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)Procedure());
-
-	//		if (!OldProc)
-	//			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Procedure swap Unsuccessful");
-	//	}
-	//	}
-
-	//	return OldProc(hwnd, message, wParam, lParam);
-	//}
-
+	
 
 	HString HWindow::GetWinText() {
 		int size = GetWindowTextLength(Handle());

@@ -8,13 +8,20 @@
 
 namespace Himani {
 
+	class HSimpleWindow :public HCustomWindow {
+	public:
+		HSimpleWindow(const HClassInitializer &Args = HClassInitializer()):HCustomWindow(Args) {}
+
+		WINCLASS_PROPERTIES(HSimpleWindow, CS_HREDRAW | CS_VREDRAW);
+	};
+
 	class HApplication :public HCustomWindow {
 
 	public:
 		HApplication(const HString& Title, DWORD style,
 			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) :HCustomWindow(HClassInitializer()){
 			//NOTE Because HApplication can't have parent maybe??
-			CreateWin(Title, style, size, NULL);
+			CreateWin(Title, style, nullptr, size);
 
 		}
 

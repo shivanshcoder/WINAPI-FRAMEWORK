@@ -34,23 +34,24 @@ namespace Himani{
 
 #ifdef AUTO_APP_ENTRY
 
-extern Himani::HApplication* EntryApplication();
+extern Himani::HBaseApp* EntryApplication();
 
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
 	Himani::InitFramework(Instance, CmdShow);
 
-	try {
+	try {/*
 		auto App = EntryApplication();
 		App->start();
 		
-		delete App;
+		delete App;*/
+		Himani::HThread<Himani::HBaseApp> App(EntryApplication());
 	}
 	catch (Himani::Exceptions &e) {
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
 	}
 }
-#define ENTRY_APP(APP)  Himani::HApplication* EntryApplication() { return new APP(); }
+#define ENTRY_APP(APP)  Himani::HBaseApp* EntryApplication() { return new APP(); }
 
 #else
 
