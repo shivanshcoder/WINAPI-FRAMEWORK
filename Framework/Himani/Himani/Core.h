@@ -263,7 +263,6 @@ namespace Himani {
 	};
 
 	class HBaseApp {
-		//TODO maybe save Instance of the Thread? 
 
 	public:
 		virtual void start() {
@@ -303,13 +302,42 @@ namespace Himani {
 		HCriticalSectionBase CriticalSection;
 	};
 
+
+	/*
+		Thread Local Storage small wrapper for auto cleanup
+		Allocates teh Index on construction!
+	*/
+	class HThreadLocalStorage {
+	public:
+		HThreadLocalStorage() {
+			Index = TlsAlloc();
+		}
+
+		void SetValue(LPVOID Data) {
+			TlsSetValue(Index, Data);
+		}
+
+		LPVOID GetValue() {
+			return TlsGetValue(Index);
+		}
+
+		~HThreadLocalStorage() {
+			TlsFree(Index);
+		}
+
+		DWORD Index = 0;
+	};
+
 	template<class WinApp>
 	class HThread;
 
 	class HBaseThread {
 		template<class WinApp>
 		friend class HThread;
-
+		/*
+			Thread Local Storage works only if one process exists and all the framework works using single process 
+			mabe later find some fix for this
+		*/
 	private:
 		HBaseThread(DWORD(WINAPI* func)(LPVOID), bool createNewThread = true) {
 			//This creates a new thread and calls the callback function in the new thread
@@ -355,55 +383,50 @@ namespace Himani {
 		}
 	protected:
 		HANDLE ThreadHandle = nullptr;
+
+		//Is it safe it to be statically constructed?
+		static inline HThreadLocalStorage tls;
 	};
 
-	//extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
+	extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
 
 	//More thn one Instance of this class with same template arguement is not allowed
 	template<class WinApp>
 	class HThread :public HBaseThread {
 		//TODO make the function a friend!
-	//	friend int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int);
+		friend int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
 
 		static_assert(std::is_base_of<HBaseApp, WinApp>::value, "Base class of Template class should only be HBaseApp");
 		//Should anything be public?
 	public:
-		HThread() :HBaseThread(HThread::ThreadFunc) {
-			SaveInsatnce(this);
-		}
+		HThread() :HBaseThread(HThread::ThreadFunc) {}
 
 
 		static DWORD ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
+			tls.SetValue((LPVOID)&App);
 			App.Run();
 			//Success!
 			return 0;
 		}
 
-		static HThread<WinApp>& GetApp() {
-			return SaveInsatnce(nullptr);
+		static WinApp* GetApp() {
+			return (WinApp*)tls.GetValue();
 		}
 
-
+	//private:
 		//TODO make this constructor private later!!
 		//Framework Reserved for Use in MainThread
 		HThread(WinApp* Instance) :HBaseThread(HThread::ThreadFunc, false) {
+			tls.SetValue((LPVOID)Instance);
 			Instance->Run();
-			SaveInsatnce(this);
-		}
 
-	private:
-		static HThread<WinApp>& SaveInsatnce(HThread<WinApp>* Inst) {
-			static HThread<WinApp>* Instance = nullptr;
-			if (Instance || !Inst) {
-				//Error
-				__debugbreak();
-			}
-			Instance = Inst;
-			return *Inst;
 		}
 
 	};
 
-
+	/*template<class AppName>
+	AppName* GetApp() {
+		return HThread<AppName>::GetApp
+	}*/
 }

@@ -216,15 +216,11 @@ namespace Himani {
 		void CreateWin(const HString& Title, DWORD style , HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
-		//Framework Reserved Function 
-		//Should Never be called by anyone and can Hinder proper Functioning
-		void UpdateProperties(HWND hwnd);
-
 		virtual HString& ClassName() = 0;
 
 		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
-
+		//Is Storing even needed?	
 		//HWindow* wndParent = nullptr;
 
 	private:
@@ -232,7 +228,7 @@ namespace Himani {
 		
 		//true if SelfDestruct is necessary
 		//made false if window is created using CreateWin member function
-		bool SelfDestruct = true;
+		bool SelfDestruct = false;
 	};
 
 

@@ -26,7 +26,7 @@ namespace Himani {
 		Data += L" Windows Error: ";
 		Data += HString(buf);
 		Data += s.str();
-		//URGENT should it be deleted??
-		//delete buf;
+		//WARNING should it be deleted??
+		delete buf;
 	}
 }

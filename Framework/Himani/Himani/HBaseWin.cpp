@@ -47,12 +47,6 @@ namespace Himani {
 
 	}
 
-	void HCustomWindow::UpdateProperties(HWND hwnd) {
-		InitHandle(hwnd);
-		//InstanceHandler = this;
-		SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
-	}
-
 	LRESULT HCustomWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
 		
 		switch (message) {
@@ -75,17 +69,14 @@ namespace Himani {
 			return (LRESULT)this;
 
 		case WM_NCDESTROY:
-			//TODO make Instance Handler safer later on!
-			//if (InstanceHandler)
-				//WARNING 
-				//Strange code for sure and should only run if class Instance was created using External calls only 
-				//Not for Objects Intantited by Class itself
+
+			//WARNING 
+			//Strange code for sure and should only run if class Instance was created using External calls only 
+			//Not for Objects Intantited by Class itself
 			//SelfDestruct if the Instance was created using External Call!
 			if(SelfDestruct)
 				delete this;
 				return 0;
-			//InstanceHandler = nullptr;
-			//delete this;
 		}
 		return MessageFunc(message, wParam, lParam);
 	}

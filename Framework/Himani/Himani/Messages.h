@@ -47,9 +47,9 @@ namespace Himani {
 					//Use Dynamic Cast or something like that maybe?
 					Args = (HClassInitializer*)createArguments->lpCreateParams;
 					Args->hwnd = hwnd;
+					Args->SelfDestruct = true;
 					ClassInstance = new OwnerWindow(*Args);
 				}
-			//	ClassInstance->UpdateProperties(hwnd);
 				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)ClassInstance->Procedure());
 				
 			}

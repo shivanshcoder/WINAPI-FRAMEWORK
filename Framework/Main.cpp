@@ -19,7 +19,6 @@ public:
 		ws << *ptr;
 		switch (message) {
 
-
 		case WM_TIMER:
 		case WM_LBUTTONDOWN: {
 			//(*ptr)++;
@@ -42,30 +41,36 @@ public:
 };
 class MainWin :public Himani::HBaseApp {
 public:
-	MainWin() {
-		fs.CreateWin(nullptr,&a,10);
+	MainWin():s(&b) {
+		fs.CreateWin(nullptr, s, 10000);
 	}
 	void Idle()override {
-		a++;
+		MainWin* Hey = Himani::HThread<MainWin>::GetApp();
+		(*Hey->s)++;
 	}
+	int* s;
+	const int z = 23123;
 	FirstChild fs;
 };
-
 class MainWins :public Himani::HBaseApp {
 public:
-	MainWins() {
-		newThread.StartThread();
-		//newThread2.StartThread();
-		fs.CreateWin(nullptr,&b, 10);
+	MainWins() :
+	s(&a){
+		thread2.StartThread();
+		fs.CreateWin(nullptr, s, 10);
 	}
 	void Idle()override {
-		b++;
+		MainWin* Hey = Himani::HThread<MainWin>::GetApp();
+		(*Hey->s)++;
 	}
-
+	int* s;
+	const int z = 2;
 	FirstChild fs;
-	Himani::HThread<MainWin> newThread;
-	//Himani::HThread<MainWin> newThread2;
+	Himani::HThread<MainWin>thread2;
+
 };
+
+
 
 ENTRY_APP(MainWins);
 //
