@@ -8,10 +8,10 @@ int a = 0;
 int b = 0;
 class FirstChild :public Himani::HSimpleWindow {
 public:
-	void CreateWin(HWindow* parent,int* val,int time) {
+	void CreateWin(HWindow* parent, int* val, int time) {
 		ptr = val;
-		Himani::HSimpleWindow::CreateWin(TEXT(""), WS_OVERLAPPEDWINDOW|WS_VISIBLE, parent, Helpers::HRect(600,600));
-		SetTimer(Handle(),1, time, NULL);
+		Himani::HSimpleWindow::CreateWin(TEXT(""), WS_OVERLAPPEDWINDOW | WS_VISIBLE, parent, Helpers::HRect(600, 600));
+		SetTimer(Handle(), 1, time, NULL);
 	}
 
 	DECLARE_MESSAGE_MAP() {
@@ -41,7 +41,7 @@ public:
 };
 class MainWin :public Himani::HBaseApp {
 public:
-	MainWin():s(&b) {
+	MainWin() :s(&b) {
 		fs.CreateWin(nullptr, s, 10000);
 	}
 	void Idle()override {
@@ -55,7 +55,7 @@ public:
 class MainWins :public Himani::HBaseApp {
 public:
 	MainWins() :
-	s(&a){
+		s(&a) {
 		thread2.StartThread();
 		fs.CreateWin(nullptr, s, 10);
 	}
@@ -98,3 +98,4 @@ ENTRY_APP(MainWins);
 //private:
 //	FirstChild MultiWins[4];
 //};
+

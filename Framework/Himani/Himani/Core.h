@@ -9,7 +9,6 @@
 	VERSION
 */
 
-
 #pragma region CUSTOM_CLASS_MACROS
 ///Function for Getting class Name
 ///#define DEFINE_CLASSNAME(ClassName__) LPCWSTR ClassName()override { return L###ClassName__; } 
@@ -42,10 +41,13 @@ friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT messa
 	__debugbreak();\
 	}
 
-#define DISABLE_CLASS_COPY_ASSIGNMENT(ClassName) \
-	ClassName(const ClassName&) = delete;\
+#define DISABLE_CLASS_COPYCONS_ASSIGNMENT(ClassName)					\
+	ClassName(const ClassName&) = delete;								\
 	ClassName& operator=(const ClassName&) = delete;
 
+#define DISABLE_CLASS_MOVECONS_ASSIGNMENT(ClassName)					\
+	ClassName(ClassName&&) = delete;									\
+	ClassName& operator=(ClassName&&) = delete;
 
 #pragma endregion
 
@@ -148,39 +150,6 @@ namespace Himani {
 		HandleType handle;
 	};
 
-	class HWNDCLASS {
-	public:
-		HWNDCLASS() {
-			handle = (nullptr);
-		}
-
-		explicit HWNDCLASS(HWND __handle) {
-			handle = __handle;
-		}
-
-		HWND Handle()const {
-			if (handle)
-				return handle;
-			//	else
-				//	throw Exceptions(TEXT("Handle yet not Initialized"));
-		}
-
-
-		explicit operator HWND() {
-			return handle;
-		}
-
-		//This should be Protected?
-	//protected:
-		void InitHandle(HWND __handle) {
-			handle = __handle;
-		}
-
-		virtual ~HWNDCLASS() {}
-
-	private:
-		HWND handle;
-	};
 
 	/*
 	----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
@@ -197,25 +166,65 @@ namespace Himani {
 		HClassInitializer() :hwnd(nullptr), SelfDestruct(false) {}
 
 	private:
-		HClassInitializer(HWND wnd , bool AllowSelfDestruct) :hwnd(wnd),SelfDestruct(AllowSelfDestruct) {}
+		HClassInitializer(HWND wnd, bool AllowSelfDestruct) :hwnd(wnd), SelfDestruct(AllowSelfDestruct) {}
 
 		HWND hwnd;
 		bool SelfDestruct;
 	};
 
+#pragma region ThreadingComp
+
+
 	/*
 	------------------------------------------Threading Helping Components--------------------------------------------------
 	*/
 
+	class HEvent {
+
+	public:
+		enum Event_Type {
+			auto_reset,
+			manual_reset
+		};
+
+		//Disabled copy Constructors
+		DISABLE_CLASS_COPYCONS_ASSIGNMENT(HEvent);
+
+		//TODO implement Move Constructors
+
+		HEvent(Event_Type type = Event_Type::manual_reset) {
+			Event = CreateEvent(nullptr, type, false, nullptr);
+		}
+
+		HEvent(LPSECURITY_ATTRIBUTES attrs, Event_Type type, bool initialState) {
+			Event = CreateEvent(attrs, type, initialState, nullptr);
+		}
+
+
+		void Set() {
+			SetEvent(Event);
+		}
+
+		void Reset() {
+			ResetEvent(Event);
+		}
+
+		DWORD Wait(DWORD milliseconds = INFINITE) {
+			return WaitForSingleObject(Event, milliseconds);
+		}
+
+	private:
+		HANDLE Event;
+	};
 
 	/*
 		Critical Section Wrapper
 		A simple wrapper with no overhead and simple functionality
+		Just made for Auto Cleanup
 	*/
 	class HCriticalSectionBase {
 
 	public:
-
 
 		class HCriticalSection {
 			friend HCriticalSectionBase;
@@ -233,10 +242,10 @@ namespace Himani {
 			}
 		};
 
-		HCriticalSectionBase(HCriticalSectionBase const&) = delete;
-		HCriticalSectionBase(HCriticalSectionBase&&) = delete;
-		HCriticalSectionBase& operator=(HCriticalSectionBase const&) = delete;
-		HCriticalSectionBase& operator=(HCriticalSectionBase&&) = delete;
+		//No need for Copy or Move Constructors!
+		DISABLE_CLASS_COPYCONS_ASSIGNMENT(HCriticalSectionBase);
+		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HCriticalSectionBase);
+
 
 		HCriticalSectionBase() {
 			InitializeCriticalSection(&sc);
@@ -265,8 +274,15 @@ namespace Himani {
 	class HBaseApp {
 
 	public:
-		virtual void start() {
+		HBaseApp() = default;
+		//No Need of Copy or Move Constructors
+		HBaseApp(HBaseApp const&) = delete;
+		HBaseApp(HBaseApp&&) = delete;
+		HBaseApp& operator=(HBaseApp const&) = delete;
+		HBaseApp& operator=(HBaseApp&&) = delete;
 
+		virtual void Start() {
+			Run();
 		}
 
 		virtual void Run() {
@@ -309,6 +325,10 @@ namespace Himani {
 	*/
 	class HThreadLocalStorage {
 	public:
+
+		DISABLE_CLASS_COPYCONS_ASSIGNMENT(HThreadLocalStorage);
+		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HThreadLocalStorage);
+
 		HThreadLocalStorage() {
 			Index = TlsAlloc();
 		}
@@ -334,8 +354,13 @@ namespace Himani {
 	class HBaseThread {
 		template<class WinApp>
 		friend class HThread;
+
+
+
+		friend HBaseApp* GetApp();
+
 		/*
-			Thread Local Storage works only if one process exists and all the framework works using single process 
+			Thread Local Storage works only if one process exists and all the framework works using single process
 			mabe later find some fix for this
 		*/
 	private:
@@ -351,6 +376,9 @@ namespace Himani {
 
 		}
 	public:
+		DISABLE_CLASS_COPYCONS_ASSIGNMENT(HBaseThread);
+		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HBaseThread);
+
 		void StartThread() {
 			::ResumeThread(ThreadHandle);
 		}
@@ -362,10 +390,7 @@ namespace Himani {
 		void SuspendThread() {
 			::SuspendThread(ThreadHandle);
 		}
-		//protected:
-		virtual void Run() {
 
-		}
 
 		~HBaseThread() {
 			WaitForSingleObject(ThreadHandle, INFINITE);
@@ -385,28 +410,31 @@ namespace Himani {
 		HANDLE ThreadHandle = nullptr;
 
 		//Is it safe it to be statically constructed?
+		//TODO waht happens if more processes are to be used?
 		static inline HThreadLocalStorage tls;
 	};
 
-	extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
-
+	//extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
 	//More thn one Instance of this class with same template arguement is not allowed
+
 	template<class WinApp>
 	class HThread :public HBaseThread {
 		//TODO make the function a friend!
-		friend int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
+		friend int WINAPI::WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
 
 		static_assert(std::is_base_of<HBaseApp, WinApp>::value, "Base class of Template class should only be HBaseApp");
-		//Should anything be public?
+
 	public:
 		HThread() :HBaseThread(HThread::ThreadFunc) {}
+
+		DISABLE_CLASS_COPYCONS_ASSIGNMENT(HThread);
+		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HThread);
 
 
 		static DWORD ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
-			tls.SetValue((LPVOID)&App);
-			App.Run();
-			//Success!
+			tls.SetValue((LPVOID)& App);
+			App.Start();
 			return 0;
 		}
 
@@ -414,19 +442,26 @@ namespace Himani {
 			return (WinApp*)tls.GetValue();
 		}
 
-	//private:
-		//TODO make this constructor private later!!
+	private:
 		//Framework Reserved for Use in MainThread
 		HThread(WinApp* Instance) :HBaseThread(HThread::ThreadFunc, false) {
 			tls.SetValue((LPVOID)Instance);
 			Instance->Run();
-
 		}
 
 	};
 
-	/*template<class AppName>
-	AppName* GetApp() {
-		return HThread<AppName>::GetApp
-	}*/
+	/*
+		Returns The Instance of the Running Application of the current thread of the current process!
+	*/
+	inline HBaseApp* GetApp() {
+		return (HBaseApp*)HBaseThread::tls.GetValue();
+	}
+
+	/*
+	------------------------------------------------------END---------------------------------------------------------------
+	------------------------------------------Threading Helping Components--------------------------------------------------
+	*/
+#pragma endregion
+
 }
