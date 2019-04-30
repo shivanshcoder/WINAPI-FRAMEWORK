@@ -380,9 +380,9 @@ namespace Himani {
 				ThreadHandle = CreateThread(NULL, NULL, func, NULL, NULL/*CREATE_SUSPENDED*/, NULL);
 
 			//This calls the callback function using the same thread Framework Reserved!
-			//else {
-			//	ThreadHandle = GetCurrentThread();
-			//}
+			else {
+				ThreadHandle = GetCurrentThread();
+			}
 
 		}
 	public:
