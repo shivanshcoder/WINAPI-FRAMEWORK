@@ -204,7 +204,7 @@ namespace Himani {
 		HWindow* Parent() {
 			HWND parent = nullptr;
 			if (parent = GetParent(Handle())) {
-				return (HWindow*)SendMessage(parent, H_WM_GETOWNINSTANCE, 0, 0);
+				return (HWindow*)SendMessage(parent, H_WM_GETPARENTINSTANCE, 0, 0);
 			}
 			return nullptr;
 		}

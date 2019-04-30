@@ -32,6 +32,14 @@ friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT messa
 
 #define CheckDefaultWinError	if (GetLastError())	throw Himani::WinExceptions(__LINE__,TEXT(__FILE__))
 
+	//Delete or make something else
+#define CheckTempError if(GetLastError()){\
+	wchar_t *buf;	\
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,\
+		NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),\
+		(LPWSTR)& buf, sizeof(buf), NULL);\
+	__debugbreak();\
+	}
 
 #define DISABLE_CLASS_COPYCONS_ASSIGNMENT(ClassName)					\
 	ClassName(const ClassName&) = delete;								\
@@ -121,9 +129,6 @@ namespace Himani {
 		HandleType Handle()const {
 			if (handle)
 				return handle;
-
-			//TODO fix this maybe?
-			//Why did i comment this?
 			//	else
 				//	throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
@@ -283,22 +288,12 @@ namespace Himani {
 		virtual void Run() {
 			MessageProcess();
 		}
-		virtual ~HBaseApp() {}
 
 	protected:
 
 		//Override for Custom task during the IDLE time
 		virtual void Idle() {}
 
-		bool DialogProcessing(MSG* msg) {
-			bool IsProcessed = 0;
-			if (DlgStore.size()) {
-				for (auto& Dlg : DlgStore) {
-					IsProcessed = IsDialogMessage(Dlg, msg);
-				}
-			}
-			return IsProcessed;
-		}
 		//Default Message Processing
 		virtual WPARAM MessageProcess() {
 			MSG msg;
@@ -320,12 +315,7 @@ namespace Himani {
 			return msg.wParam;
 		}
 
-		
-		//TODO is it needed?
-		//HCriticalSectionBase CriticalSection;
-
-	private:
-		std::vector<HWND>DlgStore;
+		HCriticalSectionBase CriticalSection;
 	};
 
 
@@ -379,10 +369,10 @@ namespace Himani {
 			if (createNewThread)
 				ThreadHandle = CreateThread(NULL, NULL, func, NULL, NULL/*CREATE_SUSPENDED*/, NULL);
 
-			//This calls the callback function using the same thread Framework Reserved!
-			//else {
-			//	ThreadHandle = GetCurrentThread();
-			//}
+			//This calls the callback function using the same thread System Reserved!
+			else {
+				ThreadHandle = GetCurrentThread();
+			}
 
 		}
 	public:
@@ -401,31 +391,19 @@ namespace Himani {
 			::SuspendThread(ThreadHandle);
 		}
 
-		//
-		virtual ~HBaseThread() {
 
-			//When the Thread manages the primary thread
-			//ThreadHandle stores the pseudoHandle which is equal to GetCurrentThread()
-			if (GetCurrentThread() != ThreadHandle) {
+		~HBaseThread() {
+			WaitForSingleObject(ThreadHandle, INFINITE);
+			DWORD exitCode;
+			GetExitCodeThread(ThreadHandle, &exitCode);
 
-				WaitForSingleObject(ThreadHandle, INFINITE);
-				DWORD exitCode;
-				GetExitCodeThread(ThreadHandle, &exitCode);
+			//WARNING need to refactor it later on when the logic flow is clearer!
+			if (exitCode == STILL_ACTIVE) {
+				__debugbreak();
 
-				//WARNING need to refactor it later on when the logic flow is clearer!
-				if (exitCode == STILL_ACTIVE) {
-					__debugbreak();
+				//TODO should i Terminate if somehow the thread doesn't terminate?
+				TerminateThread(ThreadHandle, 0);
 
-					//TODO should i Terminate if somehow the thread doesn't terminate?
-					TerminateThread(ThreadHandle, 0);
-
-				}
-			}
-			else {
-				//Since we are constructing primary thread with a Applicaiton Object created using heap 
-				//We have to manually delete the Object
-				//TODO maybe make alternative primary thread class!
-				delete ((HBaseApp*)tls.GetValue());
 			}
 		}
 	protected:
@@ -433,10 +411,8 @@ namespace Himani {
 
 		//Is it safe it to be statically constructed?
 		//TODO waht happens if more processes are to be used?
-		//VESION c++17
 		static inline HThreadLocalStorage tls;
 	};
-
 
 	//extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
 	//More thn one Instance of this class with same template arguement is not allowed
@@ -458,7 +434,7 @@ namespace Himani {
 		static DWORD ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
 			tls.SetValue((LPVOID)& App);
-			App.Start(); 
+			App.Start();
 			return 0;
 		}
 

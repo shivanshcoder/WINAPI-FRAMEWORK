@@ -48,6 +48,11 @@ namespace Himani {
 	}
 
 	LRESULT HCustomWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+		
+		switch (message) {
+			
+		}
+
 		return DefWindowProc(Handle(), message, wParam, lParam);
 	}
 
@@ -59,7 +64,7 @@ namespace Himani {
 			//WARNING Is it necessary?
 			InitHandle(hwnd);
 
-		case H_WM_GETOWNINSTANCE:
+		case H_WM_GETPARENTINSTANCE:
 			//Sends the Current Instance of the Class;
 			return (LRESULT)this;
 
@@ -67,7 +72,7 @@ namespace Himani {
 
 			//WARNING 
 			//Strange code for sure and should only run if class Instance was created using External calls only 
-			//Not for Objects Intantited by Class itself(Stack Creation)
+			//Not for Objects Intantited by Class itself
 			//SelfDestruct if the Instance was created using External Call!
 			if(SelfDestruct)
 				delete this;
