@@ -21,12 +21,12 @@ return ParentWinClass::MessageFunc( message, wParam, lParam); }
 #define MESSAGE_MAP_ENTRY_SINGLE(STATEMENT, RETURN_VAL, MESSAGE_VAL) case MESSAGE_VAL: STATEMENT; return RETURN_VAL;
 
 
-//Sends to Parent Window and returns the Class Instance to be stored in children
-#define H_WM_GETPARENTINSTANCE WM_USER+1
+//Sends to Window using raw Handle and returns the Class Instance associated with that handle
+#define H_WM_GETOWNINSTANCE WM_USER+1
 #define H_WM_SWAPPROCADDR WM_USER+2
 
-#define H_WM_ACCELERATOR WM_USER+3
-#define H_WM_DIALOGPROCESSING WM_USER+4
+#define H_WM_ACCELERATOR WM_USER+100
+#define H_WM_DIALOGPROCESSING WM_USER+101
 
 namespace Himani {
 

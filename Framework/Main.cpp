@@ -34,6 +34,10 @@ public:
 			EndPaint(Handle(), &ps);
 			return 0;
 		}
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
 		}
 		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
@@ -52,6 +56,8 @@ public:
 	const int z = 23123;
 	FirstChild fs;
 };
+
+
 class MainWins :public Himani::HBaseApp {
 public:
 	MainWins() :
@@ -63,11 +69,12 @@ public:
 		MainWin* Hey = Himani::HThread<MainWin>::GetApp();
 		(*Hey->s)++;
 	}
+
 	int* s;
 	const int z = 2;
 	FirstChild fs;
-	Himani::HThread<MainWin>thread2;
 
+	Himani::HThread<MainWin>thread2;
 };
 
 
