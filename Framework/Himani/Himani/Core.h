@@ -8,18 +8,28 @@
 	WARNING
 	VERSION
 */
-
 #pragma region CUSTOM_CLASS_MACROS
 ///Function for Getting class Name
 ///#define DEFINE_CLASSNAME(ClassName__) LPCWSTR ClassName()override { return L###ClassName__; } 
 
 ///#define OVERRIDE_PREDEFINEDCLASS(ClassName__) DEFINE_CLASSNAME(ClassName__)
 
-#define WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), Himani::CommonWndProc<__ClassName>,(Style)};\
+#define LEGACY_WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), Himani::CommonWndProc<__ClassName>,(Style)};\
+	Himani::HString& ClassName()override {		\
+		return __Prop.ClassName;			\
+	}											
+
+#define WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), DefWindowProc,(Style)};\
 	Himani::HString& ClassName()override {		\
 		return __Prop.ClassName;			\
 	}											\
 friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+#define PREDEFINED_WINCLASS(ClassNameStr) Himani::HString __ClassName = ClassNameStr;\
+	Himani::HString& ClassName()override {		\
+		return __ClassName;			\
+	}
+
 
 #pragma endregion
 
@@ -53,10 +63,30 @@ namespace Himani {
 	typedef std::string HString;
 #endif
 
+	//template<int InstanceID>
+	class FrameworkProps {
+	public:
+		FrameworkProps() {
+
+		}
+
+	private:
+
+		struct ClassProperties {
+			Himani::HString className;
+			WNDPROC procAddr;
+			int classStyle;
+		};
+
+		static inline HINSTANCE __ProgramInstance;
+		static inline int ProgramCmdShow;
+		static inline std::vector<ClassProperties>ClassList;
+	};
 
 
 	extern HINSTANCE __ProgramInstance;
 	extern int __ProgramCmdShow;
+
 
 	inline HINSTANCE Instance() {
 		return __ProgramInstance;
@@ -103,6 +133,15 @@ namespace Himani {
 	/*------------------------------------Error Handling------------------------------------*/
 
 #pragma endregion
+	//template<class Control, int size>
+	//class HControlGroup {
+	//public:
+	//	HControlGroup(std::vector<HString>Titles, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect(100, 200)) {
+	//		Controls.push_back(Control());
+	//	}
+	//private:
+	//	std::vector<HWindow&>Controls;
+	//};
 
 
 
@@ -113,6 +152,16 @@ namespace Himani {
 		HHandleWrapperBaseClass() {
 			handle = (nullptr);
 		}
+
+		HHandleWrapperBaseClass(HHandleWrapperBaseClass&& other) {
+			handle = other.handle;
+			other.handle = nullptr;
+		}
+
+		HHandleWrapperBaseClass& operator=(HHandleWrapperBaseClass&&) = delete;
+
+		HHandleWrapperBaseClass(const HHandleWrapperBaseClass&) = delete;
+		HHandleWrapperBaseClass& operator=(const HHandleWrapperBaseClass&&) = delete;
 
 		explicit HHandleWrapperBaseClass(HandleType __handle) {
 			handle = __handle;
@@ -154,6 +203,7 @@ namespace Himani {
 	class HClassInitializer {
 		template<class OwnerWindow>
 		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 		friend class HCustomWindow;
 
 	public:
@@ -302,7 +352,7 @@ namespace Himani {
 		//Default Message Processing
 		virtual WPARAM MessageProcess() {
 			MSG msg;
-
+			CheckDefaultWinError;
 			while (true) {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 					if (msg.message == WM_QUIT)
@@ -320,7 +370,7 @@ namespace Himani {
 			return msg.wParam;
 		}
 
-		
+
 		//TODO is it needed?
 		//HCriticalSectionBase CriticalSection;
 
@@ -455,10 +505,10 @@ namespace Himani {
 		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HThread);
 
 
-		static DWORD ThreadFunc(LPVOID lPvoid) {
+		static DWORD CALLBACK ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
 			tls.SetValue((LPVOID)& App);
-			App.Start(); 
+			App.Start();
 			return 0;
 		}
 

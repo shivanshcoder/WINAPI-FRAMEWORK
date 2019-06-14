@@ -2,84 +2,64 @@
 #include"Hpch.h"
 #define AUTO_APP_ENTRY
 #include"Himani.h"
+#include"Himani/Himani/PredefinedClasses.h"
+#include"Himani/Himani/SampleWinClasses.h"
 #include"Himani/Log System/Log.h"
+void DrawRectangle(HWND hwnd)
+{
+	HBRUSH hBrush;
+	HDC    hdc;
+	RECT   rect;
 
-int a = 0;
-int b = 0;
-class FirstChild :public Himani::HSimpleWindow {
+
+	SetRect(&rect, rand() % 480, rand() % 480,
+		rand() % 480, rand() % 480);
+
+	hBrush = CreateSolidBrush(
+		RGB(rand() % 256, rand() % 256, rand() % 256));
+
+	hdc = GetDC(hwnd);
+	FillRect(hdc, &rect, hBrush);
+	ReleaseDC(hwnd, hdc);
+	DeleteObject(hBrush);
+}
+
+class tempWin :public Himani::HSimpleWindow {
 public:
-	void CreateWin(HWindow* parent, int* val, int time) {
-		ptr = val;
-		Himani::HSimpleWindow::CreateWin(TEXT(""), WS_OVERLAPPEDWINDOW | WS_VISIBLE, parent, Helpers::HRect(600, 600));
-		SetTimer(Handle(), 1, time, NULL);
-	}
+	tempWin() :HSimpleWindow(TEXT("tempWin")) {	}
 
 	DECLARE_MESSAGE_MAP() {
-		std::wstringstream ws;
-		ws << *ptr;
 		switch (message) {
-
-		case WM_TIMER:
-		case WM_LBUTTONDOWN: {
-			//(*ptr)++;
-			::InvalidateRect(Handle(), NULL, true);
+		case WM_SIZE:
+			DrawRectangle(Handle());
 			return 0;
 		}
 
-
-		case WM_PAINT: {
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(Handle(), &ps);
-			TextOut(hdc, 50, 50, ws.str().c_str(), ws.str().size());
-			EndPaint(Handle(), &ps);
-			return 0;
-		}
-
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
-		}
-		return HSimpleWindow::MessageFunc(message, wParam, lParam);
+		return DefWindowProc(Handle(), message, wParam, lParam);
 	}
-	int* ptr;
+
 };
+
 class MainWin :public Himani::HBaseApp {
 public:
-	MainWin() :s(&b) {
-		fs.CreateWin(nullptr, s, 10000);
+	MainWin(){
+		Himani::HSimpleWindow s(TEXT("Hello"));
+		tempWin s2;
+		Himani::HSimpleWindow* ptr = &s2;
+		//*ptr = std::move(s);
+		*(Himani::HSimpleWindow*)& s2 = std::move(s);
+		s2.Show(SW_NORMAL);
+		s2.Update();
+		Run();
+		PostQuitMessage(0);
 	}
-	void Idle()override {
-		MainWin* Hey = Himani::HThread<MainWin>::GetApp();
-		(*Hey->s)++;
-	}
-	int* s;
-	const int z = 23123;
-	FirstChild fs;
-};
-
-
-class MainWins :public Himani::HBaseApp {
-public:
-	MainWins() :
-		s(&a) {
-		thread2.StartThread();
-		fs.CreateWin(nullptr, s, 10);
-	}
-	void Idle()override {
-		MainWin* Hey = Himani::HThread<MainWin>::GetApp();
-		(*Hey->s)++;
-	}
-
-	int* s;
-	const int z = 2;
-	FirstChild fs;
-
-	Himani::HThread<MainWin>thread2;
 };
 
 
 
-ENTRY_APP(MainWins);
+
+
+ENTRY_APP(MainWin);
 //
 //class MainWin :public Himani::HBaseApp {
 //public:

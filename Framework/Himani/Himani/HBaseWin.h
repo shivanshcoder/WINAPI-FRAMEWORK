@@ -58,6 +58,7 @@ namespace Himani {
 */
 	public:
 		using HHandleWrapperBaseClass<HWND>::HHandleWrapperBaseClass;
+		HWindow(HWindow&&) = default;
 
 		HString GetWinText();
 		Helpers::HRect GetClientRect();
@@ -133,6 +134,59 @@ namespace Himani {
 	for std17++
 		inline static HWinClassProperties Object = { ... };
 	*/
+
+	//TODO complete this class
+	template<class WinClassName>
+	struct HWinClass {
+		HWinClass(Himani::HString className, WNDPROC procAddr, int classStyle) {
+			ClassName += TEXT("Himani.WinClass.");
+			ClassName += className;
+
+			//ClassList.push_back({ ClassName, procAddr, classStyle });
+
+		}
+
+		/*When using a system Registered Class*/
+		HWinClass(Himani::HString className) {
+			ClassName += className;
+		}
+
+		//Registers all the Classes added to the Store
+		//This funciton is called Automatically by Framework and Registers all the Window Classes before Entering the Main Application!
+		static void RegisterAllClasses() {
+			while (ClassList.size()) {
+				auto ClassProp = ClassList.back();
+				ClassList.pop_back();
+
+				WNDCLASSEX wndclass = {};
+				wndclass.cbSize = sizeof(WNDCLASSEX);
+				wndclass.style = ClassProp.classStyle;
+				wndclass.lpfnWndProc = ClassProp.procAddr;
+				wndclass.hInstance = Instance();
+				wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+				wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+				wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+				wndclass.lpszClassName = ClassProp.className.c_str();
+				wndclass.lpszMenuName = NULL;
+				wndclass.hIconSm = NULL;
+
+				if (!RegisterClassEx(&wndclass)) {
+					CheckDefaultWinError;
+				}
+			}
+		}
+
+		struct ClassProperties {
+			Himani::HString className;
+			WNDPROC procAddr;
+			int classStyle;
+		};
+		
+		HString ClassName;
+		static inline std::vector<ClassProperties>ClassList;
+
+	};
+	
 	struct HWinClassProperties {
 		HWinClassProperties(Himani::HString className, WNDPROC procAddr, int classStyle) {
 			ClassName += TEXT("Himani.WinClass.");
@@ -140,6 +194,11 @@ namespace Himani {
 
 			ClassList.push_back({ ClassName, procAddr, classStyle });
 
+		}
+
+		/*When using a system Registered Class*/
+		HWinClassProperties(Himani::HString className) {
+			ClassName += className;
 		}
 
 		//Registers all the Classes added to the Store
@@ -177,7 +236,6 @@ namespace Himani {
 
 	};
 
-
 	/*
 	------------------------	Custom HCustomWindow Classes ------------------------------
 	Derive from HCustomWindow Class
@@ -192,11 +250,11 @@ namespace Himani {
 	Don't Use Constructor for Operations using Window
 	Since the Window is created after calling CreateWin only!5
 	*/
-	class HCustomWindow :public HWindow, public HWindowsProc {
+	class HCustomWindow :public HWindow, private HWindowsProc {
 	public:
 		//HCustomWindow() = default;
 
-		HCustomWindow(const HClassInitializer& Data) {
+		HCustomWindow(const HClassInitializer& Data = HClassInitializer()) {
 			InitHandle(Data.hwnd);
 			SelfDestruct = Data.SelfDestruct;
 		}
@@ -209,11 +267,30 @@ namespace Himani {
 			return nullptr;
 		}
 
+		//Disable Copy Constructor and Assignment
 		HCustomWindow(const HCustomWindow&) = delete;
 		HCustomWindow& operator=(const HCustomWindow&) = delete;
 
+		HCustomWindow(HCustomWindow&& other):HWindow(std::move(other)) {
+			//Swap the Procedure!
+			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+			
+			//Make the other UnInitialized
+			other.InitHandle(nullptr);
+		}
 
-		void CreateWin(const HString& Title, DWORD style , HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
+		//Disable Assignment for now 
+		HCustomWindow& operator=(HCustomWindow&& other)  {
+			InitHandle(other.Handle());
+			//Swap the Procedure!
+			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+
+			//Make the other UnInitialized
+			other.InitHandle(nullptr);
+			return *this;
+		}
+
+		void CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle = 0, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
 		virtual HString& ClassName() = 0;
@@ -230,6 +307,5 @@ namespace Himani {
 		//made false if window is created using CreateWin member function
 		bool SelfDestruct = false;
 	};
-
 
 }

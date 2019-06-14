@@ -54,9 +54,6 @@
     <ClCompile Include="Himani\Himani\Log System\Log.cpp">
       <Filter>LogSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Himani\Himani\ControlsWin.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Himani\Himani.h">
@@ -98,8 +95,14 @@
     <ClInclude Include="Himani\Himani\Log System\Log.h">
       <Filter>LogSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Himani\Himani\ControlsWin.h">
+    <ClInclude Include="Himani\Himani\PredefinedClasses.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Himani\Himani\SampleWinClasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

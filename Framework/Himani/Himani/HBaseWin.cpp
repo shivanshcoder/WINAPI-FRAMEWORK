@@ -23,31 +23,36 @@ namespace Himani {
 
 	//std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
 
-	void HCustomWindow::CreateWin(const HString& Title, DWORD style, HWindow* parent, Helpers::HRect size ) {
-		//wndParent = parent;
+	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size){
 		SelfDestruct = false;
 		HWND parentHandle = nullptr;
 		if (parent)
 			parentHandle = (HWND)* parent;
 
 
-		auto tempHandle = CreateWindowExW(0, ClassName().c_str(), //ClassName using virtual function
+		auto tempHandle = CreateWindowExW(ExStyle, ClassName().c_str(), //ClassName using virtual function
 			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
 			parentHandle, //Parent HWindow
 			NULL, Instance(),
 			(LPVOID)-1// This Stops from creating instance of Class from the common procedure
 		);
-
-		SendMessage(tempHandle, H_WM_SWAPPROCADDR, NULL, (LPARAM)Procedure());
+		SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LPARAM)Procedure());
 		InitHandle(tempHandle);
 
 		if (!tempHandle)
 			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
-
 	}
 
 	LRESULT HCustomWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+		/*switch (message) {
+		case WM_COMMAND: {
+			if (lParam) {
+				SendMessage((HWND)lParam, HIWORD(wParam), LOWORD(wParam), 0);
+			}
+		}
+		}*/
+
 		return DefWindowProc(Handle(), message, wParam, lParam);
 	}
 
@@ -62,6 +67,17 @@ namespace Himani {
 		case H_WM_GETOWNINSTANCE:
 			//Sends the Current Instance of the Class;
 			return (LRESULT)this;
+
+
+		case WM_COMMAND: {
+			if (lParam) {
+				//Framework Controls can automatically use the notification by themselves
+				int temp =	SendMessage((HWND)lParam, H_CM_PROCESSNOTIF, HIWORD(wParam), LOWORD(wParam));
+				if (temp != -1)
+					break;
+				return 0;
+			}
+		}
 
 		case WM_NCDESTROY:
 

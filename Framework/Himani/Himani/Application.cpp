@@ -36,7 +36,7 @@ namespace Himani {
 		case WM_DESTROY:
 			return OnDestroy();
 		}
-		return HCustomWindow::MessageFunc(message, wParam, lParam);
+		return this->HCustomWindow::MessageFunc(message, wParam, lParam);
 	}
 
 

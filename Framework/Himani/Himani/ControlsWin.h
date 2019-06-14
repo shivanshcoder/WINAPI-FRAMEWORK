@@ -2,7 +2,7 @@
 #include"HBaseWin.h"
 #include"Messages.h"
 #include"GDI.h"
-
+//https://docs.microsoft.com/en-us/windows/desktop/Controls/individual-control-info
 namespace Himani {
 	//class HGDIObject;
 	/*
@@ -87,7 +87,7 @@ namespace Himani {
 
 	public:
 		HButton(const Himani::HClassInitializer& Args = HClassInitializer()) :HCustomWindow(Args) {	
-			if (OldBtnProc) {
+			if (!OldBtnProc) {
 				WNDCLASSEX wndclass;
 				GetClassInfoEx(NULL, TEXT("button"), &wndclass);
 				OldBtnProc = wndclass.lpfnWndProc;
@@ -120,6 +120,8 @@ namespace Himani {
 
 	private:
 		WINCLASS_PROPERTIES(HButton, CS_HREDRAW | CS_VREDRAW);
+
+		//VERSION c++17
 		static inline WNDPROC OldBtnProc = nullptr;
 	};
 

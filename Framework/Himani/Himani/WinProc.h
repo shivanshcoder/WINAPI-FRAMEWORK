@@ -126,6 +126,12 @@ namespace Himani {
 			return thunk->GetThunkAddress();
 		}
 
+		//Disable Copy/Move Assignment and Constructor
+		HWindowsProc(HWindowsProc&&) = delete;
+		HWindowsProc& operator=(HWindowsProc&&) = delete;
+		HWindowsProc(const HWindowsProc&) = delete;
+		HWindowsProc& operator=(const HWindowsProc&) = delete;
+
 	protected:
 
 		virtual LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -156,6 +162,13 @@ namespace Himani {
 		HDialogProc() {
 			thunk->Init(this, (DWORD_PTR)WndProc);
 		}
+
+		//Disable Copy/Move Assignment and Constructor
+		HDialogProc(HDialogProc&&) = delete;
+		HDialogProc& operator=(HDialogProc&&) = delete;
+		HDialogProc(const HDialogProc&) = delete;
+		HDialogProc& operator=(const HDialogProc&) = delete;
+
 
 	protected:
 		//Returns the windows Procedure specific to our class Object

@@ -27,6 +27,7 @@ return ParentWinClass::MessageFunc( message, wParam, lParam); }
 
 #define H_WM_ACCELERATOR WM_USER+100
 #define H_WM_DIALOGPROCESSING WM_USER+101
+#define H_CM_PROCESSNOTIF WM_USER+102
 
 namespace Himani {
 

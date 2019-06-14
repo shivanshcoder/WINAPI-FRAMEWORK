@@ -168,7 +168,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Himani\Himani\Application.cpp" />
-    <ClCompile Include="Himani\Himani\ControlsWin.cpp" />
     <ClCompile Include="Himani\Himani\Core.cpp" />
     <ClCompile Include="Himani\Himani\Dialogs.cpp" />
     <ClCompile Include="Himani\Himani\GDI.cpp" />
@@ -191,7 +190,6 @@
   <ItemGroup>
     <ClInclude Include="Himani\Himani.h" />
     <ClInclude Include="Himani\Himani\Application.h" />
-    <ClInclude Include="Himani\Himani\ControlsWin.h" />
     <ClInclude Include="Himani\Himani\Core.h" />
     <ClInclude Include="Himani\Himani\Dialogs.h" />
     <ClInclude Include="Himani\Himani\GDI.h" />
@@ -201,8 +199,13 @@
     <ClInclude Include="Himani\Himani\Log System\Log.h" />
     <ClInclude Include="Himani\Himani\Menu.h" />
     <ClInclude Include="Himani\Himani\Messages.h" />
+    <ClInclude Include="Himani\Himani\PredefinedClasses.h" />
+    <ClInclude Include="Himani\Himani\SampleWinClasses.h" />
     <ClInclude Include="Himani\Himani\WinProc.h" />
     <ClInclude Include="Himani\Hpch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
