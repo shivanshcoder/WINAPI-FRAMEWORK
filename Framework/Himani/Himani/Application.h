@@ -19,7 +19,7 @@ namespace Himani {
 
 	public:
 		HApplication(const HString& Title, DWORD style,
-			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) :HCustomWindow(HClassInitializer()) {
+			Helpers::HRect size = { CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT }) {
 			//NOTE Because HApplication can't have parent maybe??
 			HCustomWindow::CreateWinEx(Title, style, 0, nullptr, size);
 

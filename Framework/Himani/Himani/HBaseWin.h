@@ -12,52 +12,13 @@ namespace Himani {
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName);
 
 
-	//class HWindow {
-	//	friend class HCustomWindow;
-	//	friend class HPredefinedWindow;
-	//	friend class HBaseDialog;
-	//	//friend class HWindow;
-	//public:
-	//	//Return Empty HWindow as nullptr
-	//	HWindow() {
-	//		hwnd = nullptr;
-	//	}
-	//	HWindow(HWND _hwnd) {
-	//		hwnd = _hwnd;
-	//	}
-	//
-	//	//Doesn't check if the handle is nullptr or not
-	//	operator HWND()const {
-	//		return hwnd;
-	//	}
-
-	//	~HWindow() {}
-
-	//	//Should it be protected?
-	////protected:
-	//	//Checks if the handle to window is nullptr or not
-	//	HWND Handle() {
-	//		if (!hwnd)
-	//			throw Himani::Exceptions(L"nullptr Window Handle");
-	//		return hwnd;
-	//	}
-
-	//private:
-	//	HWND hwnd;
-	//};
-
+	LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	class HWindow :public HHandleWrapperBaseClass<HWND> {
 
-	private:
-		//Create Instance using Raw Handle to Window
-		//Reserved for Framework Use only!
-	/*	HWindow(HWND Handle) {
-			InitHandle(Handle);
-		}
-*/
 	public:
 		using HHandleWrapperBaseClass<HWND>::HHandleWrapperBaseClass;
+		
 		HWindow(HWindow&&) = default;
 
 		HString GetWinText();
@@ -68,6 +29,7 @@ namespace Himani {
 		/*						Simple Wrappers						*/
 
 		void SetWinText(const HString& Text) const {
+			
 			SetWindowText(Handle(), Text.c_str());
 		}
 
@@ -136,63 +98,65 @@ namespace Himani {
 	*/
 
 	//TODO complete this class
-	template<class WinClassName>
-	struct HWinClass {
-		HWinClass(Himani::HString className, WNDPROC procAddr, int classStyle) {
-			ClassName += TEXT("Himani.WinClass.");
-			ClassName += className;
+	//template<class WinClassName>
+	//struct HWinClass {
+	//	HWinClass(Himani::HString className, WNDPROC procAddr, int classStyle) {
+	//		ClassName += TEXT("Himani.WinClass.");
+	//		ClassName += className;
 
-			//ClassList.push_back({ ClassName, procAddr, classStyle });
+	//		//ClassList.push_back({ ClassName, procAddr, classStyle });
 
-		}
+	//	}
 
-		/*When using a system Registered Class*/
-		HWinClass(Himani::HString className) {
-			ClassName += className;
-		}
+	//	/*When using a system Registered Class*/
+	//	HWinClass(Himani::HString className) {
+	//		ClassName += className;
+	//	}
 
-		//Registers all the Classes added to the Store
-		//This funciton is called Automatically by Framework and Registers all the Window Classes before Entering the Main Application!
-		static void RegisterAllClasses() {
-			while (ClassList.size()) {
-				auto ClassProp = ClassList.back();
-				ClassList.pop_back();
+	//	//Registers all the Classes added to the Store
+	//	//This funciton is called Automatically by Framework and Registers all the Window Classes before Entering the Main Application!
+	//	static void RegisterAllClasses() {
+	//		while (ClassList.size()) {
+	//			auto ClassProp = ClassList.back();
+	//			ClassList.pop_back();
 
-				WNDCLASSEX wndclass = {};
-				wndclass.cbSize = sizeof(WNDCLASSEX);
-				wndclass.style = ClassProp.classStyle;
-				wndclass.lpfnWndProc = ClassProp.procAddr;
-				wndclass.hInstance = Instance();
-				wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-				wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-				wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-				wndclass.lpszClassName = ClassProp.className.c_str();
-				wndclass.lpszMenuName = NULL;
-				wndclass.hIconSm = NULL;
+	//			WNDCLASSEX wndclass = {};
+	//			wndclass.cbSize = sizeof(WNDCLASSEX);
+	//			wndclass.style = ClassProp.classStyle;
+	//			wndclass.lpfnWndProc = ClassProp.procAddr;
+	//			wndclass.hInstance = Instance();
+	//			wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	//			wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	//			wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	//			wndclass.lpszClassName = ClassProp.className.c_str();
+	//			wndclass.lpszMenuName = NULL;
+	//			wndclass.hIconSm = NULL;
 
-				if (!RegisterClassEx(&wndclass)) {
-					CheckDefaultWinError;
-				}
-			}
-		}
+	//			if (!RegisterClassEx(&wndclass)) {
+	//				CheckDefaultWinError;
+	//			}
+	//		}
+	//	}
 
-		struct ClassProperties {
-			Himani::HString className;
-			WNDPROC procAddr;
-			int classStyle;
-		};
-		
-		HString ClassName;
-		static inline std::vector<ClassProperties>ClassList;
+	//	struct ClassProperties {
+	//		Himani::HString className;
+	//		WNDPROC procAddr;
+	//		int classStyle;
+	//	};
+	//	
+	//	HString ClassName;
+	//	static inline std::vector<ClassProperties>ClassList;
 
-	};
+	//};
+
 	
 	struct HWinClassProperties {
+
 		HWinClassProperties(Himani::HString className, WNDPROC procAddr, int classStyle) {
 			ClassName += TEXT("Himani.WinClass.");
 			ClassName += className;
 
-			ClassList.push_back({ ClassName, procAddr, classStyle });
+			ClassList.push_back({ ClassName/*, procAddr*/, classStyle });
 
 		}
 
@@ -211,7 +175,7 @@ namespace Himani {
 				WNDCLASSEX wndclass = {};
 				wndclass.cbSize = sizeof(WNDCLASSEX);
 				wndclass.style = ClassProp.classStyle;
-				wndclass.lpfnWndProc = ClassProp.procAddr;
+				wndclass.lpfnWndProc = CommonWndProc;
 				wndclass.hInstance = Instance();
 				wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
 				wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
@@ -228,13 +192,14 @@ namespace Himani {
 
 		struct ClassProperties {
 			Himani::HString className;
-			WNDPROC procAddr;
+			//WNDPROC procAddr;
 			int classStyle;
 		};
 		HString ClassName;
 		static inline std::vector<ClassProperties>ClassList;
 
 	};
+
 
 	/*
 	------------------------	Custom HCustomWindow Classes ------------------------------
@@ -251,14 +216,13 @@ namespace Himani {
 	Since the Window is created after calling CreateWin only!5
 	*/
 	class HCustomWindow :public HWindow, private HWindowsProc {
+	private:
+//		HCustomWindow(HWND rawHandle)
+		using HWindow::HWindow;
+	//protected:
+	//	HCustomWindow() = default;
 	public:
-		//HCustomWindow() = default;
-
-		HCustomWindow(const HClassInitializer& Data = HClassInitializer()) {
-			InitHandle(Data.hwnd);
-			SelfDestruct = Data.SelfDestruct;
-		}
-
+	
 		HWindow* Parent() {
 			HWND parent = nullptr;
 			if (parent = GetParent(Handle())) {
@@ -273,20 +237,26 @@ namespace Himani {
 
 		HCustomWindow(HCustomWindow&& other):HWindow(std::move(other)) {
 			//Swap the Procedure!
-			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
-			
+			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+			UpdateProc();
 			//Make the other UnInitialized
 			other.InitHandle(nullptr);
 		}
 
 		//Disable Assignment for now 
 		HCustomWindow& operator=(HCustomWindow&& other)  {
+		//	if()
+			HWND temmp = (HWND)* this;
+		
+
 			InitHandle(other.Handle());
 			//Swap the Procedure!
-			SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
-
+			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+			UpdateProc();
 			//Make the other UnInitialized
 			other.InitHandle(nullptr);
+
+			if (temmp)DestroyWindow(temmp);
 			return *this;
 		}
 
@@ -300,12 +270,46 @@ namespace Himani {
 		//Is Storing even needed?	
 		//HWindow* wndParent = nullptr;
 
+		void UpdateProc() {
+			oldProc = (WNDPROC)SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+			if (oldProc == CommonWndProc)
+				oldProc = DefWindowProc;
+		}
+
 	private:
 		LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)final;
 		
+		WNDPROC oldProc;
 		//true if SelfDestruct is necessary
 		//made false if window is created using CreateWin member function
-		bool SelfDestruct = false;
+		//bool SelfDestruct = false;
 	};
 
+	//Reserved for Framework shouldn't now be used anywhere else
+	class ReservedTempWindow :public HCustomWindow {
+	private:
+
+		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+		ReservedTempWindow(const HString& classname, HWND hwnd) {
+			className = classname;
+			InitHandle(hwnd);
+			UpdateProc();
+		}
+
+		HString& ClassName()final {
+			return className;
+		}
+
+		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)final {
+			switch (message) {
+			case WM_NCDESTROY:
+				delete this;
+				return 0;
+			}
+
+			return HCustomWindow::MessageFunc(message, wParam, lParam);
+		}
+		HString className;
+	};
 }

@@ -14,22 +14,19 @@
 
 ///#define OVERRIDE_PREDEFINEDCLASS(ClassName__) DEFINE_CLASSNAME(ClassName__)
 
-#define LEGACY_WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), Himani::CommonWndProc<__ClassName>,(Style)};\
-	Himani::HString& ClassName()override {		\
-		return __Prop.ClassName;			\
-	}											
 
 #define WINCLASS_PROPERTIES(__ClassName, Style) inline static Himani::HWinClassProperties __Prop = { TEXT( #__ClassName ), DefWindowProc,(Style)};\
 	Himani::HString& ClassName()override {		\
 		return __Prop.ClassName;			\
-	}											\
-friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	}											
+//friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #define PREDEFINED_WINCLASS(ClassNameStr) Himani::HString __ClassName = ClassNameStr;\
 	Himani::HString& ClassName()override {		\
 		return __ClassName;			\
 	}
 
+#define LEGACY_WINCLASS_PROPERTIES(ClassNameStr) WINCLASS_PROPERTIES(ClassNameStr)
 
 #pragma endregion
 
@@ -149,73 +146,79 @@ namespace Himani {
 	template<class HandleType>
 	class HHandleWrapperBaseClass {
 	public:
-		HHandleWrapperBaseClass() {
+		HHandleWrapperBaseClass() noexcept{
 			handle = (nullptr);
 		}
 
-		HHandleWrapperBaseClass(HHandleWrapperBaseClass&& other) {
+		HHandleWrapperBaseClass(HHandleWrapperBaseClass&& other) noexcept{
 			handle = other.handle;
 			other.handle = nullptr;
 		}
 
-		HHandleWrapperBaseClass& operator=(HHandleWrapperBaseClass&&) = delete;
+		HHandleWrapperBaseClass& operator=(HHandleWrapperBaseClass&& other)noexcept {
+			handle = other.handle;
+			other.handle = nullptr;
+		}
 
 		HHandleWrapperBaseClass(const HHandleWrapperBaseClass&) = delete;
 		HHandleWrapperBaseClass& operator=(const HHandleWrapperBaseClass&&) = delete;
 
-		explicit HHandleWrapperBaseClass(HandleType __handle) {
+		explicit HHandleWrapperBaseClass(HandleType __handle)noexcept {
 			handle = __handle;
 		}
-
+	public:
+		//Checks if raw handle is valid or not
+		//if not throws exception
 		HandleType Handle()const {
 			if (handle)
 				return handle;
-
+			
 			//TODO fix this maybe?
 			//Why did i comment this?
-			//	else
-				//	throw Exceptions(TEXT("Handle yet not Initialized"));
+				else
+					throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
 
 
-		explicit operator HandleType() {
+		explicit operator HandleType() noexcept{
 			return handle;
 		}
 
-		//This should be Protected?
-	//protected:
-		void InitHandle(HandleType __handle) {
+		virtual ~HHandleWrapperBaseClass() {}
+		
+		//URGENT made this Protected now
+	protected:
+		void InitHandle(HandleType __handle) noexcept{
 			handle = __handle;
 		}
 
-		virtual ~HHandleWrapperBaseClass() {}
 
 	private:
 		HandleType handle;
 	};
 
 
-	/*
-	----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
-	This is a helper class for Initializing Extra Data members even if class is being constructed using CreateWin!
-	HCustomWindow Derived Class Constructors will only take pointer to one of such class object(i.e. User should derive from
-	*/
-	class HClassInitializer {
-		template<class OwnerWindow>
-		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	///*
+	//----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
+	//This is a helper class for Initializing Extra Data members even if class is being constructed using CreateWin!
+	//HCustomWindow Derived Class Constructors will only take pointer to one of such class object(i.e. User should derive from
+	//*/
+	//class HClassInitializer {
+	//	template<class OwnerWindow>
+	//	friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-		friend class HCustomWindow;
+	//	friend class HCustomWindow;
 
-	public:
+	//public:
 
-		HClassInitializer() :hwnd(nullptr), SelfDestruct(false) {}
+	//	HClassInitializer() :hwnd(nullptr), SelfDestruct(false) {}
 
-	private:
-		HClassInitializer(HWND wnd, bool AllowSelfDestruct) :hwnd(wnd), SelfDestruct(AllowSelfDestruct) {}
+	//private:
+	//	HClassInitializer(HWND wnd, bool AllowSelfDestruct) :hwnd(wnd), SelfDestruct(AllowSelfDestruct) {}
 
-		HWND hwnd;
-		bool SelfDestruct;
-	};
+	//	HWND hwnd;
+	//	bool SelfDestruct;
+	//};
 
 #pragma region ThreadingComp
 

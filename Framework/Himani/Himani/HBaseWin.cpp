@@ -20,14 +20,32 @@ namespace Himani {
 		return true;
 	}
 
+	LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
+		if (message == WM_NCCREATE) {
+			auto createArguments = (LPCREATESTRUCT)lParam;
+			if (createArguments->lpCreateParams != (LPVOID)-1) {
+				HCustomWindow* ClassInstance;
+
+				if (createArguments->lpCreateParams == NULL)
+					ClassInstance = new ReservedTempWindow(createArguments->lpszClass, hwnd);
+			}
+
+			return TRUE;
+		}
+
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
 
 	//std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
 
+	HString& HCustomWindow::ClassName() { static HString temp = (TEXT("NO_CLASS")); return temp; }
+
 	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size){
-		SelfDestruct = false;
+		//SelfDestruct = false;
 		HWND parentHandle = nullptr;
 		if (parent)
-			parentHandle = (HWND)* parent;
+			parentHandle = static_cast<HWND>(* parent);
 
 
 		auto tempHandle = CreateWindowExW(ExStyle, ClassName().c_str(), //ClassName using virtual function
@@ -53,7 +71,7 @@ namespace Himani {
 		}
 		}*/
 
-		return DefWindowProc(Handle(), message, wParam, lParam);
+		return oldProc(Handle(), message, wParam, lParam);
 	}
 
 	LRESULT HCustomWindow::__MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -79,15 +97,15 @@ namespace Himani {
 			}
 		}
 
-		case WM_NCDESTROY:
+		//case WM_NCDESTROY:
 
 			//WARNING 
 			//Strange code for sure and should only run if class Instance was created using External calls only 
 			//Not for Objects Intantited by Class itself(Stack Creation)
 			//SelfDestruct if the Instance was created using External Call!
-			if(SelfDestruct)
-				delete this;
-				return 0;
+			//if(SelfDestruct)
+			//	delete this;
+			//	return 0;
 		}
 		return MessageFunc(message, wParam, lParam);
 	}

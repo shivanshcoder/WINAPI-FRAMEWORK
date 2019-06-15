@@ -24,8 +24,6 @@ namespace Himani {
 
 	class HButton :public HCustomWindow {
 	public:
-		HButton() :
-			HCustomWindow(Himani::HClassInitializer()) {}
 
 
 

@@ -31,25 +31,41 @@ public:
 	DECLARE_MESSAGE_MAP() {
 		switch (message) {
 		case WM_SIZE:
+			
 			DrawRectangle(Handle());
 			return 0;
+
+		//case WM_DESTROY:
+			//PostQuitMessage(0);
 		}
 
 		return DefWindowProc(Handle(), message, wParam, lParam);
 	}
 
-};
+	int z = 2143;
 
+};
 class MainWin :public Himani::HBaseApp {
 public:
 	MainWin(){
-		Himani::HSimpleWindow s(TEXT("Hello"));
+		HWND  hwnd = CreateWindow(L"Himani.WinClass.HSimpleWindow", TEXT("Random Rectangles"),
+			WS_OVERLAPPEDWINDOW|WS_VISIBLE,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			NULL, NULL, Himani::Instance(), NULL);
+
+		Himani::HCustomWindow* ptr = (Himani::HCustomWindow*)(SendMessage(hwnd, H_WM_GETOWNINSTANCE, 0, 0));
+
 		tempWin s2;
-		Himani::HSimpleWindow* ptr = &s2;
-		//*ptr = std::move(s);
-		*(Himani::HSimpleWindow*)& s2 = std::move(s);
+		//s2.Update();
+		//Himani::HSimpleWindow s(TEXT("Hello"));
+		//Himani::HSimpleWindow* ptr = dynamic_cast<Himani::HSimpleWindow*>(&s2);
+		////*ptr = std::move(s);
 		s2.Show(SW_NORMAL);
-		s2.Update();
+		//s2.Update();
+		
+		*(Himani::HCustomWindow*)& s2 = std::move(*ptr);
+
 		Run();
 		PostQuitMessage(0);
 	}

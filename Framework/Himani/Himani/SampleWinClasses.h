@@ -7,7 +7,7 @@ namespace Himani {
 	class HSimpleWindow :public HCustomWindow {
 	public:
 
-		HSimpleWindow(const Himani::HClassInitializer& Data) :HCustomWindow(Data) {}
+		//HSimpleWindow(const Himani::HClassInitializer& Data) :HCustomWindow(Data) {}
 
 		HSimpleWindow(const HString& Title, DWORD style = WS_OVERLAPPEDWINDOW, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect(480, 480)) {
 			CreateWinEx(Title, style, 0, parent, size);
