@@ -9,7 +9,6 @@ Overriden System Registered Window Classes
 //https://docs.microsoft.com/en-us/windows/desktop/Controls/common-control-window-classes
 
 namespace Himani {
-	typedef HCustomWindow HPredefinedWindow;
 	//class HPredefinedWindow :public HCustomWindow {
 	//public:
 	//	HPredefinedWindow(Himani::HString Title, DWORD Style, HWindow* Parent, Helpers::HRect Size = Helpers::HRect()) :
@@ -22,7 +21,24 @@ namespace Himani {
 
 	//};
 
-	class HButton :public HCustomWindow {
+	class HPredefinedWindow: public HCustomWindow {
+	public:
+		
+
+	protected:
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+			return oldProc(Handle(), message, wParam, lParam);
+		}
+
+		virtual WNDPROC UpdateProc() {
+			return oldProc = HCustomWindow::UpdateProc();
+		}
+
+	//private:
+		WNDPROC oldProc;
+	};
+
+	class HButton :public HPredefinedWindow {
 	public:
 
 
@@ -50,29 +66,38 @@ namespace Himani {
 	class HPushButton :public HButton {
 	public:
 
-		HPushButton(const HString& Title, HWindow* parent, Helpers::HRect size) {
+		HPushButton(std::function<void()> callback, const HString& Title, HWindow* parent, Helpers::HRect size)
+			:callbackOnPush(callback) {
 			CreateWinEx(Title,
 				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON, 0,
 				parent, size);	
 		}
 
+		HPushButton(std::function<void()> callback, HWindow* parent, int ControlID)
+		:callbackOnPush(callback){
+			InitHandle(GetDlgItem(parent->Handle(), ControlID));
+			UpdateProc();
+		}
 		
 		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
 
+		
 	private:
 		virtual void OnClick() {
-
+			callbackOnPush();
 		}
+
+		std::function<void()>callbackOnPush;
 	};
 
 	LRESULT HPushButton::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
 		case H_CM_PROCESSNOTIF:
 			if (wParam == BN_CLICKED) {
-
+				OnClick();
 			}
 		}
-		return DefWindowProc(Handle(), message, wParam, lParam);
+		return HButton::MessageFunc(message, wParam, lParam);
 	}
 
 	//class HRadioButton :public HButton {

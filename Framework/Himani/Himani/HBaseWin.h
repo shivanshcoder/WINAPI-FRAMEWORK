@@ -18,7 +18,7 @@ namespace Himani {
 
 	public:
 		using HHandleWrapperBaseClass<HWND>::HHandleWrapperBaseClass;
-		
+
 		HWindow(HWindow&&) = default;
 
 		HString GetWinText();
@@ -29,7 +29,7 @@ namespace Himani {
 		/*						Simple Wrappers						*/
 
 		void SetWinText(const HString& Text) const {
-			
+
 			SetWindowText(Handle(), Text.c_str());
 		}
 
@@ -149,7 +149,7 @@ namespace Himani {
 
 	//};
 
-	
+
 	struct HWinClassProperties {
 
 		HWinClassProperties(Himani::HString className, WNDPROC procAddr, int classStyle) {
@@ -217,12 +217,14 @@ namespace Himani {
 	*/
 	class HCustomWindow :public HWindow, private HWindowsProc {
 	private:
-//		HCustomWindow(HWND rawHandle)
+		//		HCustomWindow(HWND rawHandle)
+		friend class HPredefinedWindow;
+
 		using HWindow::HWindow;
-	//protected:
-	//	HCustomWindow() = default;
+		//protected:
+		//	HCustomWindow() = default;
 	public:
-	
+
 		HWindow* Parent() {
 			HWND parent = nullptr;
 			if (parent = GetParent(Handle())) {
@@ -235,7 +237,7 @@ namespace Himani {
 		HCustomWindow(const HCustomWindow&) = delete;
 		HCustomWindow& operator=(const HCustomWindow&) = delete;
 
-		HCustomWindow(HCustomWindow&& other):HWindow(std::move(other)) {
+		HCustomWindow(HCustomWindow&& other) :HWindow(std::move(other)) {
 			//Swap the Procedure!
 			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
 			UpdateProc();
@@ -244,10 +246,16 @@ namespace Himani {
 		}
 
 		//Disable Assignment for now 
-		HCustomWindow& operator=(HCustomWindow&& other)  {
-		//	if()
+		HCustomWindow& operator=(HCustomWindow&& other) {
+			int c = lstrcmpi(other.ClassName().c_str(), ClassName().c_str());
+			if (c) {
+
+				//Add Error Handling later on!
+				__debugbreak();
+			}
+
 			HWND temmp = (HWND)* this;
-		
+
 
 			InitHandle(other.Handle());
 			//Swap the Procedure!
@@ -260,7 +268,7 @@ namespace Himani {
 			return *this;
 		}
 
-		void CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle = 0, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect());
+		void CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle = 0, HWindow * parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
 		virtual HString& ClassName() = 0;
@@ -270,25 +278,19 @@ namespace Himani {
 		//Is Storing even needed?	
 		//HWindow* wndParent = nullptr;
 
-		void UpdateProc() {
-			oldProc = (WNDPROC)SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
-			if (oldProc == CommonWndProc)
-				oldProc = DefWindowProc;
+		virtual WNDPROC UpdateProc() {
+			return (WNDPROC)SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
+
 		}
 
 	private:
 		LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)final;
-		
-		WNDPROC oldProc;
-		//true if SelfDestruct is necessary
-		//made false if window is created using CreateWin member function
-		//bool SelfDestruct = false;
 	};
 
 	//Reserved for Framework shouldn't now be used anywhere else
 	class ReservedTempWindow :public HCustomWindow {
 	private:
-
+	public:
 		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 		ReservedTempWindow(const HString& classname, HWND hwnd) {

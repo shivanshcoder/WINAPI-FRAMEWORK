@@ -11,7 +11,6 @@ void DrawRectangle(HWND hwnd)
 	HDC    hdc;
 	RECT   rect;
 
-
 	SetRect(&rect, rand() % 480, rand() % 480,
 		rand() % 480, rand() % 480);
 
@@ -23,56 +22,71 @@ void DrawRectangle(HWND hwnd)
 	ReleaseDC(hwnd, hdc);
 	DeleteObject(hBrush);
 }
+void func() {
 
+}
 class tempWin :public Himani::HSimpleWindow {
 public:
-	tempWin() :HSimpleWindow(TEXT("tempWin")) {	}
+	tempWin() :HSimpleWindow(TEXT("tempWin"))/*, Button(std::bind(&tempWin::print,this),TEXT("Push this!"),this, Helpers::HRect(10,10,100,100))*/ {
+
+		//Button.CreateWinEx(TEXT("Push this!"), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 0, this, Helpers::HRect(10,10, 100,100));
+		auto rect = Helpers::HRect(100, 100, 100, 100);
+		//Button.upda();
+		HWND hwndButton = CreateWindowEx(
+			0,
+			L"button",  // Predefined class; Unicode assumed 
+			TEXT("Push this!"),      // Button text 
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+			rect.left,         // x position 
+			rect.top,         // y position 
+			rect.right,        // Button width
+			rect.bottom,        // Button height
+			Handle(),     // Parent window
+			(HMENU)5,       // No menu.
+			Himani::Instance(),
+			(LPVOID)-1);      // Pointer not needed.
+
+		btn = std::make_unique<Himani::HPushButton>(std::move(Himani::HPushButton(std::bind(&tempWin::print,this), (Himani::HWindow*)this, 5)));
+
+	}
+
+	void print() {
+		DrawRectangle(Handle());
+	}
 
 	DECLARE_MESSAGE_MAP() {
 		switch (message) {
-		case WM_SIZE:
-			
-			DrawRectangle(Handle());
-			return 0;
+	//	case WM_SIZE:
 
-		//case WM_DESTROY:
-			//PostQuitMessage(0);
+			//DrawRectangle(Handle());
+		//	return 0;
+
+			//case WM_DESTROY:
+				//PostQuitMessage(0);
 		}
 
-		return DefWindowProc(Handle(), message, wParam, lParam);
+		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
-
+	
+	std::unique_ptr<Himani::HPushButton>btn;
 	int z = 2143;
 
 };
+
+
 class MainWin :public Himani::HBaseApp {
 public:
-	MainWin(){
-		HWND  hwnd = CreateWindow(L"Himani.WinClass.HSimpleWindow", TEXT("Random Rectangles"),
-			WS_OVERLAPPEDWINDOW|WS_VISIBLE,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			NULL, NULL, Himani::Instance(), NULL);
-
-		Himani::HCustomWindow* ptr = (Himani::HCustomWindow*)(SendMessage(hwnd, H_WM_GETOWNINSTANCE, 0, 0));
+	MainWin() {
 
 		tempWin s2;
-		//s2.Update();
-		//Himani::HSimpleWindow s(TEXT("Hello"));
-		//Himani::HSimpleWindow* ptr = dynamic_cast<Himani::HSimpleWindow*>(&s2);
-		////*ptr = std::move(s);
 		s2.Show(SW_NORMAL);
 		//s2.Update();
-		
-		*(Himani::HCustomWindow*)& s2 = std::move(*ptr);
+
 
 		Run();
 		PostQuitMessage(0);
 	}
 };
-
-
-
 
 
 ENTRY_APP(MainWin);
