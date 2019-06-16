@@ -32,22 +32,25 @@ public:
 		//Button.CreateWinEx(TEXT("Push this!"), WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 0, this, Helpers::HRect(10,10, 100,100));
 		auto rect = Helpers::HRect(100, 100, 100, 100);
 		//Button.upda();
-		HWND hwndButton = CreateWindowEx(
-			0,
-			L"button",  // Predefined class; Unicode assumed 
-			TEXT("Push this!"),      // Button text 
-			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
-			rect.left,         // x position 
-			rect.top,         // y position 
-			rect.right,        // Button width
-			rect.bottom,        // Button height
-			Handle(),     // Parent window
-			(HMENU)5,       // No menu.
-			Himani::Instance(),
-			(LPVOID)-1);      // Pointer not needed.
 
-		btn = std::make_unique<Himani::HPushButton>(std::move(Himani::HPushButton(std::bind(&tempWin::print,this), (Himani::HWindow*)this, 5)));
+		auto l = &tempWin::print;
+		//HWND hwndButton = CreateWindowEx(
+		//	0,
+		//	L"button",  // Predefined class; Unicode assumed 
+		//	TEXT("Push this!"),      // Button text 
+		//	BS_LEFT|WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+		//	rect.left,         // x position 
+		//	rect.top,         // y position 
+		//	rect.right,        // Button width
+		//	rect.bottom,        // Button height
+		//	Handle(),     // Parent window
+		//	(HMENU)5,       // No menu.
+		//	Himani::Instance(),
+		//	(LPVOID)-1);      // Pointer not needed.
 
+		//btn = std::make_unique<Himani::Lite::HPushButton<tempWin> >(std::move(Himani::Lite::HPushButton<tempWin> (&tempWin::print this, 5)));
+
+		btn = std::make_unique<Himani::Lite::HPushButton<tempWin, BS_LEFT> >(&tempWin::print,TEXT("Push Plzz!"), this, rect);
 	}
 
 	void print() {
@@ -68,7 +71,7 @@ public:
 		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
 	
-	std::unique_ptr<Himani::HPushButton>btn;
+	std::unique_ptr<Himani::Lite::HPushButton<tempWin, BS_LEFT> >btn;
 	int z = 2143;
 
 };

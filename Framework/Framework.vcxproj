@@ -203,9 +203,13 @@
     <ClInclude Include="Himani\Himani\SampleWinClasses.h" />
     <ClInclude Include="Himani\Himani\WinProc.h" />
     <ClInclude Include="Himani\Hpch.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Framework.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

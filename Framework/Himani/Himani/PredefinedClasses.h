@@ -9,21 +9,32 @@ Overriden System Registered Window Classes
 //https://docs.microsoft.com/en-us/windows/desktop/Controls/common-control-window-classes
 
 namespace Himani {
-	//class HPredefinedWindow :public HCustomWindow {
-	//public:
-	//	HPredefinedWindow(Himani::HString Title, DWORD Style, HWindow* Parent, Helpers::HRect Size = Helpers::HRect()) :
-	//		HCustomWindow(Himani::HClassInitializer()) {
-	//		CreateWin(Title, Style, Parent, Size);
-	//	}
-
-	//	HPredefinedWindow(const Himani::HClassInitializer& Data) :
-	//		HCustomWindow(Data) {}
-
-	//};
-
-	class HPredefinedWindow: public HCustomWindow {
+	
+	class HWindowGroup:public HCustomWindow{
 	public:
-		
+		HWindowGroup(const HString& Title, HWindow* ptr, Helpers::HRect size) {
+			CreateWinEx(Title, WS_CHILD | WS_TABSTOP | WS_CLIPCHILDREN, 0, ptr, size);
+		}
+
+		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
+	protected:
+		int ChildrenID = 1;
+		WINCLASS_PROPERTIES(HWindowGroup, CS_VREDRAW | CS_HREDRAW)
+	};
+
+	LRESULT HWindowGroup::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+		switch (message) {
+
+		case H_WM_GETCHILDID:
+			return ChildrenID++;
+		}
+
+		return HCustomWindow::MessageFunc(message, wParam, lParam);
+	}
+
+	class HPredefinedWindow : public HCustomWindow {
+	public:
+
 
 	protected:
 		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
@@ -34,7 +45,7 @@ namespace Himani {
 			return oldProc = HCustomWindow::UpdateProc();
 		}
 
-	//private:
+		//private:
 		WNDPROC oldProc;
 	};
 
@@ -42,67 +53,100 @@ namespace Himani {
 	public:
 
 
-
-		enum ButtonStyles {
-			Push = BS_PUSHBUTTON,
-			DefPush = BS_DEFPUSHBUTTON,
-			CheckBox = BS_CHECKBOX,
-			AutoCheckBox = BS_AUTOCHECKBOX,
-			RadioButton = BS_RADIOBUTTON,
-			Manual3State = BS_3STATE,
-			Auto3State = BS_AUTO3STATE,
-			GroupBox = BS_GROUPBOX,
-			User = BS_USERBUTTON,
-			AutoRadio = BS_AUTORADIOBUTTON,
-			PushBox = BS_PUSHBOX,
-			OwnerDraw = BS_OWNERDRAW
-		};
-
 	protected:
+		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
+
+		virtual void OnClick() {}
 
 		PREDEFINED_WINCLASS(TEXT("button"))
 	};
 
-	class HPushButton :public HButton {
-	public:
 
-		HPushButton(std::function<void()> callback, const HString& Title, HWindow* parent, Helpers::HRect size)
-			:callbackOnPush(callback) {
-			CreateWinEx(Title,
-				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON, 0,
-				parent, size);	
-		}
-
-		HPushButton(std::function<void()> callback, HWindow* parent, int ControlID)
-		:callbackOnPush(callback){
-			InitHandle(GetDlgItem(parent->Handle(), ControlID));
-			UpdateProc();
-		}
-		
-		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
-
-		
-	private:
-		virtual void OnClick() {
-			callbackOnPush();
-		}
-
-		std::function<void()>callbackOnPush;
-	};
-
-	LRESULT HPushButton::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+	LRESULT HButton::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
 		case H_CM_PROCESSNOTIF:
 			if (wParam == BN_CLICKED) {
 				OnClick();
 			}
 		}
-		return HButton::MessageFunc(message, wParam, lParam);
+		return HPredefinedWindow::MessageFunc(message, wParam, lParam);
 	}
 
-	//class HRadioButton :public HButton {
 
-	//};
+	namespace Lite {
+
+		template<class parentClass, int ButtonStyles = 0>
+		class HPushButton :public HButton {
+		public:
+
+			HPushButton(void (parentClass::* callback)(), const HString& Title, parentClass* parent, Helpers::HRect size)
+				:ParentMember(callback) {
+				parentInstance = parent;
+				CreateWinEx(Title,
+					ButtonStyles | WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON, 0,
+					parent, size);
+			}
+
+			HPushButton(void (parentClass::* callback)(), parentClass* parent, int ControlID)
+				:ParentMember(callback) {
+				parentInstance = parent;
+				InitHandle(GetDlgItem(parent->Handle(), ControlID));
+				UpdateProc();
+			}
+
+		private:
+			virtual void OnClick()override {
+				(parentInstance->*ParentMember)();
+			}
+
+			//Stores the pointer to member function to the parent class which will be called on getting clicked
+			void (parentClass::* ParentMember)();
+
+
+			parentClass* parentInstance;
+		};
+	}
+
+	template<int ButtonStyles = 0>
+	class HPushButton :public HButton {
+	public:
+
+		HPushButton(std::function<void()> callback, const HString& Title, HWindow* parent, Helpers::HRect size)
+			:callbackOnPush(callback) {
+			CreateWinEx(Title,
+				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON | ButtonStyles, 0,
+				parent, size);
+		}
+
+		HPushButton(std::function<void()> callback, HWindow* parent, int ControlID)
+			:callbackOnPush(callback) {
+			InitHandle(GetDlgItem(parent->Handle(), ControlID));
+			UpdateProc();
+		}
+
+
+
+	private:
+		virtual void OnClick()override {
+			callbackOnPush();
+		}
+
+		std::function<void()>callbackOnPush;
+	};
+
+
+	template<int ButtonStyles = 0>
+	class HRadioButton :public HButton {
+		HRadioButton(const HString& Title, HWindow* parent, Helpers::HRect size){
+			CreateWinEx(Title,
+				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_AUTORADIOBUTTON | ButtonStyles, 0,
+				parent, size);
+		}
+
+		HRadioButton(int ControlID) {
+
+		}
+	};
 
 	//class HCheckButton :public HButton {
 
@@ -112,7 +156,7 @@ namespace Himani {
 
 	};
 
-	class HEdit:public HPredefinedWindow {
+	class HEdit :public HPredefinedWindow {
 
 	protected:
 

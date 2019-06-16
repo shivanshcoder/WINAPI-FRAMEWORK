@@ -2,7 +2,7 @@
 #include"Hpch.h"
 
 namespace Helpers {
-	
+
 	class HPoint {
 	public:
 		HPoint()
@@ -11,8 +11,8 @@ namespace Helpers {
 		HPoint(int _x, int _y)
 			:x(_x), y(_y) {}
 
-	//TOOO maybe make private??
-	//private:
+		//TOOO maybe make private??
+		//private:
 
 		union {
 			POINT pt;
@@ -30,7 +30,7 @@ namespace Helpers {
 	};
 
 	typedef HPoint Pair;
-	
+
 
 	class HRect {
 
@@ -48,10 +48,10 @@ namespace Helpers {
 		}
 
 		static HRect Random(
-			unsigned long long xlimit , unsigned long long ylimit) {
+			unsigned long long xlimit, unsigned long long ylimit) {
 			return HRect(
-				rand() % xlimit,rand() % ylimit,
-				rand() % xlimit,rand() % ylimit
+				rand() % xlimit, rand() % ylimit,
+				rand() % xlimit, rand() % ylimit
 			);
 		}
 
@@ -93,11 +93,11 @@ namespace Helpers {
 			return bottom - top;
 		}
 
-			/*---------------Wrappers-------------------*/
+		/*---------------Wrappers-------------------*/
 
 
-	//TOOO maybe make private??
-	//private:
+//TOOO maybe make private??
+//private:
 
 		union {
 			RECT rect;
@@ -113,12 +113,12 @@ namespace Helpers {
 		};
 	};
 
-	template<class T,unsigned int Size>
+	template<class T, unsigned int Size>
 	class HWinArray {
 	public:
 
 		template<class... _Types>
-		HWinArray(_Types&&... _Args) {
+		HWinArray(_Types&& ... _Args) {
 			for (int i = 0; i < Size; ++i)
 				Windows[i] = std::make_unique<T>((_Args)...);
 
@@ -135,6 +135,8 @@ namespace Helpers {
 	public:
 		std::unique_ptr<T>Windows[Size];
 	};
+
+	
 
 }
 

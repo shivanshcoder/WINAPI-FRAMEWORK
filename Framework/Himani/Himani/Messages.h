@@ -22,9 +22,10 @@ return ParentWinClass::MessageFunc( message, wParam, lParam); }
 
 
 //Sends to Window using raw Handle and returns the Class Instance associated with that handle
-#define H_WM_GETOWNINSTANCE WM_USER+1
-#define H_WM_SWAPPROCADDR WM_USER+2
+#define H_WM_GETOWNINSTANCE WM_USER + 1
+#define H_WM_SWAPPROCADDR WM_USER + 2
+#define H_WM_GETCHILDID WM_USER + 3
 
-#define H_WM_ACCELERATOR WM_USER+100
-#define H_WM_DIALOGPROCESSING WM_USER+101
-#define H_CM_PROCESSNOTIF WM_USER+102
+#define H_WM_ACCELERATOR WM_USER + 100
+#define H_WM_DIALOGPROCESSING WM_USER + 101
+#define H_CM_PROCESSNOTIF WM_USER + 102

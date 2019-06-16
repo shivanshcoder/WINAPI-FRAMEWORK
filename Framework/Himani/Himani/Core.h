@@ -21,7 +21,7 @@
 	}											
 //friend LRESULT CALLBACK Himani::CommonWndProc<__ClassName>(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-#define PREDEFINED_WINCLASS(ClassNameStr) Himani::HString __ClassName = ClassNameStr;\
+#define PREDEFINED_WINCLASS(ClassNameStr) inline static Himani::HString __ClassName = ClassNameStr;\
 	Himani::HString& ClassName()override {		\
 		return __ClassName;			\
 	}

@@ -225,7 +225,8 @@ namespace Himani {
 		//	HCustomWindow() = default;
 	public:
 
-		HWindow* Parent() {
+		//Can be overriden incase derived class stores the parent itself
+		virtual HWindow* Parent() {
 			HWND parent = nullptr;
 			if (parent = GetParent(Handle())) {
 				return (HWindow*)SendMessage(parent, H_WM_GETOWNINSTANCE, 0, 0);
@@ -239,7 +240,6 @@ namespace Himani {
 
 		HCustomWindow(HCustomWindow&& other) :HWindow(std::move(other)) {
 			//Swap the Procedure!
-			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
 			UpdateProc();
 			//Make the other UnInitialized
 			other.InitHandle(nullptr);
@@ -249,7 +249,6 @@ namespace Himani {
 		HCustomWindow& operator=(HCustomWindow&& other) {
 			int c = lstrcmpi(other.ClassName().c_str(), ClassName().c_str());
 			if (c) {
-
 				//Add Error Handling later on!
 				__debugbreak();
 			}
@@ -275,9 +274,8 @@ namespace Himani {
 
 		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
-		//Is Storing even needed?	
-		//HWindow* wndParent = nullptr;
-
+		//Don't override 
+		//TODO later on
 		virtual WNDPROC UpdateProc() {
 			return (WNDPROC)SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)Procedure());
 

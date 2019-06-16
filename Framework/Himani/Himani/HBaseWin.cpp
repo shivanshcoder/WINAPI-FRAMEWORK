@@ -44,18 +44,21 @@ namespace Himani {
 	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size){
 		//SelfDestruct = false;
 		HWND parentHandle = nullptr;
-		if (parent)
-			parentHandle = static_cast<HWND>(* parent);
+		int ID;
+		if (parent) {
+			parentHandle = static_cast<HWND>(*parent);
+			ID = SendMessage(parentHandle, H_WM_GETCHILDID, 0, 0);
+		}
 
 		auto tempHandle = CreateWindowExW(ExStyle, ClassName().c_str(), //ClassName using virtual function
 			Title.c_str(), style,
 			size.left, size.top, size.right, size.bottom,
 			parentHandle, //Parent HWindow
-			NULL, Instance(),
+			(HMENU)ID, Instance(),
 			(LPVOID)-1// This Stops from creating instance of Class from the common procedure
 		);
+
 		InitHandle(tempHandle);
-		//SetWindowLongPtr(tempHandle, GWLP_WNDPROC, (LPARAM)Procedure());
 		UpdateProc();
 
 		if (!tempHandle)
