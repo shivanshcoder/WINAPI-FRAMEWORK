@@ -51,7 +51,7 @@ public:
 
 		//btn = std::make_unique<Himani::Lite::HPushButton<tempWin> >(std::move(Himani::Lite::HPushButton<tempWin> (&tempWin::print this, 5)));
 
-		btn = std::make_unique<Himani::Lite::HPushButton<tempWin, BS_LEFT> >(&tempWin::print,TEXT("Push Plzz!"), this, rect);
+		//btn = std::make_unique<Himani::Lite::HPushButton<tempWin, BS_LEFT> >(&tempWin::print,TEXT("Push Plzz!"), this, rect);
 	}
 
 	void print() {
@@ -80,19 +80,23 @@ public:
 class Dial :public Himani::HBaseDialog {
 public:
 
-	Dial(Himani::HDialogBoxParams &params):HBaseDialog(params) {
+	Dial(Himani::HDialogBoxParams &params):HBaseDialog(params),btn(std::bind(&Dial::print,this),this,IDC_BUTTON1 ) {
 		HWND a = Handle();
 	}
 	void print() {
-		int cc = 23;
+		DrawRectangle(Handle());
 	}
 
-	virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+	virtual BOOL MessageFunc( UINT message, WPARAM wParam, LPARAM lParam)override{
+		if (message == WM_COMMAND) {
+			//__debugbreak();
+			return TRUE;
+		}
 		return FALSE;
 	}
 
 private:
-	int c;
+	Himani::HPushButton<>btn;
 };
 
 class MainWin :public Himani::HBaseApp {

@@ -1,8 +1,6 @@
 #pragma once
 #include"Core.h"
 
-//TODO fix the HWND initialization for WM_CREATE
-//NOTE Dont override WM_CREATE instead use the constructor space ofr doing stuff
 
 //Declares Message map for that class
 #define DECLARE_MESSAGE_MAP() LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override

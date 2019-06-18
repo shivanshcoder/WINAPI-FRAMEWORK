@@ -10,7 +10,7 @@ namespace Himani {
 
 	class HDialogBoxParams {
 	public:
-		friend class HBaseDialog; 
+		friend class HBaseDialog;
 		template<class DialogBoxClass, class DialogClassParams>
 		friend class ReservedTempDialog;
 
@@ -22,17 +22,30 @@ namespace Himani {
 		HWND currentInst = nullptr;
 	};
 
-	
+
 	class HBaseDialog :public HWindow, private HDialogProc {
 		template<class DialogBoxClass, class DialogClassParams>
 		friend class ReservedTempDialog;
 	public:
-		HBaseDialog(HDialogBoxParams &params)
-			:Parent(params.ptr),HDialogProc(params.thunk), HWindow(params.currentInst) {}
+		HBaseDialog(HDialogBoxParams& params)
+			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst) {}
 
-		virtual BOOL MessageFunc( UINT message, WPARAM wParam, LPARAM lParam);
+		virtual BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 		virtual BOOL __MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)override {
 			//Some FOrced functionality to be added!
+			switch (message) {
+			case WM_COMMAND: {
+				if (lParam) {
+					//Framework Controls can automatically use the notification by themselves
+					int temp = SendMessage((HWND)lParam, H_CM_PROCESSNOTIF, HIWORD(wParam), LOWORD(wParam));
+
+					//TODO change the return value checking !!
+					if (temp != -1)
+						break;
+					return TRUE;
+				}
+			}
+			}
 			return MessageFunc(message, wParam, lParam);
 		}
 
@@ -70,9 +83,9 @@ namespace Himani {
 	};
 
 	template<class DialogBoxClass, class DialogClassParams>
-	class ReservedTempDialog:public HBaseDialog {
+	class ReservedTempDialog :public HBaseDialog {
 	public:
-		ReservedTempDialog(HDialogBoxParams& params):HBaseDialog(params){}
+		ReservedTempDialog(HDialogBoxParams& params) :HBaseDialog(params) {}
 
 
 		virtual BOOL __MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -84,8 +97,11 @@ namespace Himani {
 				ptr->currentInst = _hDlg;
 				//FunctionThunk::thunk = new (eHeapAddr)winThunk;
 
-				newDialog = new DialogBoxClass(*(DialogClassParams*)ptr);
-				
+				DialogBoxClass* tempPTR = new DialogBoxClass(*(DialogClassParams*)ptr);
+				newDialog = tempPTR;
+				auto c = typeid(this).raw_name();
+				auto ss = typeid(tempPTR).raw_name();
+
 				SendMessage(_hDlg, message, wParam, lParam);
 				return TRUE;
 			}
@@ -101,11 +117,11 @@ namespace Himani {
 			delete newDialog;
 		}
 	private:
-		HBaseDialog *newDialog;
+		HBaseDialog* newDialog;
 	};
 
 	template<class DialogClass, class DialogClassParams = HDialogBoxParams>
-	void CreateDialogBox(LPCWSTR ResourceName, HWindow& parent,DialogClassParams* Args = nullptr ) {
+	void CreateDialogBox(LPCWSTR ResourceName, HWindow & parent, DialogClassParams * Args = nullptr) {
 		if (!Args) {
 			Args = new HDialogBoxParams(parent);
 		}

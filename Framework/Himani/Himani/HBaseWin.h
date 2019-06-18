@@ -80,10 +80,7 @@ namespace Himani {
 		}
 		/*						Simple Wrappers						*/
 
-		~HWindow() {
-			//URGENT REMOVE THIS!!
-			//SetWindowLongPtr(Handle(), GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
-		}
+		virtual ~HWindow() {}
 	};
 
 

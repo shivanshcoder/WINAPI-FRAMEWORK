@@ -67,6 +67,7 @@ namespace Himani {
 		case H_CM_PROCESSNOTIF:
 			if (wParam == BN_CLICKED) {
 				OnClick();
+				return -1;
 			}
 		}
 		return HPredefinedWindow::MessageFunc(message, wParam, lParam);

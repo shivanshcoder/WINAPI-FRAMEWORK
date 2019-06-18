@@ -186,7 +186,6 @@ namespace Himani {
 
 		virtual ~HHandleWrapperBaseClass() {}
 		
-		//URGENT made this Protected now
 	protected:
 		void InitHandle(HandleType __handle) noexcept{
 			handle = __handle;
