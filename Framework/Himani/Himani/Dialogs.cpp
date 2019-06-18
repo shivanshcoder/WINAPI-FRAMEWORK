@@ -3,13 +3,11 @@
 
 namespace Himani {
 
-	BOOL HBaseDialog::MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+	BOOL HBaseDialog::MessageFunc( UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message) {
 
 		case WM_INITDIALOG: {
-
-			InitHandle(_hDlg);
 			return OnInit();
 		}
 

@@ -86,18 +86,6 @@ struct winThunk {
 namespace Himani {
 
 
-	//The Default Callback Windows Procedure for every window
-	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		if (message == WM_CREATE) {
-
-			//Replaces the Callback Procedure with the Thunk we have supplied with the CREATESTRUCT param
-			SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
-			//return TRUE;
-		}
-		if (message == WM_NCDESTROY)
-			__debugbreak();
-		return DefWindowProc(hwnd, message, wParam, lParam);
-	}
 
 #pragma region HBaseWinProc
 
@@ -106,30 +94,11 @@ namespace Himani {
 		friend class HDialogProc;
 	public:
 
-		FunctionThunk(FunctionThunk&& other) {
-			thunk = other.thunk;
-
-			//Should it be made nullptr or allocate it?
-			other.thunk = new (eHeapAddr)winThunk;
-			//other.thunk = nullptr;
-		}
-
-		FunctionThunk& operator=(FunctionThunk&& other) {
-			if (thunk)
-				delete thunk;
-
-			thunk = other.thunk;
-
-			//Should it be made nullptr or allocate it?
-			other.thunk = new (eHeapAddr)winThunk;
-			//other.thunk = nullptr;
-
-			return *this;
-		}
 
 		FunctionThunk();
 		~FunctionThunk();
 
+		void deleteThunk();;
 	private:
 		winThunk * thunk;
 		static HANDLE eHeapAddr;
@@ -181,38 +150,32 @@ namespace Himani {
 	class HDialogProc :public FunctionThunk {
 	public:
 		
-		HDialogProc() {
-			thunk->Init(this, (DWORD_PTR)WndProc);
-		}
-		HDialogProc(winThunk* ptrThunk) {
+		HDialogProc(winThunk* ptrThunk = nullptr) {
 			if (ptrThunk) {
-				delete thunk;
+				deleteThunk();
 				thunk = ptrThunk;
 			}
-				thunk->Init(this, (DWORD_PTR)WndProc);
+			thunk->Init(this, (DWORD_PTR)WndProc);
 		}
 		//Disable Copy/Move Assignment and Constructor
-		//HDialogProc(HDialogProc&&) :FunctionThunk()
-		HDialogProc(HDialogProc&& other) :FunctionThunk(std::move(other)) {
-			thunk->Init(this, (DWORD_PTR)WndProc);
-		}
-
-		HDialogProc& operator=(HDialogProc&& other) {
-
-			thunk->Init(this, (DWORD_PTR)WndProc);
-		}
-
+		HDialogProc(HDialogProc&& ) = delete;
+		HDialogProc& operator=(HDialogProc&& ) = delete;
 		HDialogProc(const HDialogProc&) = delete;
 		HDialogProc& operator=(const HDialogProc&) = delete;
 
-		//TODO make it protected again
 	protected:
 		//Returns the windows Procedure specific to our class Object
 		DLGPROC Procedure() {
 			return (DLGPROC)thunk->GetThunkAddress();
 		}
 
-		virtual BOOL MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		winThunk* leaveThunk() {
+			winThunk* p = thunk;
+			thunk = nullptr;
+			return p;
+		}
+
+		virtual BOOL __MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
 			return TRUE;
 		}
 
@@ -223,7 +186,7 @@ namespace Himani {
 		static BOOL CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HDialogProc* pThis) {
 #endif
 			try {
-				return pThis->MessageFunc(hwnd, message, wParam, lParam);
+				return pThis->__MessageFunc(hwnd, message, wParam, lParam);
 			}
 			//TODO add std::exception Handling
 			catch (Himani::Exceptions & e) {

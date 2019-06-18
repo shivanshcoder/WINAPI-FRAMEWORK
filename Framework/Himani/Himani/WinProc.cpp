@@ -118,13 +118,20 @@ namespace Himani {
 		//	CheckDefaultWinError;
 	}
 	FunctionThunk::~FunctionThunk() {
+		deleteThunk();
+	}
+
+	void FunctionThunk::deleteThunk(){
+		if (!thunk)return;
+
 		if (objInstances == 1) {
 			//TOOD Check for Error or not?
+			delete thunk;
 			HeapDestroy(eHeapAddr);
 			eHeapAddr = NULL;
 			objInstances = 0;
 		}
-		else {
+		else if(objInstances >= 0){
 			objInstances--;
 			delete thunk;
 		}

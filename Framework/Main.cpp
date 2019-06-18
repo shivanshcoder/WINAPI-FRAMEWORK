@@ -102,8 +102,8 @@ public:
 		tempWin s2;
 		s2.Show(SW_NORMAL);
 		//s2.Update();
-		Himani::CreateDialogBox<Dial>(MAKEINTRESOURCE(IDD_DIALOG1), s2,Himani::HDialogBoxParams(s2));
-		__debugbreak();
+		Himani::CreateDialogBox<Dial>(MAKEINTRESOURCE(IDD_DIALOG1), s2);
+		
 		Run();
 		PostQuitMessage(0);
 	}
