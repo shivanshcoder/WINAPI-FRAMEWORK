@@ -136,7 +136,63 @@ namespace Helpers {
 		std::unique_ptr<T>Windows[Size];
 	};
 
-	
+	class Grid {
+	public:
+		Grid(HRect GridSize) :gridsize(GridSize) {
+			grid.resize(1);
+		}
+
+	private:
+		struct HorzRow {
+			HorzRow(std::vector<HRect>& __grid1D, int height) :
+				blockHeight(blockHeight), grid1D(__grid1D) {}
+
+			int blockHeight;
+			std::vector<HRect>& grid1D;
+		};
+
+		class ProxyGrid {
+		public:
+			ProxyGrid(std::vector<HRect>& __grid1D, int height) :grid1D(__grid1D), blockHeight(height) {}
+
+			HRect operator[](int index) {
+				//Is resizing even needed?
+				if (grid1D.size() <= index) {
+					grid1D.resize(index);
+				}
+				return grid1D[index];
+			}
+
+			HRect GetPlace(int width, int height) {
+				HRect rect = HRect(0, 0, width, height);
+				grid1D.push_back(rect);
+
+			}
+
+			int blockHeight;
+			std::vector<HRect>& grid1D;
+		};
+
+	public:
+		ProxyGrid operator[](int index) {
+			if (index == 0)
+				return ProxyGrid(grid[index], 0);
+
+			if (grid.size() <= index) {
+				grid.push_back(std::vector<HRect>());
+			}
+			return ProxyGrid(grid[index], grid[index - 1][0].bottom);
+		}
+
+		void AddHorzBlock(int height) {
+			int last_height = grid.back()[0].bottom;
+			grid.push_back({ HRect(0, last_height, 0, height + last_height) });
+		}
+
+	private:
+		std::vector< std::vector< HRect > >grid;
+		HRect gridsize;
+	};
 
 }
 

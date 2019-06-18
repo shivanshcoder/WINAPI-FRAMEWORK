@@ -5,6 +5,7 @@
 #include"Himani/Himani/PredefinedClasses.h"
 #include"Himani/Himani/SampleWinClasses.h"
 #include"Himani/Log System/Log.h"
+#include"resource.h"
 void DrawRectangle(HWND hwnd)
 {
 	HBRUSH hBrush;
@@ -58,7 +59,7 @@ public:
 	}
 
 	DECLARE_MESSAGE_MAP() {
-		switch (message) {
+		//switch (message) {
 	//	case WM_SIZE:
 
 			//DrawRectangle(Handle());
@@ -66,7 +67,7 @@ public:
 
 			//case WM_DESTROY:
 				//PostQuitMessage(0);
-		}
+		//}
 
 		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
@@ -76,6 +77,23 @@ public:
 
 };
 
+class Dial :public Himani::HBaseDialog {
+public:
+
+	Dial(Himani::HDialogBoxParams &params):HBaseDialog(params) {
+		HWND a = Handle();
+	}
+	void print() {
+		int cc = 23;
+	}
+
+	virtual BOOL MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+		return FALSE;
+	}
+
+private:
+	int c;
+};
 
 class MainWin :public Himani::HBaseApp {
 public:
@@ -84,8 +102,8 @@ public:
 		tempWin s2;
 		s2.Show(SW_NORMAL);
 		//s2.Update();
-
-
+		Himani::CreateDialogBox<Dial>(MAKEINTRESOURCE(IDD_DIALOG1), s2,Himani::HDialogBoxParams(s2));
+		__debugbreak();
 		Run();
 		PostQuitMessage(0);
 	}

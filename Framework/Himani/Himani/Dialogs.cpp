@@ -8,6 +8,7 @@ namespace Himani {
 		switch (message) {
 
 		case WM_INITDIALOG: {
+
 			InitHandle(_hDlg);
 			return OnInit();
 		}
@@ -24,7 +25,8 @@ namespace Himani {
 
 		return TRUE;
 	}
-	
+
+
 		
 	/*HModalDialog::HModalDialog(HWindow& parent, const HString& resourceName)
 		:HBaseDialog(parent, resourceName) {

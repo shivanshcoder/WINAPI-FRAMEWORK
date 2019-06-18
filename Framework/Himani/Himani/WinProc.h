@@ -105,6 +105,28 @@ namespace Himani {
 		friend class HWindowsProc;
 		friend class HDialogProc;
 	public:
+
+		FunctionThunk(FunctionThunk&& other) {
+			thunk = other.thunk;
+
+			//Should it be made nullptr or allocate it?
+			other.thunk = new (eHeapAddr)winThunk;
+			//other.thunk = nullptr;
+		}
+
+		FunctionThunk& operator=(FunctionThunk&& other) {
+			if (thunk)
+				delete thunk;
+
+			thunk = other.thunk;
+
+			//Should it be made nullptr or allocate it?
+			other.thunk = new (eHeapAddr)winThunk;
+			//other.thunk = nullptr;
+
+			return *this;
+		}
+
 		FunctionThunk();
 		~FunctionThunk();
 
@@ -156,20 +178,34 @@ namespace Himani {
 
 	};
 
-
 	class HDialogProc :public FunctionThunk {
 	public:
+		
 		HDialogProc() {
 			thunk->Init(this, (DWORD_PTR)WndProc);
 		}
-
+		HDialogProc(winThunk* ptrThunk) {
+			if (ptrThunk) {
+				delete thunk;
+				thunk = ptrThunk;
+			}
+				thunk->Init(this, (DWORD_PTR)WndProc);
+		}
 		//Disable Copy/Move Assignment and Constructor
-		HDialogProc(HDialogProc&&) = delete;
-		HDialogProc& operator=(HDialogProc&&) = delete;
+		//HDialogProc(HDialogProc&&) :FunctionThunk()
+		HDialogProc(HDialogProc&& other) :FunctionThunk(std::move(other)) {
+			thunk->Init(this, (DWORD_PTR)WndProc);
+		}
+
+		HDialogProc& operator=(HDialogProc&& other) {
+
+			thunk->Init(this, (DWORD_PTR)WndProc);
+		}
+
 		HDialogProc(const HDialogProc&) = delete;
 		HDialogProc& operator=(const HDialogProc&) = delete;
 
-
+		//TODO make it protected again
 	protected:
 		//Returns the windows Procedure specific to our class Object
 		DLGPROC Procedure() {

@@ -44,7 +44,7 @@ namespace Himani {
 	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size){
 		//SelfDestruct = false;
 		HWND parentHandle = nullptr;
-		int ID;
+		int ID = 0;
 		if (parent) {
 			parentHandle = static_cast<HWND>(*parent);
 			ID = SendMessage(parentHandle, H_WM_GETCHILDID, 0, 0);
