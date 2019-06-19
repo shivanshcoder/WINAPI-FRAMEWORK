@@ -122,7 +122,7 @@ namespace Himani {
 		HBaseDialog* newDialog;
 	};
 
-	template<class DialogClass, class DialogClassParams = HDialogBoxParams>
+	template<class DialogClass = HBaseDialog, class DialogClassParams = HDialogBoxParams>
 	void CreateDialogBox(LPCWSTR ResourceName, HWindow & parent, DialogClassParams * Args = nullptr) {
 		if (!Args) {
 			Args = new HDialogBoxParams(parent);

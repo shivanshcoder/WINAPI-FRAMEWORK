@@ -17,6 +17,10 @@ namespace Himani {
 
 		case WM_PAINT:
 			return OnPaint();
+
+		case WM_CLOSE:
+			EndDialog(0);
+			return TRUE;
 		default:
 			return FALSE;
 		}

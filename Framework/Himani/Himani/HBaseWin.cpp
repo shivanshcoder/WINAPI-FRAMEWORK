@@ -4,6 +4,7 @@
 namespace Himani {
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
 		WNDCLASSEX wndclass = {};
+		
 		wndclass.cbSize = sizeof(WNDCLASSEX);
 		wndclass.style = Style;
 		wndclass.lpfnWndProc = Proc;
@@ -41,7 +42,7 @@ namespace Himani {
 
 	//HString& HCustomWindow::ClassName() { static HString temp = (TEXT("NO_CLASS")); return temp; }
 
-	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size){
+	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size) {
 		//SelfDestruct = false;
 		HWND parentHandle = nullptr;
 		int ID = 0;
@@ -93,31 +94,22 @@ namespace Himani {
 		case WM_COMMAND: {
 			if (lParam) {
 				//Framework Controls can automatically use the notification by themselves
-				int temp =	SendMessage((HWND)lParam, H_CM_PROCESSNOTIF, HIWORD(wParam), LOWORD(wParam));
-				if (temp != -1)
-					break;
-				return 0;
+				int temp = SendMessage((HWND)lParam, H_CM_PROCESSNOTIF, HIWORD(wParam), LOWORD(wParam));
+				if (temp == -1)
+					return 0;
 			}
+			break;
+		}
+
 		case WM_NCDESTROY: {
 			InitHandle(nullptr);
 			return 0;
 		}
 		}
-
-		//case WM_NCDESTROY:
-
-			//WARNING 
-			//Strange code for sure and should only run if class Instance was created using External calls only 
-			//Not for Objects Intantited by Class itself(Stack Creation)
-			//SelfDestruct if the Instance was created using External Call!
-			//if(SelfDestruct)
-			//	delete this;
-			//	return 0;
-		}
 		return MessageFunc(message, wParam, lParam);
 	}
 
-	
+
 
 	HString HWindow::GetWinText() {
 		int size = GetWindowTextLength(Handle());

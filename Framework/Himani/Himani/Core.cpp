@@ -5,7 +5,7 @@ namespace Himani {
 
 	HINSTANCE __ProgramInstance; 
 	int __ProgramCmdShow;
-
+	int __WinAppStorageIndex = -1;
 
 	Exceptions::Exceptions(int LineNumber, const HString FilePath, const HString & data) {
 		Data += L"Line :";

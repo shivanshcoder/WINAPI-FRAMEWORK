@@ -84,6 +84,11 @@ namespace Himani {
 	extern HINSTANCE __ProgramInstance;
 	extern int __ProgramCmdShow;
 
+	extern int __WinAppStorageIndex;
+
+	inline int WinAppStorageIndex() {
+		return __WinAppStorageIndex;
+	}
 
 	inline HINSTANCE Instance() {
 		return __ProgramInstance;
@@ -146,11 +151,11 @@ namespace Himani {
 	template<class HandleType>
 	class HHandleWrapperBaseClass {
 	public:
-		HHandleWrapperBaseClass() noexcept{
+		HHandleWrapperBaseClass() noexcept {
 			handle = (nullptr);
 		}
 
-		HHandleWrapperBaseClass(HHandleWrapperBaseClass&& other) noexcept{
+		HHandleWrapperBaseClass(HHandleWrapperBaseClass&& other) noexcept {
 			handle = other.handle;
 			other.handle = nullptr;
 		}
@@ -172,22 +177,22 @@ namespace Himani {
 		HandleType Handle()const {
 			if (handle)
 				return handle;
-			
+
 			//TODO fix this maybe?
 			//Why did i comment this?
-				else
-					throw Exceptions(TEXT("Handle yet not Initialized"));
+			else
+				throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
 
 
-		explicit operator HandleType() noexcept{
+		explicit operator HandleType() noexcept {
 			return handle;
 		}
 
 		virtual ~HHandleWrapperBaseClass() {}
-		
+
 	protected:
-		void InitHandle(HandleType __handle) noexcept{
+		void InitHandle(HandleType __handle) noexcept {
 			handle = __handle;
 		}
 
@@ -321,7 +326,9 @@ namespace Himani {
 	class HBaseApp {
 
 	public:
-		HBaseApp() = default;
+		HBaseApp() {
+			TlsSetValue(WinAppStorageIndex(), (LPVOID)this);
+		}
 		//No Need of Copy or Move Constructors
 		HBaseApp(HBaseApp const&) = delete;
 		HBaseApp(HBaseApp&&) = delete;
@@ -336,6 +343,12 @@ namespace Himani {
 			MessageProcess();
 		}
 		virtual ~HBaseApp() {}
+
+		/*void AddModlessBoxInst(HWindow* ptr) {
+			DlgStore.push_back((HWND)* ptr);
+		}*/
+
+		//TODO implement Deleting of Modless Instances!!
 
 	protected:
 
@@ -477,7 +490,9 @@ namespace Himani {
 				//Since we are constructing primary thread with a Applicaiton Object created using heap 
 				//We have to manually delete the Object
 				//TODO maybe make alternative primary thread class!
-				delete ((HBaseApp*)tls.GetValue());
+				//URGENT
+				//URGENT UNCOMMENT THE DELETION!!!!!!
+				//delete ((HBaseApp*)WinAppStorage.GetValue());
 			}
 		}
 	protected:
@@ -486,7 +501,7 @@ namespace Himani {
 		//Is it safe it to be statically constructed?
 		//TODO waht happens if more processes are to be used?
 		//VESION c++17
-		static inline HThreadLocalStorage tls;
+		//static inline HThreadLocalStorage WinAppStorage;
 	};
 
 
@@ -509,19 +524,22 @@ namespace Himani {
 
 		static DWORD CALLBACK ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
-			tls.SetValue((LPVOID)& App);
+			//WinAppStorage.SetValue((LPVOID)& App);
 			App.Start();
 			return 0;
 		}
 
-		static WinApp* GetApp() {
-			return (WinApp*)tls.GetValue();
-		}
+		/*static WinApp* GetApp() {
+			return (WinApp*)WinAppStorage.GetValue();
+		}*/
 
 	private:
 		//Framework Reserved for Use in MainThread
 		HThread(WinApp* Instance) :HBaseThread(HThread::ThreadFunc, false) {
-			tls.SetValue((LPVOID)Instance);
+
+
+			//WinAppStorage.SetValue((LPVOID)Instance);
+			//WinAppStorageIndex = WinAppStorage.Index;
 			Instance->Run();
 		}
 
@@ -530,8 +548,12 @@ namespace Himani {
 	/*
 		Returns The Instance of the Running Application of the current thread of the current process!
 	*/
+	/*inline HBaseApp* GetApp() {
+		return (HBaseApp*)HBaseThread::WinAppStorage.GetValue();
+	}*/
+
 	inline HBaseApp* GetApp() {
-		return (HBaseApp*)HBaseThread::tls.GetValue();
+		return (HBaseApp*)TlsGetValue(WinAppStorageIndex());
 	}
 
 	/*
