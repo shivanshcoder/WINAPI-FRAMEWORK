@@ -82,7 +82,8 @@ public:
 
 	Dial(Himani::HDialogBoxParams& params) :HBaseDialog(params), btn(std::bind(&Dial::print, this), *this, IDC_BUTTON1),
 		grp(*this, { IDC_RADIO1,IDC_RADIO2,IDC_RADIO3,IDC_RADIO4,IDC_RADIO5,IDC_RADIO6 }) {
-		HWND a = Handle();
+		int lll = sizeof(Himani::HGroupableControl< Himani::HRadioButton<0>, 5>);
+	
 	}
 	void print() {
 		DrawRectangle(Handle());

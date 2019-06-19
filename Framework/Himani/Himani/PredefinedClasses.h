@@ -152,6 +152,14 @@ namespace Himani {
 
 		}
 
+		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
+			if (H_CM_PROCESSNOTIF == message) {
+				GroupOwner.Notify(lParam);
+			}
+			return ControlName::MessageFunc(message, wParam, lParam);
+
+		}
+
 		//WARNING is destructor needed?
 		//~HGroupableControl() 
 		HControlGroup<ControlName,size>& GroupOwner;
@@ -167,11 +175,22 @@ namespace Himani {
 		HControlGroup(HWindow& parent, std::initializer_list<DWORD>controlIDs) {
 			int i = 0;
 			for (auto& ID : controlIDs) {
-				controls[i++] = std::make_unique < HGroupableControl<ControlName,size> >(*this, parent, ID);
+				controls[i++] = std::make_unique < HGroupableControl<ControlName, size> >(*this, parent, ID);
+
+			}
+		}
+		HControlGroup(HWindow& parent, DWORD startID, DWORD endID) {
+			int i = 0;
+			while(startID <= endID) {
+				controls[i++] = std::make_unique < HGroupableControl<ControlName, size> >(*this, parent, startID++);
 
 			}
 		}
 
+		void Notify(int ID) {
+			//__debugbreak();
+		}
+		
 	private:
 		std::array< std::unique_ptr< HGroupableControl<ControlName, size> >, size > controls;
 	};

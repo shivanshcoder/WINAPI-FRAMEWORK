@@ -264,6 +264,17 @@ namespace Himani {
 			return *this;
 		}
 
+		~HCustomWindow() {
+			//TODO do the error checking!!!
+			HWND rawHandle = (HWND)* this;
+			//if()
+			if (rawHandle) {
+				if ((WNDPROC)GetWindowLongPtr((HWND)* this, GWLP_WNDPROC) == Procedure())
+					SetWindowLongPtr((HWND)* this, GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
+			}
+		}
+
+
 		void CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle = 0, HWindow * parent = nullptr, Helpers::HRect size = Helpers::HRect());
 	protected:
 
