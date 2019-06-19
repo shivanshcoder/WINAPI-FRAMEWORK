@@ -80,7 +80,8 @@ public:
 class Dial :public Himani::HBaseDialog {
 public:
 
-	Dial(Himani::HDialogBoxParams &params):HBaseDialog(params),btn(std::bind(&Dial::print,this),this,IDC_BUTTON1 ) {
+	Dial(Himani::HDialogBoxParams& params) :HBaseDialog(params), btn(std::bind(&Dial::print, this), *this, IDC_BUTTON1),
+		grp(*this, { IDC_RADIO1,IDC_RADIO2,IDC_RADIO3,IDC_RADIO4,IDC_RADIO5,IDC_RADIO6 }) {
 		HWND a = Handle();
 	}
 	void print() {
@@ -88,8 +89,9 @@ public:
 	}
 
 	virtual BOOL MessageFunc( UINT message, WPARAM wParam, LPARAM lParam)override{
-		if (message == WM_COMMAND) {
+		if (message == WM_CLOSE) {
 			//__debugbreak();
+			EndDialog(0);
 			return TRUE;
 		}
 		return FALSE;
@@ -97,6 +99,7 @@ public:
 
 private:
 	Himani::HPushButton<>btn;
+	Himani::HControlGroup<Himani::HRadioButton<>, 6> grp;
 };
 
 class MainWin :public Himani::HBaseApp {

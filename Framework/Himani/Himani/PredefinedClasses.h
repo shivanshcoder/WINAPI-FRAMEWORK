@@ -9,28 +9,8 @@ Overriden System Registered Window Classes
 //https://docs.microsoft.com/en-us/windows/desktop/Controls/common-control-window-classes
 
 namespace Himani {
-	
-	class HWindowGroup:public HCustomWindow{
-	public:
-		HWindowGroup(const HString& Title, HWindow* ptr, Helpers::HRect size) {
-			CreateWinEx(Title, WS_CHILD | WS_TABSTOP | WS_CLIPCHILDREN, 0, ptr, size);
-		}
 
-		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
-	protected:
-		int ChildrenID = 1;
-		WINCLASS_PROPERTIES(HWindowGroup, CS_VREDRAW | CS_HREDRAW)
-	};
 
-	LRESULT HWindowGroup::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
-		switch (message) {
-
-		case H_WM_GETCHILDID:
-			return ChildrenID++;
-		}
-
-		return HCustomWindow::MessageFunc(message, wParam, lParam);
-	}
 
 	class HPredefinedWindow : public HCustomWindow {
 	public:
@@ -112,16 +92,16 @@ namespace Himani {
 	class HPushButton :public HButton {
 	public:
 
-		HPushButton(std::function<void()> callback, const HString& Title, HWindow* parent, Helpers::HRect size)
+		HPushButton(std::function<void()> callback, const HString& Title, HWindow& parent, Helpers::HRect size)
 			:callbackOnPush(callback) {
 			CreateWinEx(Title,
 				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_PUSHBUTTON | ButtonStyles, 0,
-				parent, size);
+				&parent, size);
 		}
 
-		HPushButton(std::function<void()> callback, HWindow* parent, int ControlID)
+		HPushButton(std::function<void()> callback, HWindow& parent, int ControlID)
 			:callbackOnPush(callback) {
-			InitHandle(GetDlgItem(parent->Handle(), ControlID));
+			InitHandle(GetDlgItem(parent.Handle(), ControlID));
 			UpdateProc();
 		}
 
@@ -134,21 +114,107 @@ namespace Himani {
 
 		std::function<void()>callbackOnPush;
 	};
+/*
+	template<int ButtonStyles>
+	class HRadioButton;*/
+
+	//template<int size, DWORD RadioButtonStyle>
+	//class HRadioGroup {
+	//public:
+	//	HRadioGroup(HWindow& parent, std::initializer_list<HString>texts) {
+
+	//	}
+
+	//	HRadioGroup(HWindow& parent, std::initializer_list<int>buttonIDs) {
+	//		//TODO later use iterators!
+	//		int i = 0;
+	//		for (auto& ID : buttonIDs) {
+	//			buttons[i++] = std::make_unique < HRadioButton<RadioButtonStyle> >(parent, ID);
+	//		}
+	//	}
+
+	//private:
+	//	std::array< std::unique_ptr< HRadioButton<RadioButtonStyle> >, size > buttons;
+	//};
+	template<class ControlName, int size>
+	class HControlGroup;
+
+	template<class ControlName, int size>
+	class HGroupableControl : public ControlName {
+		template<class ControlName, int size>
+		friend class HControlGroup;
+	public:
+		//using ControlName::ControlName;
+
+		template <class... _Types>
+		HGroupableControl(HControlGroup<ControlName, size>& groupOwner, _Types&& ... _Args) :
+			GroupOwner(groupOwner), ControlName(std::forward<_Types>(_Args)...) {
+
+		}
+
+		//WARNING is destructor needed?
+		//~HGroupableControl() 
+		HControlGroup<ControlName,size>& GroupOwner;
+	};
+
+
+
+	template<class ControlName, int size>
+	class HControlGroup  {
+		//	using HGrouBpableControl<ControlName> ControlGroupable;
+
+	public:
+		HControlGroup(HWindow& parent, std::initializer_list<DWORD>controlIDs) {
+			int i = 0;
+			for (auto& ID : controlIDs) {
+				controls[i++] = std::make_unique < HGroupableControl<ControlName,size> >(*this, parent, ID);
+
+			}
+		}
+
+	private:
+		std::array< std::unique_ptr< HGroupableControl<ControlName, size> >, size > controls;
+	};
 
 
 	template<int ButtonStyles = 0>
 	class HRadioButton :public HButton {
-		HRadioButton(const HString& Title, HWindow* parent, Helpers::HRect size){
+	public:
+	/*	HRadioButton(const HString& Title, HWindow& parent, Helpers::HRect size) {
 			CreateWinEx(Title,
 				WS_CHILD | WS_TABSTOP | WS_VISIBLE | BS_AUTORADIOBUTTON | ButtonStyles, 0,
-				parent, size);
-		}
+				&parent, size);
+		}*/
 
-		HRadioButton(int ControlID) {
-
+		HRadioButton(HWindow& parent, int ControlID) {
+			InitHandle(GetDlgItem(parent.Handle(), ControlID));
+			UpdateProc();
 		}
 	};
 
+
+	/*
+	class HWindowGroup:public HCustomWindow{
+	public:
+		HWindowGroup(const HString& Title, HWindow* ptr, Helpers::HRect size) {
+			CreateWinEx(Title, WS_CHILD | WS_TABSTOP | WS_CLIPCHILDREN, 0, ptr, size);
+		}
+
+		LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override;
+	protected:
+		int ChildrenID = 1;
+		WINCLASS_PROPERTIES(HWindowGroup, CS_VREDRAW | CS_HREDRAW)
+	};
+
+	LRESULT HWindowGroup::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
+		switch (message) {
+
+		case H_WM_GETCHILDID:
+			return ChildrenID++;
+		}
+
+		return HCustomWindow::MessageFunc(message, wParam, lParam);
+	}*/
 	//class HCheckButton :public HButton {
 
 	//};

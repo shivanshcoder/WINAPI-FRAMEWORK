@@ -2,6 +2,7 @@
 
 
 #include<vector>
+#include<array>
 #include<queue>
 #include<forward_list>
 #include<unordered_map>

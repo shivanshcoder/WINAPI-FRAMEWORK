@@ -8,6 +8,8 @@ namespace Himani {
 
 	class HBaseDialog;
 
+	//Dialog Initialization helper class
+	//Every DialogBox class needs to have constructor taking object of this or its derived class
 	class HDialogBoxParams {
 	public:
 		friend class HBaseDialog;
@@ -17,8 +19,10 @@ namespace Himani {
 		HDialogBoxParams(HWindow& parent) :ptr(parent) {}
 
 	private:
-		winThunk* thunk = nullptr;
 		HWindow& ptr;
+		//Only Parent needs to be filled
+		//rest variables will be filled automatically 
+		winThunk* thunk = nullptr;
 		HWND currentInst = nullptr;
 	};
 
@@ -28,11 +32,14 @@ namespace Himani {
 		friend class ReservedTempDialog;
 	public:
 		HBaseDialog(HDialogBoxParams& params)
+			//Initializes the Handle,parent, and replaces the thunk with the supplied thunk
 			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst) {}
 
 		virtual BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
+
+		//TODO make this final type, so that no overriding is allowed
 		virtual BOOL __MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)override {
-			//Some FOrced functionality to be added!
+			//Some Forced functionality to be added!
 			switch (message) {
 			case WM_COMMAND: {
 				if (lParam) {
@@ -51,13 +58,8 @@ namespace Himani {
 
 		virtual bool OnInit() { return true; }
 		virtual bool OnPaint() { return false; }
-		virtual void OnCommand(int ID) {
-			EndDialog(0);
-		}
+		virtual void OnCommand(int ID) {}
 
-		void End(int returnVal) {
-			PostMessage(Handle(), H_WM_ENDDIALOGBOX, returnVal, 0);
-		}
 
 	protected:
 		HWindow& Parent;
