@@ -19,13 +19,16 @@ DWORD func2(PVOID c) {
 
 class MainApp :public Himani::HBaseApp {
 public:
-	MainApp() {
-		Himani::HSimpleWindow w(TEXT("SAMPLE"));
-		Himani::CreateDialogBox<Himani::HBaseDialog>(MAKEINTRESOURCE(IDD_DIALOG1), w);
+	MainApp():
+	w(TEXT("SAMPLE") ),z(w, MAKEINTRESOURCE(IDD_DIALOG1)) {
+		//Himani::CreateDialogBox<Himani::HBaseDialog>(MAKEINTRESOURCE(IDD_DIALOG1), w);
+		w.Show(SW_NORMAL);
+		z.Show(SW_NORMAL);
 		//PostQuitMessage(0);
 		
 	}
-
+	Himani::HSimpleWindow w;
+	Himani::HBaseDialog z;
 };
 
 

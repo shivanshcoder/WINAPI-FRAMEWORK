@@ -7,16 +7,16 @@ namespace Himani {
 	{
 		switch (message) {
 
-		case WM_INITDIALOG: {
-			return OnInit();
-		}
 
 		case WM_COMMAND:
 			OnCommand(LOWORD(wParam));
 			break;
 
-		case WM_PAINT:
+		case WM_PAINT: {
+
+			HWND w = Handle();
 			return OnPaint();
+		}
 
 		case WM_CLOSE:
 			EndDialog(0);

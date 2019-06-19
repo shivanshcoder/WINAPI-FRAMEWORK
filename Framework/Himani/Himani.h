@@ -18,10 +18,9 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 namespace Himani{
 
-	void InitFramework(HINSTANCE Instance, int CmdShow, int AppInstStorageIndex) {
+	void InitFramework(HINSTANCE Instance, int CmdShow) {
 		__ProgramInstance = Instance;
 		__ProgramCmdShow = CmdShow;
-		__WinAppStorageIndex = AppInstStorageIndex;
 		//Registers all the classes added 
 		HWinClassProperties::RegisterAllClasses();
 		///TODO throw if Framework could not be initialzed 
@@ -38,13 +37,14 @@ extern Himani::HBaseApp* EntryApplication();
 
 
 int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow) {
-	Himani::HThreadLocalStorage AppInstanceStorage;
-	Himani::InitFramework(Instance, CmdShow, AppInstanceStorage.Index);
-	try {/*
-		auto App = EntryApplication();
-		App->start();
-		
-		delete App;*/
+
+
+	Himani::InitFramework(Instance, CmdShow);
+
+	try {
+		Himani::HThreadLocalStorage AppInstanceStorage;
+		Himani::__WinAppStorageIndex = AppInstanceStorage.Index;
+
 		Himani::HThread<Himani::HBaseApp> App(EntryApplication());
 	}
 	catch (Himani::Exceptions &e) {

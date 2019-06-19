@@ -31,9 +31,17 @@ namespace Himani {
 		template<class DialogBoxClass, class DialogClassParams>
 		friend class ReservedTempDialog;
 	public:
+		//To be used when the derived class is a Modal Dialog Box
 		HBaseDialog(HDialogBoxParams& params)
 			//Initializes the Handle,parent, and replaces the thunk with the supplied thunk
 			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst) {}
+
+		HBaseDialog(HWindow& parent, LPCWSTR ResourceName) :Parent(parent) {
+			CreateDialog(Instance(), ResourceName, parent.Handle(), Procedure());
+			
+			CheckDefaultWinError;
+			int c = 34;
+		}
 
 		virtual BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -41,6 +49,14 @@ namespace Himani {
 		virtual BOOL __MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)override {
 			//Some Forced functionality to be added!
 			switch (message) {
+
+			case WM_INITDIALOG:
+				if (((HWND)* this) == nullptr) {
+					
+					InitHandle(_hDlg);
+					return 0;
+				}
+
 			case WM_COMMAND: {
 				if (lParam) {
 					//Framework Controls can automatically use the notification by themselves
@@ -75,13 +91,13 @@ namespace Himani {
 			::CheckRadioButton(Handle(), StartID, EndID, CheckItemID);
 		}
 
-		//	HWindow GetItem(int ItemID) {
-		//		return HWindow(::GetDlgItem(Handle(), ItemID));
-		//	}
-
-		virtual ~HBaseDialog() {
-
+		~HBaseDialog() {
+			if ((HWND)* this) {
+				//In case the object is getting out of scope Destroy Window forcefully!!
+				DestroyWindow((HWND)* this);
+			}
 		}
+
 	};
 
 	template<class DialogBoxClass, class DialogClassParams>
@@ -119,9 +135,10 @@ namespace Himani {
 			delete newDialog;
 		}
 	private:
-		HBaseDialog* newDialog;
+		HBaseDialog* newDialog = nullptr;
 	};
 
+	//Doesn't return till the dialog box is closed or successfully returns
 	template<class DialogClass = HBaseDialog, class DialogClassParams = HDialogBoxParams>
 	void CreateDialogBox(LPCWSTR ResourceName, HWindow & parent, DialogClassParams * Args = nullptr) {
 		if (!Args) {
@@ -136,48 +153,14 @@ namespace Himani {
 		delete instance;
 
 	}
-	/*
-	Modal Dialog Box Class
-	Simply Create Instance of this Class to get a ModalDialog box and this doesn't return untill the
-	Dialog Box processing is complete
-	*/
-	class HModalDialog :public HBaseDialog {
-	public:
-
-		using HBaseDialog::HBaseDialog;
-
-		bool Result() const {
-			return EndResult;
-		}
-
-	protected:
-
-		//Should be called in Constructor of the Derived class
-		void StartDialog() {
-			//EndResult = DialogBox(Instance(),
-			//	(ResourceID) ? MAKEINTRESOURCE(ResourceID) : ResourceName.c_str(),
-			//	Parent.Handle(), Procedure()
-			//);
-		}
-
-
-	private:
-		//True if Ok is pressed
-		//False if Cancel is pressed
-		bool EndResult;
-	};
 
 
 	/*
-	Modless DIalog Box Class
+	Modless Dialog Box Class
 	Saves the data using constructor and simply call Init function to start the Modless DialogBox
 	*/
-	//class HModlessDialog :public HBaseDialog {
-	//public:
-	//	using HBaseDialog::HBaseDialog;
+	class HDialog : HBaseDialog {
 
-	//	//Initializes the Modless Dialog
-	//	void StartDialog();
-	//};
+	};
 
 }

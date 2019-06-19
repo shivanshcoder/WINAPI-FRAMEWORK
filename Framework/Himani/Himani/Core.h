@@ -405,6 +405,8 @@ namespace Himani {
 		DISABLE_CLASS_MOVECONS_ASSIGNMENT(HThreadLocalStorage);
 
 		HThreadLocalStorage() {
+			//Will it ever not allocate?
+			//thn probably throw exception?
 			Index = TlsAlloc();
 		}
 
@@ -466,7 +468,7 @@ namespace Himani {
 			::SuspendThread(ThreadHandle);
 		}
 
-		//
+		
 		virtual ~HBaseThread() {
 
 			//When the Thread manages the primary thread
@@ -492,21 +494,16 @@ namespace Himani {
 				//TODO maybe make alternative primary thread class!
 				//URGENT
 				//URGENT UNCOMMENT THE DELETION!!!!!!
-				//delete ((HBaseApp*)WinAppStorage.GetValue());
+				delete (HBaseApp*)TlsGetValue(WinAppStorageIndex());
 			}
 		}
 	protected:
 		HANDLE ThreadHandle = nullptr;
 
-		//Is it safe it to be statically constructed?
-		//TODO waht happens if more processes are to be used?
-		//VESION c++17
-		//static inline HThreadLocalStorage WinAppStorage;
 	};
 
 
-	//extern int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int CmdShow);
-	//More thn one Instance of this class with same template arguement is not allowed
+	
 
 	template<class WinApp>
 	class HThread :public HBaseThread {
@@ -524,14 +521,10 @@ namespace Himani {
 
 		static DWORD CALLBACK ThreadFunc(LPVOID lPvoid) {
 			WinApp App;
-			//WinAppStorage.SetValue((LPVOID)& App);
 			App.Start();
 			return 0;
 		}
 
-		/*static WinApp* GetApp() {
-			return (WinApp*)WinAppStorage.GetValue();
-		}*/
 
 	private:
 		//Framework Reserved for Use in MainThread
@@ -545,13 +538,10 @@ namespace Himani {
 
 	};
 
-	/*
-		Returns The Instance of the Running Application of the current thread of the current process!
-	*/
-	/*inline HBaseApp* GetApp() {
-		return (HBaseApp*)HBaseThread::WinAppStorage.GetValue();
-	}*/
+	
+	
 
+	//	Returns The Instance of the Running Application of the current thread of the current process!
 	inline HBaseApp* GetApp() {
 		return (HBaseApp*)TlsGetValue(WinAppStorageIndex());
 	}
