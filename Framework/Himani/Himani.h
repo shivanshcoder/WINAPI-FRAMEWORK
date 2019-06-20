@@ -19,6 +19,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 namespace Himani{
 
 	void InitFramework(HINSTANCE Instance, int CmdShow) {
+		LoadLibrary(TEXT("Msftedit.dll"));
 		__ProgramInstance = Instance;
 		__ProgramCmdShow = CmdShow;
 		//Registers all the classes added 

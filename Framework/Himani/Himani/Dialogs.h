@@ -34,13 +34,14 @@ namespace Himani {
 		//To be used when the derived class is a Modal Dialog Box
 		HBaseDialog(HDialogBoxParams& params)
 			//Initializes the Handle,parent, and replaces the thunk with the supplied thunk
-			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst) {}
+			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst){}
 
 		HBaseDialog(HWindow& parent, LPCWSTR ResourceName) :Parent(parent) {
-			CreateDialog(Instance(), ResourceName, parent.Handle(), Procedure());
-			
-			CheckDefaultWinError;
-			int c = 34;
+			HWND temp = CreateDialog(Instance(), ResourceName, parent.Handle(), Procedure());
+			if (temp == nullptr)
+				throw Exceptions(TEXT("Failed to Create DialogBox!!!!!"));
+
+			GetApp()->DlgStore.push_back(Handle());
 		}
 
 		virtual BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -57,6 +58,8 @@ namespace Himani {
 					return 0;
 				}
 
+			case WM_VSCROLL:
+			case WM_HSCROLL:
 			case WM_COMMAND: {
 				if (lParam) {
 					//Framework Controls can automatically use the notification by themselves
@@ -68,6 +71,8 @@ namespace Himani {
 					return TRUE;
 				}
 			}
+
+
 			}
 			return MessageFunc(message, wParam, lParam);
 		}
@@ -83,7 +88,18 @@ namespace Himani {
 		/*Wrapper Functions*/
 
 		void EndDialog(int returnVal) {
-			::EndDialog(Handle(), returnVal);
+			HBaseApp* ptr = GetApp();
+			auto c = std::find(ptr->DlgStore.begin(), ptr->DlgStore.end(), (HWND)* this);
+			if (c == ptr->DlgStore.end()) {
+				::EndDialog(Handle(), returnVal);
+				InitHandle(nullptr);
+			}
+			else {
+				ptr->DlgStore.erase(c);
+				DestroyWindow((HWND)* this);
+				InitHandle(nullptr);
+
+			}
 		}
 
 	public:
@@ -93,8 +109,12 @@ namespace Himani {
 
 		~HBaseDialog() {
 			if ((HWND)* this) {
-				//In case the object is getting out of scope Destroy Window forcefully!!
-				DestroyWindow((HWND)* this);
+				EndDialog(0);
+				////std::remove(GetApp()->DlgStore.begin(), GetApp()->DlgStore.end(), (HWND)* this);
+				//auto c = std::find(GetApp()->DlgStore.begin(), GetApp()->DlgStore.end(), (HWND)* this);
+				//GetApp()->DlgStore.erase(c);
+				////In case the object is getting out of scope Destroy Window forcefully!!
+				//DestroyWindow((HWND)* this);
 			}
 		}
 

@@ -181,7 +181,8 @@ namespace Himani {
 			//TODO fix this maybe?
 			//Why did i comment this?
 			else
-				throw Exceptions(TEXT("Handle yet not Initialized"));
+				__debugbreak();
+				//throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
 
 
@@ -324,7 +325,7 @@ namespace Himani {
 	};
 
 	class HBaseApp {
-
+		friend class HBaseDialog;
 	public:
 		HBaseApp() {
 			TlsSetValue(WinAppStorageIndex(), (LPVOID)this);
@@ -356,7 +357,7 @@ namespace Himani {
 		virtual void Idle() {}
 
 		bool DialogProcessing(MSG* msg) {
-			bool IsProcessed = 0;
+			bool IsProcessed = false;
 			if (DlgStore.size()) {
 				for (auto& Dlg : DlgStore) {
 					IsProcessed = IsDialogMessage(Dlg, msg);
@@ -372,6 +373,15 @@ namespace Himani {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 					if (msg.message == WM_QUIT)
 						break;
+
+					//Don't further process if Dialog Message has been processed
+					if (DialogProcessing(&msg))
+						continue;
+
+					//TODO is it safe to use msg.hwnd??
+					//if (TranslateAccelerator(msg.hwnd, Accel, &msg))
+					//	continue;
+
 
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
@@ -391,6 +401,8 @@ namespace Himani {
 
 	private:
 		std::vector<HWND>DlgStore;
+		//HACCEL Accel;
+		HWND AccelWindow;
 	};
 
 
@@ -529,10 +541,6 @@ namespace Himani {
 	private:
 		//Framework Reserved for Use in MainThread
 		HThread(WinApp* Instance) :HBaseThread(HThread::ThreadFunc, false) {
-
-
-			//WinAppStorage.SetValue((LPVOID)Instance);
-			//WinAppStorageIndex = WinAppStorage.Index;
 			Instance->Run();
 		}
 
@@ -545,6 +553,10 @@ namespace Himani {
 	inline HBaseApp* GetApp() {
 		return (HBaseApp*)TlsGetValue(WinAppStorageIndex());
 	}
+
+	//void LoadAccelerators(LPCWSTR ResourceName) {
+		//TODO
+	//}
 
 	/*
 	------------------------------------------------------END---------------------------------------------------------------

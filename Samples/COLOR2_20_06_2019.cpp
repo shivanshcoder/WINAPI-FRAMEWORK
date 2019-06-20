@@ -7,18 +7,11 @@
 #include"Himani/Log System/Log.h"
 #include"resource.h"
 
-int AskAboutSave(Himani::HWindow* ptr, Himani::HString Title = TEXT("untitled")) {
-	Title = TEXT("Save current changes in ") + Title + TEXT("?");
-	int returnVal = MessageBox(ptr->Handle(), Title.c_str(), TEXT("PopPad"), MB_YESNOCANCEL | MB_ICONQUESTION);
-	
-	return returnVal;
-}
 
 class ColorDialog :public Himani::HBaseDialog {
 public:
 	ColorDialog(HWindow& parent) :HBaseDialog(parent, MAKEINTRESOURCE(IDD_DIALOG1)),
 		red(*this, IDC_SCROLLBAR1, 255), green(*this, IDC_SCROLLBAR2, 255), blue(*this, IDC_SCROLLBAR3, 255) {
-		CheckDefaultWinError;
 		Show(SW_NORMAL);
 	}
 	BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
@@ -42,10 +35,9 @@ private:
 
 class MainWin :public Himani::HSimpleWindow {
 public:
-	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN|WS_VISIBLE), dialog(*this) {
-		
-		Show(SW_NORMAL);
+	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN), dialog(*this) {
 		SetClassLongPtr(Handle(), GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(0));
+		Show(SW_NORMAL);
 	}
 
 	LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
