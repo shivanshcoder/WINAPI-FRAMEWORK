@@ -455,7 +455,6 @@ namespace Himani {
 		//Default Message Processing
 		virtual WPARAM MessageProcess() {
 			MSG msg;
-			CheckDefaultWinError;
 			while (true) {
 				if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 					if (msg.message == WM_QUIT)

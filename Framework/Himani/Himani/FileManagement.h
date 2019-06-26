@@ -15,21 +15,21 @@ namespace Himani {
 
 	enum TextFiles_BOM {
 
-		NO_BOM_MARK = 0,
-
+		//No BOM marks defaults to UTF8 format!
+		NO_BOM_UTF8 = 0,
 		//LE_ENDIAN architecture!
 		//So the hex values have been reversed!!!
 
 
 		UTF_8 = 0xBFBBEF,			//	EF BB BF
 
-		UTF_32_LE = 0x0000FEFF,		//	FF FE 00 00
+	//	UTF_32_LE = 0x0000FEFF,		//	FF FE 00 00
 
-		UTF_32_BE = 0x0000FFFE,		//	00 00 FE FF
+	//	UTF_32_BE = 0x0000FFFE,		//	00 00 FE FF
 
-		UTF_16_LE = 0xFEFF,			// 	FF FE
+	UTF_16_LE = 0xFEFF,			// 	FF FE
 
-		UTF_16_BE = 0xFFFE,			//	FE FF
+	UTF_16_BE = 0xFFFE,			//	FE FF
 	};
 	//Reverses a Unicode String
 	void ReverseUnicodeStr(TCHAR* pText, uint64_t size) {
@@ -58,8 +58,8 @@ namespace Himani {
 		int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, (LPCCH)str.GetPtr(), -1, NULL, 0);
 
 		//TODO why sizeNeed
-		HBytes strTo(sizeNeeded*2);
-		int retVal = MultiByteToWideChar(CP_UTF8, 0, (LPCCH)str.GetPtr(), -1,(LPWSTR)strTo.GetPtr(), strTo.Size());
+		HBytes strTo(sizeNeeded * 2);
+		int retVal = MultiByteToWideChar(CP_UTF8, 0, (LPCCH)str.GetPtr(), -1, (LPWSTR)strTo.GetPtr(), strTo.Size());
 		if (!retVal)
 			__debugbreak();
 		return strTo;
@@ -71,7 +71,7 @@ namespace Himani {
 			return HBytes(1);
 
 		int s = lstrlen((LPCWSTR)str.GetPtr());
-		int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0,(LPCWCH) str.GetPtr(), s, NULL, 0, NULL, NULL);
+		int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, (LPCWCH)str.GetPtr(), s, NULL, 0, NULL, NULL);
 
 		HBytes strTo(sizeNeeded);
 
@@ -81,7 +81,6 @@ namespace Himani {
 
 		return strTo;
 	}
-
 
 	class HFileSystem {
 		class HWindow;
@@ -150,18 +149,18 @@ namespace Himani {
 		HANDLE hFile;
 	};
 
-	
+
 
 	//Checks for the BOM on the text file!
 	TextFiles_BOM CheckForBOM(HFileSystem& fileSys) {
 		HBytes tempStore(4);
 		DWORD dataRead;
 
-		
+
 		ReadFile(fileSys.Handle(), tempStore.GetPtr(), 4, &dataRead, NULL);
-		
+
 		int32_t* ptr = (int32_t*)tempStore.GetPtr();
-		
+
 		//TODO do UTF32 encoding or not???
 
 		//if (*ptr == UTF_32_LE) {
@@ -173,7 +172,7 @@ namespace Himani {
 
 		int16_t* ptr2 = (int16_t*)tempStore.GetPtr();
 
-		if (*ptr2 == UTF_16_LE) { 
+		if (*ptr2 == UTF_16_LE) {
 			fileSys.fileSize -= 2;
 			SetFilePointer(fileSys.Handle(), 2, NULL, FILE_BEGIN);
 			return UTF_16_LE;
@@ -189,10 +188,36 @@ namespace Himani {
 			SetFilePointer(fileSys.Handle(), 3, NULL, FILE_BEGIN);
 			return UTF_8;
 		}
-		
+
 		//restore to original place since no BOM is present!
 		SetFilePointer(fileSys.Handle(), 0, NULL, FILE_BEGIN);
-		return NO_BOM_MARK;
+		return NO_BOM_UTF8;
+	}
+
+	void WriteBOM(HFileSystem& fileSys, TextFiles_BOM fileEncoding ) {
+		if (fileEncoding == TextFiles_BOM::NO_BOM_UTF8)
+			return;
+		int32_t BOM_mark = fileEncoding;
+
+		
+		DWORD dataWritten;
+		WriteFile(fileSys.Handle(), (&BOM_mark), 4, &dataWritten, NULL);
+
+		switch (BOM_mark)
+		{
+		case UTF_8:
+			SetFilePointer(fileSys.Handle(), 3, 0, FILE_BEGIN);
+			break;
+		case UTF_16_BE:
+		case UTF_16_LE:
+			SetFilePointer(fileSys.Handle(), 2, 0, FILE_BEGIN);
+			break;
+		}
+		if (dataWritten != 4) {
+			//Throw exception maybe!!
+			__debugbreak();
+		}
+
 	}
 
 	//Reads the Entire text file and returns the data
@@ -205,28 +230,28 @@ namespace Himani {
 		}
 
 		TextFiles_BOM fileType = CheckForBOM(file);
-		
+
 		DWORD dataRead;
-		HBytes dataBuffer(file.FileSize()+2);
+		HBytes dataBuffer(file.FileSize() + 2);
 		ReadFile(file.Handle(), dataBuffer.GetPtr(), file.FileSize(), &dataRead, NULL);
 
 		file.Close();
 
 		dataBuffer.GetPtr()[file.FileSize()] = '\0';
-		dataBuffer.GetPtr()[file.FileSize()+1] = '\0';
+		dataBuffer.GetPtr()[file.FileSize() + 1] = '\0';
 
 		HBytes convertedData(0);
 
 		switch (fileType) {
 		case TextFiles_BOM::UTF_8:
-		case NO_BOM_MARK:
+		case TextFiles_BOM::NO_BOM_UTF8:
 #ifndef UNICODE
 			//If UNICODE not available simply copy the buffer!
 			convertedData = std::move(dataBuffer);
 #else
 			//convert the data to UNICODE
 			convertedData = GetUnicode(dataBuffer);
-			
+
 #endif // !UNICODE
 			break;
 
@@ -250,6 +275,27 @@ namespace Himani {
 		}
 
 		return convertedData;
+	}
+
+	/*
+	Creates the file or overwrites the existing file!
+	Always prefer UTF8 with no BOM mark for storing data
+	returns true when successful!
+	*/
+	bool WriteTextFile(HString fileName,HBytes &dataBuffer, TextFiles_BOM fileEncoding = TextFiles_BOM::NO_BOM_UTF8) {
+		HFileSystem file(&fileName[0], GENERIC_WRITE, NULL, CREATE_ALWAYS );
+
+		
+		WriteBOM(file, fileEncoding);
+
+		DWORD dataWritten;
+		WriteFile(file.Handle(), dataBuffer.GetPtr(), dataBuffer.Size(), &dataWritten, NULL);
+		if (dataWritten != dataBuffer.Size()) {
+			//Couldn't write the whole data!!
+			return false;
+		}
+		return true;
+
 	}
 
 	//TODO make class which supports streams and other things later on!!
@@ -306,7 +352,7 @@ namespace Himani {
 
 #ifdef UNICODE
 					MultiByteToWideChar(CP_ACP, 0, (LPCCH)text, -1, (PTSTR)ptrData->GetPtr(), fileSize + 1);
-					CheckDefaultWinError;
+					//CheckDefaultWinError;
 #else
 					lstrcpy((PTSTR)ptrData->GetPtr(), (PTSTR)text);
 #endif

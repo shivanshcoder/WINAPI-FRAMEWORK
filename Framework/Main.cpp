@@ -132,8 +132,12 @@ public:
 	MainApp() {
 		{
 
-			Himani::HString name = TEXT("temp.txt");
-			Himani::HBytes temp = Himani::ReadTextFile(name);
+			Himani::HString name = TEXT("temp2.txt");
+			Himani::HBytes tempBuffer(13);
+			strcpy_s((char*)tempBuffer.GetPtr(), 13, "Hello World!");
+			Himani::WriteTextFile(name, tempBuffer,Himani::TextFiles_BOM::UTF_8);
+			::GetLastError();
+		Himani::HBytes temp = Himani::ReadTextFile(name);
 			OutputDebugStringW((LPCWSTR)temp.GetPtr());
 			//HANDLE h = CreateFile(TEXT("temp.txt"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 			//auto size = GetFileSize(h, NULL);
@@ -158,4 +162,4 @@ public:
 };
 ENTRY_APP(MainApp);
 
-#pragma endregion
+#pragma endregion	
