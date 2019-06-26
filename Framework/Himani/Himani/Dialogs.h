@@ -36,7 +36,7 @@ namespace Himani {
 			//Initializes the Handle,parent, and replaces the thunk with the supplied thunk
 			:Parent(params.ptr), HDialogProc(params.thunk), HWindow(params.currentInst){}
 
-		HBaseDialog(HWindow& parent, LPCWSTR ResourceName) :Parent(parent) {
+		HBaseDialog(HWindow& parent, PTSTR ResourceName) :Parent(parent) {
 			HWND temp = CreateDialog(Instance(), ResourceName, parent.Handle(), Procedure());
 			if (temp == nullptr)
 				throw Exceptions(TEXT("Failed to Create DialogBox!!!!!"));
@@ -160,7 +160,7 @@ namespace Himani {
 
 	//Doesn't return till the dialog box is closed or successfully returns
 	template<class DialogClass = HBaseDialog, class DialogClassParams = HDialogBoxParams>
-	void CreateDialogBox(LPCWSTR ResourceName, HWindow & parent, DialogClassParams * Args = nullptr) {
+	void CreateDialogBox(PTSTR ResourceName, HWindow & parent, DialogClassParams * Args = nullptr) {
 		if (!Args) {
 			Args = new HDialogBoxParams(parent);
 		}
@@ -174,13 +174,5 @@ namespace Himani {
 
 	}
 
-
-	/*
-	Modless Dialog Box Class
-	Saves the data using constructor and simply call Init function to start the Modless DialogBox
-	*/
-	class HDialog : HBaseDialog {
-
-	};
 
 }

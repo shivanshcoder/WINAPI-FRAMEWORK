@@ -285,7 +285,7 @@ namespace Himani {
 
 	//};
 
-	/*template<DWORD EditStyle = 0>
+	template<DWORD EditStyle = 0>
 	class HEdit :public HPredefinedWindow {
 
 	public:
@@ -296,7 +296,7 @@ namespace Himani {
 	protected:
 
 		PREDEFINED_WINCLASS(TEXT("edit"))
-	};*/
+	};
 
 
 	class HComboBox :public HPredefinedWindow {

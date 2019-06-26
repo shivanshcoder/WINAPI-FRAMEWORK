@@ -2,7 +2,7 @@
 #include"HBaseWin.h"
 
 namespace Himani {
-	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, LPCWSTR MenuName, LPCWSTR ClassName) {
+	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, PTSTR MenuName, PTSTR ClassName) {
 		WNDCLASSEX wndclass = {};
 		
 		wndclass.cbSize = sizeof(WNDCLASSEX);

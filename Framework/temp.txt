@@ -1,0 +1,145 @@
+﻿#pragma once
+#include"Core.h"
+
+namespace Himani {
+
+	unsigned long long operator"" MB(unsigned long long num) {
+		return  1024 * 1024 * num;
+	}
+	unsigned long long operator"" GB(unsigned long long num) {
+		return  1024 * 1024 * 1024 * num;
+	}
+	unsigned long long operator"" KB(unsigned long long num) {
+		return  1024 * num;
+	}
+
+
+
+	class HFileSystem {
+		class HWindow;
+
+	public:
+
+		enum FileOpr {
+			Read,
+			Write,
+			Execute
+		};
+
+		//Exact replica of CreateFile
+		HFileSystem(PTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode,
+			LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition,
+			DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
+			hFile = CreateFile(lpFileName,  dwDesiredAccess,  dwShareMode,
+				 lpSecurityAttributes,  dwCreationDisposition,
+				 dwFlagsAndAttributes,  hTemplateFile);
+
+			if (hFile == INVALID_HANDLE_VALUE) {
+				HString Error = TEXT("Unable to Create/Open the Specified File");
+				throw Exceptions(Error);
+			}
+			Init();
+		}
+
+
+		HFileSystem(PTSTR fileName, DWORD desiredAccess, DWORD shareMode, DWORD creationDisposition) {
+			hFile = CreateFile(fileName, desiredAccess, shareMode, NULL, creationDisposition, 0,NULL);
+			if (hFile == INVALID_HANDLE_VALUE) {
+				HString Error = TEXT("Unable to Create/Open the Specified File: ");
+				Error += fileName;
+				throw Exceptions(Error);
+			}
+			Init();
+		}
+
+		void Close() {
+			if (hFile) {
+				CloseHandle(hFile);
+			}
+		}
+
+		~HFileSystem() {
+			Close();
+		}
+	protected:
+
+		void Init() {
+			LARGE_INTEGER tempFileSize;
+			GetFileSizeEx(hFile, &tempFileSize);
+			FileSize = tempFileSize.QuadPart;
+		}
+
+		uint64_t FileSize;
+		HANDLE hFile;
+		//OPENFILENAME ofn = {sizeof(OPENFILENAME)};
+	};
+
+	//Creates n sized bytes
+	class HBytes {
+	public:
+		HBytes(uint64_t _size) :size(_size){
+			ptrBytes = new BYTE[_size];
+
+			if (!ptrBytes)
+				throw Exceptions(TEXT("Unable to Allocate Memory"));
+		}
+
+		BYTE* GetPtr() {
+			return ptrBytes;
+		}
+
+		~HBytes() {
+			delete[] ptrBytes;
+		}
+	private:
+		uint64_t size = 0;
+		
+		BYTE* ptrBytes = nullptr;
+	};
+
+	class FileRead :public HFileSystem {
+	public:
+		//FileSizeCap is in Bytes!
+		FileRead( PTSTR const fileName, unsigned long long FileSizeCap = 1GB) :HFileSystem(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING) {
+			if (FileSize > FileSizeCap) {
+				HString Error = TEXT("File Too large to be read!");
+				Error += fileName;
+				throw Exceptions(Error);
+			}
+
+			DWORD dataRead;
+			
+			//For appending null at end!
+			ptrData = std::make_shared<HBytes>(FileSize+2);
+			//TODO maybe do return val error checking?
+			ReadFile(hFile, ptrData->GetPtr(), FileSize, &dataRead, NULL);
+
+			BYTE* ptr = ptrData->GetPtr();
+
+			//Copied from book check for explanation!
+			ptr[FileSize] = '\0';
+			ptr[FileSize+1] = '\0';
+
+			int UniTest = IS_TEXT_UNICODE_REVERSE_SIGNATURE | IS_TEXT_UNICODE_SIGNATURE;
+			if (IsTextUnicode(ptr, FileSize, &UniTest)) {
+				__debugbreak();
+			}
+
+			//Is Protection needed?
+			/*if (!ptrData) {
+
+				throw Exceptions(TEXT("Not able to Allocate data for reading!"));
+			}*/
+		}
+
+		std::shared_ptr<HBytes> TakeData() {
+			return ptrData;
+		}
+
+
+	private:
+		//VERSION
+		std::shared_ptr<HBytes>ptrData;
+
+	};
+}

@@ -192,6 +192,7 @@
     <ClInclude Include="Himani\Himani\Application.h" />
     <ClInclude Include="Himani\Himani\Core.h" />
     <ClInclude Include="Himani\Himani\Dialogs.h" />
+    <ClInclude Include="Himani\Himani\FileManagement.h" />
     <ClInclude Include="Himani\Himani\GDI.h" />
     <ClInclude Include="Himani\Himani\HBaseWin.h" />
     <ClInclude Include="Himani\Himani\Helpers.h" />

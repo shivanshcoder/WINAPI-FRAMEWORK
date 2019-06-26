@@ -18,10 +18,11 @@ namespace Himani {
 	WinExceptions::WinExceptions(int LineNumber, const HString FilePath)
 		:Exceptions(L"") {
 		wchar_t *buf;
+		auto erro  = ::GetLastError();
 		std::wstringstream s;
 		s << LineNumber;
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			NULL, erro, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			(LPWSTR)&buf, sizeof(buf), NULL);
 		Data += L" Windows Error: ";
 		Data += HString(buf);

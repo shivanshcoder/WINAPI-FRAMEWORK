@@ -10,7 +10,7 @@
 */
 #pragma region CUSTOM_CLASS_MACROS
 ///Function for Getting class Name
-///#define DEFINE_CLASSNAME(ClassName__) LPCWSTR ClassName()override { return L###ClassName__; } 
+///#define DEFINE_CLASSNAME(ClassName__) PTSTR ClassName()override { return L###ClassName__; } 
 
 ///#define OVERRIDE_PREDEFINEDCLASS(ClassName__) DEFINE_CLASSNAME(ClassName__)
 
@@ -145,6 +145,51 @@ namespace Himani {
 	//	std::vector<HWindow&>Controls;
 	//};
 
+	class HSimpleHandle {
+	public:
+		HSimpleHandle(HANDLE ptr) {	}
+
+		operator HANDLE() {
+			return ptrHandle;
+		}
+		~HSimpleHandle() { ptrHandle = nullptr; }
+		HANDLE ptrHandle;
+
+	};
+
+
+
+	class HBasicHandle {
+	public:
+		HBasicHandle(HANDLE valHandle) {
+			ptrHandle = valHandle;
+		}
+		//Protected Handle acquirer
+		virtual HANDLE Handle() {
+			return ptrHandle;
+		}
+
+		explicit operator HANDLE() {
+			return ptrHandle;
+		}
+
+
+		virtual ~HBasicHandle() = 0;
+	protected:
+		//Should it be shared or unique?
+		HANDLE ptrHandle;
+	};
+
+	class HHandleWnd:public HBasicHandle {
+	public:
+	
+		operator HWND() {
+			return (HWND)ptrHandle;
+		}
+
+		~HHandleWnd() { DestroyWindow((HWND)ptrHandle); }
+	};
+
 
 
 	//TODO make HandleWrapperClass for all types of handles
@@ -202,6 +247,48 @@ namespace Himani {
 		HandleType handle;
 	};
 
+	//Creates n sized bytes
+	class HBytes {
+	public:
+		HBytes(uint64_t _size) :size(_size) {
+			ptrBytes = new BYTE[_size];
+
+			if (!ptrBytes)
+				throw Exceptions(TEXT("Unable to Allocate Memory"));
+		}
+		HBytes(HBytes&& other) {
+			ptrBytes = other.ptrBytes;
+			size = other.size;
+			other.size = 0;
+			other.ptrBytes = nullptr;
+			
+		}
+		HBytes& operator=(HBytes&& other) {
+			if (ptrBytes) {
+				delete[] ptrBytes;
+			}
+			ptrBytes = other.ptrBytes;
+			size = other.size;
+			other.size = 0;
+			other.ptrBytes = nullptr;
+			return *this;
+		}
+
+
+		uint64_t Size() { return size; }
+
+		BYTE* GetPtr() {
+			return ptrBytes;
+		}
+
+		~HBytes() {
+			delete[] ptrBytes;
+		}
+	private:
+		uint64_t size = 0;
+
+		BYTE* ptrBytes = nullptr;
+	};
 
 	///*
 	//----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
@@ -554,7 +641,7 @@ namespace Himani {
 		return (HBaseApp*)TlsGetValue(WinAppStorageIndex());
 	}
 
-	//void LoadAccelerators(LPCWSTR ResourceName) {
+	//void LoadAccelerators(PTSTR ResourceName) {
 		//TODO
 	//}
 
