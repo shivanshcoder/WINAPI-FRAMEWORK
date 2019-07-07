@@ -174,6 +174,7 @@
     <ClCompile Include="Himani\Himani\HBaseWin.cpp" />
     <ClCompile Include="Himani\Himani\Log System\Log.cpp" />
     <ClCompile Include="Himani\Himani\Menu.cpp" />
+    <ClCompile Include="Himani\Himani\SampleWinClasses.cpp" />
     <ClCompile Include="Himani\Himani\WinProc.cpp" />
     <ClCompile Include="Himani\Hpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -190,6 +191,7 @@
   <ItemGroup>
     <ClInclude Include="Himani\Himani.h" />
     <ClInclude Include="Himani\Himani\Application.h" />
+    <ClInclude Include="Himani\Himani\CommonDlgs.h" />
     <ClInclude Include="Himani\Himani\Core.h" />
     <ClInclude Include="Himani\Himani\Dialogs.h" />
     <ClInclude Include="Himani\Himani\FileManagement.h" />

@@ -42,6 +42,9 @@ namespace Himani {
 			::InvalidateRect(Handle(), NULL, redraw);
 		}
 
+		void Message(UINT message, WPARAM wParam, LPARAM lParam) {
+			::SendMessage(Handle(), message, wParam, lParam);
+		}
 
 		void Update()const {
 			::UpdateWindow(Handle());

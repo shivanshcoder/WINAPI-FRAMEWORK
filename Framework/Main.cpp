@@ -95,13 +95,37 @@ private:
 
 	Himani::HScrollBar red, blue, green;
 };
+class SCommand :public Himani::HCommand {
+public:
+	SCommand(Himani::HString str):strTemp(str) {}
+
+	void Execute()override {
+		OutputDebugString(strTemp.c_str());
+	}
+
+	void UnExecute()override {
+		OutputDebugString(L"UnExecuted");
+	}
+
+private:
+	Himani::HString strTemp;
+};
 
 class MainWin :public Himani::HSimpleWindow {
 public:
-	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW), TypingWin(TEXT("edit"), *this, Helpers::HRect(0, 0)) {
-
+	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW), TypingWin(TEXT("edit"), *this, Helpers::HRect(0, 0)),
+	c1(L"Command1"),c2(L"Command2"),c3(L"command3"){
+		//SetMenu(LoadMenu(Himani::Instance(), MAKEINTRESOURCE(IDR_MENU_POPAD)));
+		Himani::HString m1 = L"Open";
+		Himani::HString m2 = L"Close";
+		Himani::HString m3 = L"Save";
+		menu.AppendStrItem(m1, &c1);
+		menu.AppendStrItem(m2, &c2);
+		menu.AppendStrItem(m3, &c3);
+		menu.AttachToWin(*this);
 		Show(SW_NORMAL);
-		SetClassLongPtr(Handle(), GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(0));
+		TypingWin.Message(EM_LIMITTEXT, 32000, 0);
+
 	}
 	void setText(PTSTR text) {
 		SetWindowText(TypingWin.Handle(), text);
@@ -109,18 +133,24 @@ public:
 	LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
 
 		if (WM_DESTROY == message) {
-			DeleteObject(
-				(HGDIOBJ)SetClassLongPtr(Handle(), GCLP_HBRBACKGROUND,
-				(LONG_PTR)GetStockObject(WHITE_BRUSH))
-			);
 			PostQuitMessage(0);
 			return 0;
+		}
+		if (WM_COMMAND == message) {
+			if ((HIWORD(wParam) == 0) && (lParam == 0)) {
+				menu.callback(LOWORD(wParam));
+			}
 		}
 		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
 
 	~MainWin() {}
 private:
+	SCommand c1;
+	SCommand c2;
+	SCommand c3;
+
+	Himani::HMenu menu;
 	Himani::HEdit <
 		WS_HSCROLL | WS_VSCROLL | WS_BORDER | ES_LEFT |
 		ES_MULTILINE | ES_NOHIDESEL | ES_AUTOHSCROLL | ES_AUTOHSCROLL
@@ -129,37 +159,9 @@ private:
 
 class MainApp :public Himani::HBaseApp {
 public:
-	MainApp() {
-		{
-
-			Himani::HString name = TEXT("temp2.txt");
-			Himani::HBytes tempBuffer(13);
-			strcpy_s((char*)tempBuffer.GetPtr(), 13, "Hello World!");
-			Himani::WriteTextFile(name, tempBuffer,Himani::TextFiles_BOM::UTF_8);
-			::GetLastError();
-		Himani::HBytes temp = Himani::ReadTextFile(name);
-			OutputDebugStringW((LPCWSTR)temp.GetPtr());
-			//HANDLE h = CreateFile(TEXT("temp.txt"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-			//auto size = GetFileSize(h, NULL);
-			//DWORD re;
-			//PBYTE ptr = new BYTE[10000];
-			//ReadFile(h, ptr, 5, &re, NULL);
-			//uint32_t* p = (uint32_t*)ptr;
-			//*p = 0xFFFE0000;
-			//bool t = (((*p) & 0x00FFFFFF) == 0xBFBBEF);
-			//if(t){
-			//	__debugbreak();;
-			//}
-			////SetFilePointer(h, 0, NULL, FILE_BEGIN);
-			////ReadFile(h, ptr+5, 5, &re, NULL);
-			//int c =3;
-			//Himani::TextFileRead fr(&name[0]);
-
-
-		}
-	}
+	MainApp() {	}
 	MainWin win;
 };
 ENTRY_APP(MainApp);
 
-#pragma endregion	
+#pragma endregion

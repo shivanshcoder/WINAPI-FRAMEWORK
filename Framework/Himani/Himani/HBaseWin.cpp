@@ -67,13 +67,6 @@ namespace Himani {
 	}
 
 	LRESULT HCustomWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
-		/*switch (message) {
-		case WM_COMMAND: {
-			if (lParam) {
-				SendMessage((HWND)lParam, HIWORD(wParam), LOWORD(wParam), 0);
-			}
-		}
-		}*/
 
 		return DefWindowProc(Handle(), message, wParam, lParam);
 	}
@@ -85,6 +78,7 @@ namespace Himani {
 		case WM_CREATE:
 			//WARNING Is it necessary?
 			//InitHandle(hwnd);
+			break;
 
 		case H_WM_GETOWNINSTANCE:
 			//Sends the Current Instance of the Class;

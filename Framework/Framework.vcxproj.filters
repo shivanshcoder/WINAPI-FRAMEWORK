@@ -54,6 +54,9 @@
     <ClCompile Include="Himani\Himani\Log System\Log.cpp">
       <Filter>LogSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Himani\Himani\SampleWinClasses.cpp">
+      <Filter>TestSource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Himani\Himani.h">
@@ -105,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Himani\Himani\FileManagement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Himani\Himani\CommonDlgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

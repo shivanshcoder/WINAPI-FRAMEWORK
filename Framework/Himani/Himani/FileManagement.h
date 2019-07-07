@@ -194,12 +194,12 @@ namespace Himani {
 		return NO_BOM_UTF8;
 	}
 
-	void WriteBOM(HFileSystem& fileSys, TextFiles_BOM fileEncoding ) {
+	void WriteBOM(HFileSystem& fileSys, TextFiles_BOM fileEncoding) {
 		if (fileEncoding == TextFiles_BOM::NO_BOM_UTF8)
 			return;
 		int32_t BOM_mark = fileEncoding;
 
-		
+
 		DWORD dataWritten;
 		WriteFile(fileSys.Handle(), (&BOM_mark), 4, &dataWritten, NULL);
 
@@ -282,10 +282,10 @@ namespace Himani {
 	Always prefer UTF8 with no BOM mark for storing data
 	returns true when successful!
 	*/
-	bool WriteTextFile(HString fileName,HBytes &dataBuffer, TextFiles_BOM fileEncoding = TextFiles_BOM::NO_BOM_UTF8) {
-		HFileSystem file(&fileName[0], GENERIC_WRITE, NULL, CREATE_ALWAYS );
+	bool WriteTextFile(HString fileName, HBytes& dataBuffer, TextFiles_BOM fileEncoding = TextFiles_BOM::NO_BOM_UTF8) {
+		HFileSystem file(&fileName[0], GENERIC_WRITE, NULL, CREATE_ALWAYS);
 
-		
+
 		WriteBOM(file, fileEncoding);
 
 		DWORD dataWritten;
@@ -297,6 +297,8 @@ namespace Himani {
 		return true;
 
 	}
+
+	
 
 	//TODO make class which supports streams and other things later on!!
 	namespace TODO {
@@ -381,4 +383,6 @@ namespace Himani {
 
 		};
 	}
+
+
 }

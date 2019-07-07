@@ -180,9 +180,9 @@ namespace Himani {
 		HANDLE ptrHandle;
 	};
 
-	class HHandleWnd:public HBasicHandle {
+	class HHandleWnd :public HBasicHandle {
 	public:
-	
+
 		operator HWND() {
 			return (HWND)ptrHandle;
 		}
@@ -227,7 +227,7 @@ namespace Himani {
 			//Why did i comment this?
 			else
 				__debugbreak();
-				//throw Exceptions(TEXT("Handle yet not Initialized"));
+			//throw Exceptions(TEXT("Handle yet not Initialized"));
 		}
 
 
@@ -261,7 +261,7 @@ namespace Himani {
 			size = other.size;
 			other.size = 0;
 			other.ptrBytes = nullptr;
-			
+
 		}
 		HBytes& operator=(HBytes&& other) {
 			if (ptrBytes) {
@@ -289,6 +289,22 @@ namespace Himani {
 
 		BYTE* ptrBytes = nullptr;
 	};
+
+	/*
+	Interface class for a command
+	Used with Menus
+	*/
+	class HCommand {
+	public:
+		HCommand() {}
+		virtual ~HCommand() {}
+
+		virtual void Execute() = 0;
+
+		//Should different class support the unexecute functionality?
+		virtual void UnExecute() = 0;
+	};
+
 
 	///*
 	//----------------------- HWCustomWindow Classes Constructor Arguement Helper Class------------------------------
@@ -566,7 +582,7 @@ namespace Himani {
 			::SuspendThread(ThreadHandle);
 		}
 
-		
+
 		virtual ~HBaseThread() {
 
 			//When the Thread manages the primary thread
@@ -601,7 +617,7 @@ namespace Himani {
 	};
 
 
-	
+
 
 	template<class WinApp>
 	class HThread :public HBaseThread {
@@ -632,8 +648,8 @@ namespace Himani {
 
 	};
 
-	
-	
+
+
 
 	//	Returns The Instance of the Running Application of the current thread of the current process!
 	inline HBaseApp* GetApp() {
