@@ -77,7 +77,7 @@ public:
 		CheckDefaultWinError;
 		Show(SW_NORMAL);
 	}
-	BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
+	LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
 		switch (message) {
 		case WM_VSCROLL:
 			DeleteObject(
@@ -114,14 +114,23 @@ private:
 class MainWin :public Himani::HSimpleWindow {
 public:
 	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW), TypingWin(TEXT("edit"), *this, Helpers::HRect(0, 0)),
-	c1(L"Command1"),c2(L"Command2"),c3(L"command3"){
+	c1(L"Command1"),c2(L"Command2"),c3(L"command3"),menu(IDR_MENU_POPAD){
 		//SetMenu(LoadMenu(Himani::Instance(), MAKEINTRESOURCE(IDR_MENU_POPAD)));
 		Himani::HString m1 = L"Open";
 		Himani::HString m2 = L"Close";
 		Himani::HString m3 = L"Save";
-		menu.AppendStrItem(m1, &c1);
+		Himani::HString te = L"CHANGED!!!";
+		menu[0].AppendStrItem(m1, &c1);
+		//menu[0][2][0].AppendStrItem(m1, &c1);
 		menu.AppendStrItem(m2, &c2);
 		menu.AppendStrItem(m3, &c3);
+
+
+		MENUITEMINFO info = { sizeof(MENUITEMINFO) };
+		info.fMask = MIIM_STRING;
+		info.dwTypeData = &te[0];
+		menu[1].SetInfo(&info);
+
 		menu.AttachToWin(*this);
 		Show(SW_NORMAL);
 		TypingWin.Message(EM_LIMITTEXT, 32000, 0);

@@ -4,7 +4,7 @@
 namespace Himani {
 	bool RegisterWinClass(UINT Style, WNDPROC Proc, HICON Icon, HICON IconSm, HCURSOR Cursor, HBRUSH Background, PTSTR MenuName, PTSTR ClassName) {
 		WNDCLASSEX wndclass = {};
-		
+
 		wndclass.cbSize = sizeof(WNDCLASSEX);
 		wndclass.style = Style;
 		wndclass.lpfnWndProc = Proc;
@@ -38,12 +38,8 @@ namespace Himani {
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
-	//std::vector <HWinClassProperties::ClassProperties> HWinClassProperties::ClassList;
-
-	//HString& HCustomWindow::ClassName() { static HString temp = (TEXT("NO_CLASS")); return temp; }
-
 	void HCustomWindow::CreateWinEx(const HString& Title, DWORD style, DWORD ExStyle, HWindow* parent, Helpers::HRect size) {
-		//SelfDestruct = false;
+		
 		HWND parentHandle = nullptr;
 		int ID = 0;
 		if (parent) {
@@ -66,24 +62,12 @@ namespace Himani {
 			throw WinExceptions(__LINE__, TEXT(__FILE__) L"HCustomWindow Creation Unsuccessful");
 	}
 
-	LRESULT HCustomWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
-
-		return DefWindowProc(Handle(), message, wParam, lParam);
-	}
-
 	LRESULT HCustomWindow::__MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message) {
-
-		case WM_CREATE:
-			//WARNING Is it necessary?
-			//InitHandle(hwnd);
-			break;
-
 		case H_WM_GETOWNINSTANCE:
 			//Sends the Current Instance of the Class;
 			return (LRESULT)this;
-
 
 		case WM_COMMAND: {
 			if (lParam) {
@@ -123,5 +107,13 @@ namespace Himani {
 		Helpers::HRect rect;
 		::GetWindowRect(Handle(), &rect.rect);
 		return rect;
+	}
+	LRESULT HWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		if (winRef)
+			return winRef->MessageFunc(message, wParam, lParam);
+		else {
+			return DefWindowProc(Handle(), message, wParam, lParam);
+		}
 	}
 }

@@ -15,9 +15,12 @@ namespace Himani {
 	LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	class HWindow :public HHandleWrapperBaseClass<HWND> {
+		friend class HWinDecoratorFactory;
 
 	public:
 		using HHandleWrapperBaseClass<HWND>::HHandleWrapperBaseClass;
+
+		HWindow() {}
 
 		HWindow(HWindow&&) = default;
 
@@ -83,71 +86,18 @@ namespace Himani {
 		}
 		/*						Simple Wrappers						*/
 
-		virtual ~HWindow() {}
+		virtual ~HWindow() {
+			delete winRef;
+		}
+	protected:
+
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) = 0;
+
+		HWindow(HWindow* winptr) :winRef(winptr) {}
+
+	private:
+		HWindow* winRef = nullptr;
 	};
-
-
-	/*
-	Class for Registering a Windows Class
-	Add the Class properties to a Data Structure
-
-	Usage:
-	static Object should be created using this class inside HCustomWindow
-	for std17++
-		inline static HWinClassProperties Object = { ... };
-	*/
-
-	//TODO complete this class
-	//template<class WinClassName>
-	//struct HWinClass {
-	//	HWinClass(Himani::HString className, WNDPROC procAddr, int classStyle) {
-	//		ClassName += TEXT("Himani.WinClass.");
-	//		ClassName += className;
-
-	//		//ClassList.push_back({ ClassName, procAddr, classStyle });
-
-	//	}
-
-	//	/*When using a system Registered Class*/
-	//	HWinClass(Himani::HString className) {
-	//		ClassName += className;
-	//	}
-
-	//	//Registers all the Classes added to the Store
-	//	//This funciton is called Automatically by Framework and Registers all the Window Classes before Entering the Main Application!
-	//	static void RegisterAllClasses() {
-	//		while (ClassList.size()) {
-	//			auto ClassProp = ClassList.back();
-	//			ClassList.pop_back();
-
-	//			WNDCLASSEX wndclass = {};
-	//			wndclass.cbSize = sizeof(WNDCLASSEX);
-	//			wndclass.style = ClassProp.classStyle;
-	//			wndclass.lpfnWndProc = ClassProp.procAddr;
-	//			wndclass.hInstance = Instance();
-	//			wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	//			wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	//			wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	//			wndclass.lpszClassName = ClassProp.className.c_str();
-	//			wndclass.lpszMenuName = NULL;
-	//			wndclass.hIconSm = NULL;
-
-	//			if (!RegisterClassEx(&wndclass)) {
-	//				CheckDefaultWinError;
-	//			}
-	//		}
-	//	}
-
-	//	struct ClassProperties {
-	//		Himani::HString className;
-	//		WNDPROC procAddr;
-	//		int classStyle;
-	//	};
-	//	
-	//	HString ClassName;
-	//	static inline std::vector<ClassProperties>ClassList;
-
-	//};
 
 
 	struct HWinClassProperties {
@@ -192,7 +142,6 @@ namespace Himani {
 
 		struct ClassProperties {
 			Himani::HString className;
-			//WNDPROC procAddr;
 			int classStyle;
 		};
 		HString ClassName;
@@ -217,12 +166,10 @@ namespace Himani {
 	*/
 	class HCustomWindow :public HWindow, private HWindowsProc {
 	private:
-		//		HCustomWindow(HWND rawHandle)
 		friend class HPredefinedWindow;
 
 		using HWindow::HWindow;
-		//protected:
-		//	HCustomWindow() = default;
+		
 	public:
 
 		//Can be overriden incase derived class stores the parent itself
@@ -244,7 +191,7 @@ namespace Himani {
 			//Make the other UnInitialized
 			other.InitHandle(nullptr);
 		}
-
+		
 		//Disable Assignment for now 
 		HCustomWindow& operator=(HCustomWindow&& other) {
 			int c = lstrcmpi(other.ClassName().c_str(), ClassName().c_str());
@@ -270,7 +217,6 @@ namespace Himani {
 		~HCustomWindow() {
 			//TODO do the error checking!!!
 			HWND rawHandle = (HWND)* this;
-			//if()
 			if (rawHandle) {
 				if ((WNDPROC)GetWindowLongPtr((HWND)* this, GWLP_WNDPROC) == Procedure())
 					SetWindowLongPtr((HWND)* this, GWLP_WNDPROC, (LONG_PTR)DefWindowProc);
@@ -282,8 +228,6 @@ namespace Himani {
 	protected:
 
 		virtual HString& ClassName() = 0;
-
-		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
 		//Don't override 
 		//TODO later on
@@ -299,6 +243,8 @@ namespace Himani {
 	//Reserved for Framework shouldn't now be used anywhere else
 	class ReservedTempWindow :public HCustomWindow {
 	private:
+
+		//Should they be public??
 	public:
 		friend LRESULT CALLBACK CommonWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 

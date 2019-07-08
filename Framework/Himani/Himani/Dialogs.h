@@ -44,7 +44,7 @@ namespace Himani {
 			GetApp()->DlgStore.push_back(Handle());
 		}
 
-		virtual BOOL MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam);
 
 		//TODO make this final type, so that no overriding is allowed
 		virtual BOOL __MessageFunc(HWND _hDlg, UINT message, WPARAM wParam, LPARAM lParam)override {

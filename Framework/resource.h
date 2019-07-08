@@ -4,6 +4,7 @@
 //
 #define IDD_DIALOG1                     101
 #define IDR_MENU_POPAD                  105
+#define IDR_MENU1                       108
 #define IDC_SCROLLBAR1                  1013
 #define IDC_SCROLLBAR2                  1014
 #define IDC_SCROLLBAR3                  1015
@@ -32,13 +33,18 @@
 #define ID_TEST_T                       40021
 #define ID_TEST_Y                       40022
 #define ID_Y_U                          40023
+#define ID_FILE40024                    40024
+#define ID_OPEN                         40025
+#define ID_SAVE                         40026
+#define ID_FILE_FILE1                   40027
+#define ID_FILE_FILE2                   40028
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        108
-#define _APS_NEXT_COMMAND_VALUE         40024
+#define _APS_NEXT_RESOURCE_VALUE        109
+#define _APS_NEXT_COMMAND_VALUE         40029
 #define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

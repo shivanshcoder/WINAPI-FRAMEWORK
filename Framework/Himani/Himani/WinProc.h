@@ -98,7 +98,7 @@ namespace Himani {
 		FunctionThunk();
 		~FunctionThunk();
 
-		void deleteThunk();;
+		void deleteThunk();
 	private:
 		winThunk * thunk;
 		static HANDLE eHeapAddr;
@@ -125,9 +125,7 @@ namespace Himani {
 
 	protected:
 
-		virtual LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-			return DefWindowProc(hwnd, message, wParam, lParam);
-		}
+		virtual LRESULT __MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
 
 	private:
@@ -136,9 +134,11 @@ namespace Himani {
 #elif defined(_M_AMD64)
 		static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam, HWindowsProc* pThis) {
 #endif
+
 			try {
 				return pThis->__MessageProc(hwnd, message, wParam, lParam);
 			}
+
 			//TODO add std::exception Handling
 			catch (Himani::Exceptions & e) {
 				MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);
@@ -175,9 +175,7 @@ namespace Himani {
 			return p;
 		}
 
-		virtual BOOL __MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-			return TRUE;
-		}
+		virtual BOOL __MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
 	private:
 #if defined(_M_IX86)

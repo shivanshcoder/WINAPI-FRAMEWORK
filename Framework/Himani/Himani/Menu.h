@@ -8,38 +8,56 @@ namespace Himani {
 	class HMenu
 	{
 	public:
+
+		//Constructors!!!!!!
 		HMenu() {
+			autoDeleteMenu = true;
 			menu = CreateMenu();
+			mainInstance = this;
 		}
 
 		//TODO need to fix the index ranges visual studio starts with like 4000s or something big!
 		HMenu(int ResourceID) {
 			menu = LoadMenu(Instance(), MAKEINTRESOURCE(ResourceID));
+			mainInstance = this;
 		}
 
 		HMenu(const HString& Resource) {
 			menu = LoadMenu(Instance(), Resource.c_str());
+			mainInstance = this;
 		}
 
+		HMenu(HMenu&& other) {
+			commands = std::move(other.commands);
+			mainInstance = other.mainInstance;
+			menu = other.menu;
+			autoDeleteMenu = other.autoDeleteMenu;
+
+			other.mainInstance = nullptr;
+			other.menu = nullptr;
+		}
+
+
+		//Manipulation Functions!!
 
 		void Append(MENUITEMINFO* item, HCommand* command) {
 			int count = GetMenuItemCount(menu);
 
 			InsertMenuItem(menu, count, TRUE, item);
-			commands.push_back(command);
+			mainInstance->commands.push_back(command);
 		}
 
-		void AppendStrItem(HString &str, HCommand* command) {
+		void AppendStrItem(HString& str, HCommand* command) {
 			int count = GetMenuItemCount(menu);
 
 			MENUITEMINFO item = { sizeof(MENUITEMINFO) };
-			item.fMask = MIIM_STRING|MIIM_ID;
+			item.fMask = MIIM_STRING | MIIM_ID;
 			item.dwTypeData = &str[0];
-			item.wID = count;
+			item.wID = mainInstance->commands.size();
 
 
 			InsertMenuItem(menu, count, TRUE, &item);
-			commands.push_back(command);
+			mainInstance->commands.push_back(command);
 		}
 
 		void Insert(int index, MENUITEMINFO* item, HCommand* command) {
@@ -51,7 +69,7 @@ namespace Himani {
 			}
 
 			InsertMenuItem(menu, index, TRUE, item);
-			commands.push_back(command);
+			mainInstance->commands.push_back(command);
 		}
 
 		void AttachToWin(HWindow& win) {
@@ -65,28 +83,30 @@ namespace Himani {
 		}
 
 		~HMenu() {
-			DestroyMenu(menu);
+			//Delete only once
+			if(autoDeleteMenu)
+				DestroyMenu(menu);
 		}
 	private:
-		HMenu(HMENU handle, int totalsize) {
+		HMenu(HMENU handle, HMenu *mainInst) {
 			menu = handle;
-			totalSize = totalSize;
+			mainInstance = mainInst;
 		}
 
 		class MenuItem {
 		public:
 
 
-			MenuItem(int Index, HMenu& handleMenu)
-				:index(Index), parentMenu(handleMenu) {	}
+			MenuItem(int Index, HMENU handleMenu, HMenu* mainInst)
+				:index(Index), parentMenu(handleMenu), mainInstance(mainInst) {	}
 
 			void SetInfo(MENUITEMINFO* info) {
-				SetMenuItemInfo(parentMenu.menu, index, TRUE, info);
+				SetMenuItemInfo(parentMenu, index, TRUE, info);
 			}
 
 			MENUITEMINFO GetInfo() {
-				MENUITEMINFO info;
-				GetMenuItemInfo(parentMenu.menu, index, TRUE, &info);
+				MENUITEMINFO info = { sizeof(MENUITEMINFO) };
+				GetMenuItemInfo(parentMenu, index, TRUE, &info);
 				return info;
 			}
 
@@ -96,7 +116,15 @@ namespace Himani {
 				info.fMask = MIIM_SUBMENU;
 				//Is this the correct way?
 				info.hSubMenu = CreateMenu();
-				SetMenuItemInfo(parentMenu.menu, index, TRUE, &info);
+				SetMenuItemInfo(parentMenu, index, TRUE, &info);
+			}
+			void AppendStrItem(HString& str, HCommand* command) {
+				MENUITEMINFO info = { sizeof(MENUITEMINFO) };
+				info.fMask = MIIM_SUBMENU;
+				//Is this the correct way?
+				info.hSubMenu = CreateMenu();
+				SetMenuItemInfo(parentMenu, index, TRUE, &info);
+				HMenu(info.hSubMenu,mainInstance).AppendStrItem(str, command); 
 			}
 
 			/*
@@ -119,9 +147,9 @@ namespace Himani {
 
 			MenuItem operator[](int Index) {
 
-				HMENU subMenu = GetSubMenu(parentMenu.menu, index);
+				HMENU subMenu = GetSubMenu(parentMenu, index);
 				if (subMenu) {
-					return HMenu(subMenu, parentMenu.totalSize)[Index];
+					return HMenu(subMenu,mainInstance)[Index];
 				}
 
 				__debugbreak();
@@ -129,7 +157,8 @@ namespace Himani {
 
 			}
 		private:
-			HMenu& parentMenu;
+			HMenu* mainInstance;
+			HMENU parentMenu;
 			int index = 0;
 		};
 
@@ -137,7 +166,7 @@ namespace Himani {
 
 		MenuItem operator[](int Index) {
 
-			return MenuItem(Index, *this);
+			return MenuItem(Index, menu, mainInstance);
 		}
 
 		void Init() {
@@ -151,17 +180,21 @@ namespace Himani {
 
 
 		void callback(int menuItemID) {
-			if (menuItemID < commands.size()) {
-				commands[menuItemID]->Execute();
+			if (menuItemID == 40024) {
+				__debugbreak();
+			}
+
+			if (menuItemID < mainInstance->commands.size()) {
+				mainInstance->commands[menuItemID]->Execute();
 			}
 		}
 
 	private:
-			
-		std::vector<HCommand*>commands;
 
-		int totalSize = 0;
+		std::vector<HCommand*>commands;
+		HMenu* mainInstance = nullptr;
 		HMENU menu;
+		bool autoDeleteMenu = false;
 	};
 
 

@@ -140,4 +140,12 @@ namespace Himani {
 	HANDLE FunctionThunk::eHeapAddr = nullptr;
 	int FunctionThunk::objInstances = 0;
 
+	LRESULT HWindowsProc::__MessageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
+	BOOL HDialogProc::__MessageFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		return TRUE;
+	}
+
 }

@@ -113,6 +113,9 @@
     <ClInclude Include="Himani\Himani\CommonDlgs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Himani\Himani\WinComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

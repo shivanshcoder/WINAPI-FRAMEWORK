@@ -204,6 +204,7 @@
     <ClInclude Include="Himani\Himani\Messages.h" />
     <ClInclude Include="Himani\Himani\PredefinedClasses.h" />
     <ClInclude Include="Himani\Himani\SampleWinClasses.h" />
+    <ClInclude Include="Himani\Himani\WinComponents.h" />
     <ClInclude Include="Himani\Himani\WinProc.h" />
     <ClInclude Include="Himani\Hpch.h" />
     <ClInclude Include="resource.h" />

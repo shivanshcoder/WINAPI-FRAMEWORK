@@ -3,7 +3,7 @@
 
 namespace Himani {
 
-	BOOL HBaseDialog::MessageFunc( UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT HBaseDialog::MessageFunc( UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (message) {
 
