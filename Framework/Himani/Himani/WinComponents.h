@@ -6,28 +6,18 @@
 namespace Himani {
 	class HWindowDecorators;
 
-	class HWinDecoratorFactory {
-	public:
-
-		static inline void AttachDecorator(HWindowDecorators& decoratorRef, HWindow& winRef) {
-			winRef.winRef = &decoratorRef;
-		}
-
-
-	};
+	//This Decorator was just for Checking
+	//Menus should be directly using other way!
 
 	class HWindowDecorators :public HWindow {
 		friend class HWinDecoratorFactory;
 	public:
-		HWindowDecorators(HWindow* ref) :HWindow(ref) {
-			InitHandle(ref->Handle());
-		}
 
-		virtual LRESULT MessageFunc__(UINT message, WPARAM wParam, LPARAM lParam) {
+		virtual LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
 
 			switch (message) {
 			case WM_COMMAND: {
-				if ((lParam == 0) && (HIWORD(wParam))) {
+				if ((lParam == 0) && (HIWORD(wParam) == 0)) {
 					OnMenuClick(LOWORD(wParam));
 					return 0;
 				}
@@ -65,19 +55,19 @@ namespace Himani {
 
 		}
 	private:
+		
+
 		HWindow* winRef;
 
 	};
 
-	HWindow* AttachMenu(HWindow& ref, std::shared_ptr<HMenu>menu);
-	class HWinMenu :public HWindowDecorators {
-
+	//This Decorator was just for Checking
+	//Menus should be directly using other way!
+	/*class HWinMenu :public HWindowDecorators {
+		friend class HWinDecoratorFactory;
 	public:
-
-
+		HWinMenu(std::shared_ptr<HMenu>_menu) : menu(_menu) {}
 	private:
-		HWinMenu(HWindow* ref, std::shared_ptr<HMenu>_menu) :HWindowDecorators(ref), menu(_menu) {}
-
 
 		virtual void OnMenuClick(int ID)override {
 			menu->callback(ID);
@@ -85,5 +75,17 @@ namespace Himani {
 
 		std::shared_ptr<HMenu>menu;
 	};
+*/
+	class HWinDecoratorFactory {
+	public:
 
+		static inline void AttachDecorator(HWindowDecorators* decoratorRef, HWindow& winRef) {
+			//decoratorRef stores the main Wins last stored decoratorRef
+			decoratorRef->winRef = winRef.winRef;
+			//Main win now stores the new decoratorRef
+			winRef.winRef = decoratorRef;
+			decoratorRef->InitHandle(winRef.Handle());
+		}
+
+	};
 }

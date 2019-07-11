@@ -2,200 +2,145 @@
 #include"Core.h"
 #include"HBaseWin.h"
 
-//TODO later do this menu stuff
 
 namespace Himani {
-	class HMenu
-	{
+	using Himani::HCommand;
+	using Himani::HString;
+
+	/*
+		Abstract Class for Menu Handling!
+	*/
+	class HMenuBase {
+		friend class HMenuItem;
+		friend class HMenu;
 	public:
+		HMenuBase(int _index, HMenuBase* ptrparent = nullptr) :
+			parent(ptrparent), index(_index) {}
 
-		//Constructors!!!!!!
-		HMenu() {
-			autoDeleteMenu = true;
-			menu = CreateMenu();
-			mainInstance = this;
-		}
+		enum MenuItemType {
+			//Is a simple item of a menu
+			Item,
 
-		//TODO need to fix the index ranges visual studio starts with like 4000s or something big!
-		HMenu(int ResourceID) {
-			menu = LoadMenu(Instance(), MAKEINTRESOURCE(ResourceID));
-			mainInstance = this;
-		}
+			//Is a Sub Menu
+			Menu
 
-		HMenu(const HString& Resource) {
-			menu = LoadMenu(Instance(), Resource.c_str());
-			mainInstance = this;
-		}
-
-		HMenu(HMenu&& other) {
-			commands = std::move(other.commands);
-			mainInstance = other.mainInstance;
-			menu = other.menu;
-			autoDeleteMenu = other.autoDeleteMenu;
-
-			other.mainInstance = nullptr;
-			other.menu = nullptr;
-		}
-
-
-		//Manipulation Functions!!
-
-		void Append(MENUITEMINFO* item, HCommand* command) {
-			int count = GetMenuItemCount(menu);
-
-			InsertMenuItem(menu, count, TRUE, item);
-			mainInstance->commands.push_back(command);
-		}
-
-		void AppendStrItem(HString& str, HCommand* command) {
-			int count = GetMenuItemCount(menu);
-
-			MENUITEMINFO item = { sizeof(MENUITEMINFO) };
-			item.fMask = MIIM_STRING | MIIM_ID;
-			item.dwTypeData = &str[0];
-			item.wID = mainInstance->commands.size();
-
-
-			InsertMenuItem(menu, count, TRUE, &item);
-			mainInstance->commands.push_back(command);
-		}
-
-		void Insert(int index, MENUITEMINFO* item, HCommand* command) {
-			int count = GetMenuItemCount(menu);
-			if (index > count) {
-				//ERROR index out of range!
-				__debugbreak();
-				return;
-			}
-
-			InsertMenuItem(menu, index, TRUE, item);
-			mainInstance->commands.push_back(command);
-		}
-
-		void AttachToWin(HWindow& win) {
-			try {
-				SetMenu(win.Handle(), menu);
-			}
-			catch (Exceptions& error) {
-				__debugbreak();
-				throw error;
-			}
-		}
-
-		~HMenu() {
-			//Delete only once
-			if(autoDeleteMenu)
-				DestroyMenu(menu);
-		}
-	private:
-		HMenu(HMENU handle, HMenu *mainInst) {
-			menu = handle;
-			mainInstance = mainInst;
-		}
-
-		class MenuItem {
-		public:
-
-
-			MenuItem(int Index, HMENU handleMenu, HMenu* mainInst)
-				:index(Index), parentMenu(handleMenu), mainInstance(mainInst) {	}
-
-			void SetInfo(MENUITEMINFO* info) {
-				SetMenuItemInfo(parentMenu, index, TRUE, info);
-			}
-
-			MENUITEMINFO GetInfo() {
-				MENUITEMINFO info = { sizeof(MENUITEMINFO) };
-				GetMenuItemInfo(parentMenu, index, TRUE, &info);
-				return info;
-			}
-
-
-			void Append(MENUITEMINFO* item) {
-				MENUITEMINFO info = { sizeof(MENUITEMINFO) };
-				info.fMask = MIIM_SUBMENU;
-				//Is this the correct way?
-				info.hSubMenu = CreateMenu();
-				SetMenuItemInfo(parentMenu, index, TRUE, &info);
-			}
-			void AppendStrItem(HString& str, HCommand* command) {
-				MENUITEMINFO info = { sizeof(MENUITEMINFO) };
-				info.fMask = MIIM_SUBMENU;
-				//Is this the correct way?
-				info.hSubMenu = CreateMenu();
-				SetMenuItemInfo(parentMenu, index, TRUE, &info);
-				HMenu(info.hSubMenu,mainInstance).AppendStrItem(str, command); 
-			}
-
-			/*
-			bool Enable() {
-				EnableMenuItem(parentMenu, index, MF_ENABLED | MF_BYPOSITION);
-			}
-			bool Grayed() {
-				EnableMenuItem(parentMenu, index, MF_GRAYED | MF_BYPOSITION);
-			}
-			bool Disable() {
-				EnableMenuItem(parentMenu, index, MF_DISABLED | MF_BYPOSITION);
-			}
-
-			DWORD Check() {
-				CheckMenuItem(parentMenu, index, MF_CHECKED | MF_BYPOSITION);
-			}
-			DWORD UnCheck() {
-				CheckMenuItem(parentMenu, index, MF_UNCHECKED | MF_BYPOSITION);
-			}*/
-
-			MenuItem operator[](int Index) {
-
-				HMENU subMenu = GetSubMenu(parentMenu, index);
-				if (subMenu) {
-					return HMenu(subMenu,mainInstance)[Index];
-				}
-
-				__debugbreak();
-				throw Exceptions(TEXT("Index not available for the menu!"));
-
-			}
-		private:
-			HMenu* mainInstance;
-			HMENU parentMenu;
-			int index = 0;
 		};
 
-	public:
+		//should be called with MenuItem instance
+		virtual void callback() = 0;
 
-		MenuItem operator[](int Index) {
+		
+		virtual HMenuBase& operator[](int index) = 0;
 
-			return MenuItem(Index, menu, mainInstance);
+		//Replaces the reference of this object from the parent!
+		virtual HMenuBase&& operator=(HMenuBase&& other) = 0;
+
+		virtual ~HMenuBase() {}
+
+		//Returns the Instance type
+		virtual MenuItemType Type() = 0;
+	protected:
+
+		HMenuBase(HMenuBase&& other) {
+			parent = other.parent;
+			other.parent = nullptr;
+
+			index = other.index;
+			other.index = -1;
 		}
 
-		void Init() {
-			MENUINFO Info = {};
-			Info.cbSize = sizeof(MENUINFO);
-			Info.fMask = MIM_STYLE;
-			Info.dwStyle = MNS_NOTIFYBYPOS;
+		//Stores the parent Menu
+		HMenuBase* parent = nullptr;
 
-			SetMenuInfo(menu, &Info);
-		}
-
-
-		void callback(int menuItemID) {
-			if (menuItemID == 40024) {
-				__debugbreak();
-			}
-
-			if (menuItemID < mainInstance->commands.size()) {
-				mainInstance->commands[menuItemID]->Execute();
-			}
-		}
-
+		//Stores the index the current instance is placed in parent
+		int index = -1;
 	private:
 
-		std::vector<HCommand*>commands;
-		HMenu* mainInstance = nullptr;
-		HMENU menu;
-		bool autoDeleteMenu = false;
 	};
 
 
+	class HMenu :public HMenuBase {
+		friend class HMenuItem;
+
+	public:
+		HMenu(int _index = -1) :HMenuBase(_index) {
+			menu = CreateMenu();
+			Init();
+		}
+		~HMenu() {
+			if (menu) {
+				DestroyMenu(menu);
+			}
+		}
+
+		HMenuBase& operator[](int _index)  override {
+			return *(Items[_index]);
+		}
+
+		//Attaches the Menu to the Window
+		void AttachToWin(HWindow& win);
+
+		void callback() {}
+
+		//Stores the instance in the menu handle internally
+		void Init();
+		
+		HMenu(HMenu&& other);
+
+		HMenu(HMenu&) = delete;
+		HMenu& operator=(HMenu&) = delete;
+
+		//Append string menu item into the menu
+		void AppendStrItem(const HString& str, std::shared_ptr<HCommand> command);
+
+		HMenuBase&& operator=(HMenuBase&& other) override;
+
+
+		HMenuBase&& operator=(HMenuItem&& other) = delete;
+		HMenu&& operator=(HMenu&& other) = delete;
+
+
+	private:
+		void UpdateIndexHandle(int _index);
+
+		//Child Menu notifies the parent for replacing its place with another instance
+		void ReplaceMenuItem(std::shared_ptr<HMenuBase> otherItem, int _index);
+
+		MenuItemType Type()override { return MenuItemType::Menu; }
+
+		//Either store simple items or further menus
+		std::vector< std::shared_ptr<HMenuBase> >Items;
+
+	public:
+		HMENU menu = 0;
+	};
+
+	class HMenuItem :public HMenuBase {
+	public:
+		HMenuItem(HMenu& parentMenu, int _index, std::shared_ptr<HCommand>_command)
+			:HMenuBase(_index, &parentMenu), command(_command) {}
+
+		HMenuItem(HMenuItem&& other) :HMenuBase(std::move(other)) {
+				command = other.command;
+		}
+		
+		HMenuBase&& operator=(HMenuBase&& other)override;
+
+		void callback() {
+			command->Execute();
+		}
+
+	private:
+
+		HMenuBase& operator[](int index)override {
+			__debugbreak();
+			throw Exceptions(TEXT("No such Menu Item!"));
+		}
+
+		MenuItemType Type()override { return MenuItemType::Item; }
+		std::shared_ptr<HCommand>command;
+	};
+
 }
+
+

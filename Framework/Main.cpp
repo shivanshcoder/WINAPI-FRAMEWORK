@@ -6,6 +6,7 @@
 #include"Himani/Himani/SampleWinClasses.h"
 #include"Himani/Log System/Log.h"
 #include"Himani/Himani/FileManagement.h"
+#include"Himani/Himani/WinComponents.h"
 #include"resource.h"
 
 int AskAboutSave(Himani::HWindow* ptr, Himani::HString Title = TEXT("untitled")) {
@@ -56,12 +57,12 @@ int FileSaveDlg(HWND hwnd, PTSTR FileName, PTSTR TitleName) {
 bool FileRead(HWND hwndEdit, PTSTR FileName) {
 	HANDLE File;
 	if (INVALID_HANDLE_VALUE ==
-		(File = CreateFile(FileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL))) 
+		(File = CreateFile(FileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL)))
 		//If fails to open file
 		return false;
 
 	int FileLength = GetFileSize(File, NULL);
-	
+
 }
 
 #pragma endregion
@@ -95,9 +96,11 @@ private:
 
 	Himani::HScrollBar red, blue, green;
 };
+
+
 class SCommand :public Himani::HCommand {
 public:
-	SCommand(Himani::HString str):strTemp(str) {}
+	SCommand(Himani::HString str) :strTemp(str) {}
 
 	void Execute()override {
 		OutputDebugString(strTemp.c_str());
@@ -113,25 +116,40 @@ private:
 
 class MainWin :public Himani::HSimpleWindow {
 public:
-	MainWin() :HSimpleWindow(TEXT("Color Scroll"), WS_OVERLAPPEDWINDOW), TypingWin(TEXT("edit"), *this, Helpers::HRect(0, 0)),
-	c1(L"Command1"),c2(L"Command2"),c3(L"command3"),menu(IDR_MENU_POPAD){
-		//SetMenu(LoadMenu(Himani::Instance(), MAKEINTRESOURCE(IDR_MENU_POPAD)));
-		Himani::HString m1 = L"Open";
-		Himani::HString m2 = L"Close";
-		Himani::HString m3 = L"Save";
-		Himani::HString te = L"CHANGED!!!";
-		menu[0].AppendStrItem(m1, &c1);
-		//menu[0][2][0].AppendStrItem(m1, &c1);
-		menu.AppendStrItem(m2, &c2);
-		menu.AppendStrItem(m3, &c3);
+	void test() {
+		using namespace Himani;
+#define __APPEND__(obj, text) obj.AppendStrItem(text, std::make_shared<SCommand>(text))
+		__APPEND__(menu, TEXT("FIRST"));
+		__APPEND__(menu, TEXT("SECOND"));
+		__APPEND__(menu, TEXT("THIRD"));
+		__APPEND__(menu, TEXT("FOURTH"));
+		__APPEND__(menu, TEXT("FIFTH"));
+
+		HMenu menu2;
+		__APPEND__(menu2, TEXT("22222THIRD"));
+		__APPEND__(menu2, TEXT("22222FOURTH"));
+		__APPEND__(menu2, TEXT("22222FIFTH"));
 
 
-		MENUITEMINFO info = { sizeof(MENUITEMINFO) };
-		info.fMask = MIIM_STRING;
-		info.dwTypeData = &te[0];
-		menu[1].SetInfo(&info);
+		HMenu menu3;
+		__APPEND__(menu3, TEXT("333333333333THIRD"));
+		__APPEND__(menu3, TEXT("333333333333FOURTH"));
+		__APPEND__(menu3, TEXT("333333333333FIFTH"));
 
+		menu[2] = std::move(menu2);
+		menu[2] = std::move(menu3);
 		menu.AttachToWin(*this);
+	}
+
+	MainWin() :
+		TypingWin(TEXT("edit"),
+			WS_HSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE |
+			ES_NOHIDESEL | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
+			*this, Helpers::HRect(0, 0))
+	{
+
+		test();
+
 		Show(SW_NORMAL);
 		TypingWin.Message(EM_LIMITTEXT, 32000, 0);
 
@@ -139,36 +157,40 @@ public:
 	void setText(PTSTR text) {
 		SetWindowText(TypingWin.Handle(), text);
 	}
+
 	LRESULT MessageFunc(UINT message, WPARAM wParam, LPARAM lParam)override {
+
+		if (message == WM_MENUCOMMAND) {
+			MENUINFO info = { sizeof(info) };
+			info.fMask = MIM_MENUDATA;
+			GetMenuInfo((HMENU)lParam, &info);
+
+			if (info.dwMenuData) {
+				auto ptr = (Himani::HMenu*)info.dwMenuData;
+				(*ptr)[wParam].callback();
+				return 0;
+			}
+		}
 
 		if (WM_DESTROY == message) {
 			PostQuitMessage(0);
 			return 0;
 		}
-		if (WM_COMMAND == message) {
-			if ((HIWORD(wParam) == 0) && (lParam == 0)) {
-				menu.callback(LOWORD(wParam));
-			}
-		}
+
 		return HSimpleWindow::MessageFunc(message, wParam, lParam);
 	}
 
 	~MainWin() {}
 private:
-	SCommand c1;
-	SCommand c2;
-	SCommand c3;
-
 	Himani::HMenu menu;
-	Himani::HEdit <
-		WS_HSCROLL | WS_VSCROLL | WS_BORDER | ES_LEFT |
-		ES_MULTILINE | ES_NOHIDESEL | ES_AUTOHSCROLL | ES_AUTOHSCROLL
-	>TypingWin;
+	Himani::HEdit TypingWin;
 };
 
 class MainApp :public Himani::HBaseApp {
 public:
 	MainApp() {	}
+
+	
 	MainWin win;
 };
 ENTRY_APP(MainApp);

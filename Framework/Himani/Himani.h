@@ -47,6 +47,7 @@ int WINAPI WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, PSTR CmdLine, int
 		Himani::__WinAppStorageIndex = AppInstanceStorage.Index;
 
 		Himani::HThread<Himani::HBaseApp> App(EntryApplication());
+
 	}
 	catch (Himani::Exceptions &e) {
 		MessageBoxW(NULL, e.what(), L"ERROR", MB_ICONERROR);

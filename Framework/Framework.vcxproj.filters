@@ -55,7 +55,7 @@
       <Filter>LogSystem</Filter>
     </ClCompile>
     <ClCompile Include="Himani\Himani\SampleWinClasses.cpp">
-      <Filter>TestSource</Filter>
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

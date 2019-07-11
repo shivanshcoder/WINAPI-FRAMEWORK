@@ -285,11 +285,10 @@ namespace Himani {
 
 	//};
 
-	template<DWORD EditStyle = 0>
 	class HEdit :public HPredefinedWindow {
 
 	public:
-		HEdit(const HString& Title, HWindow& parent, Helpers::HRect size) {
+		HEdit(const HString& Title, DWORD EditStyle, HWindow& parent, Helpers::HRect size) {
 			CreateWinEx(Title, EditStyle | WS_CHILD | WS_VISIBLE, 0, &parent, size);
 		}
 

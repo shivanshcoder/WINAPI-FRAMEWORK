@@ -7,13 +7,23 @@ namespace Himani {
 	}
 	LRESULT HSimpleWindow::MessageFunc(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
-			//case WM_PAINT:
-			//	OnPaint();
 
 		case WM_COMMAND: {
-			if ((!lParam) && (!LOWORD(wParam)))
+			if ((!lParam) && (!HIWORD(wParam))) {
 				OnMenu();
+				return 0;
+			}
 			break;
+		}
+		
+
+		case WM_MENUCOMMAND: {
+			int a = wParam;
+			int c = lParam;
+			break;
+		}
+		case WM_SETFOCUS: {
+			return OnFocus();
 		}
 
 		}

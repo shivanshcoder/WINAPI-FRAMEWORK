@@ -9,7 +9,7 @@ namespace Himani {
 
 		//HSimpleWindow(const Himani::HClassInitializer& Data) :HCustomWindow(Data) {}
 
-		HSimpleWindow(const HString& Title, DWORD style = WS_OVERLAPPEDWINDOW, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect(480, 480)) {
+		HSimpleWindow(const HString& Title = TEXT("Simple Window"), DWORD style = WS_OVERLAPPEDWINDOW, HWindow* parent = nullptr, Helpers::HRect size = Helpers::HRect(480, 480)) {
 			CreateWinEx(Title, style, 0, parent, size);
 		}
 
@@ -17,6 +17,7 @@ namespace Himani {
 		DECLARE_MESSAGE_MAP();
 	protected:
 		virtual int OnPaint() { return 1; }
+		virtual int OnFocus() { return 0; }
 
 		WINCLASS_PROPERTIES(HSimpleWindow, CS_VREDRAW | CS_HREDRAW)
 	};
